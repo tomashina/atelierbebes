@@ -23,7 +23,7 @@ class LegacyCatalogImage
         $local = $root !== false ? realpath($root.'/'.$path) : false;
         $encoded = implode('/', array_map('rawurlencode', explode('/', $path)));
 
-        if ($local !== false && str_starts_with($local, $root.'/catalog/') && is_file($local) && filesize($local) > 0) {
+        if ($local !== false && str_starts_with($local, $root.'/') && is_file($local) && filesize($local) > 0) {
             return asset('image/'.$encoded);
         }
 
@@ -112,7 +112,7 @@ class LegacyCatalogImage
         }
 
         $segments = explode('/', $source);
-        if (($segments[0] ?? '') !== 'catalog' || count($segments) < 2
+        if (! in_array($segments[0] ?? '', (array) config('legacy_media.directories', ['catalog']), true) || count($segments) < 2
             || count(array_intersect($segments, ['', '.', '..'])) > 0
             || ! in_array(strtolower(pathinfo($source, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg', 'bmp'], true)) {
             return null;
