@@ -16,7 +16,7 @@
     @if (!empty($notifyHidden)) hidden @endif
 >
     <x-fa-icon name="bell" class="stock-notify-button-icon" />
-    <span>Obavijesti me o dostupnosti</span>
+    <span>Obavijesti me<span class="stock-notify-button-desktop-text"> o dostupnosti</span></span>
 </a>
 @once('stock-notification-modal')
     @push('stock-notification-modals')

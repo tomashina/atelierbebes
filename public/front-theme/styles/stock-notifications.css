@@ -106,3 +106,7 @@ body.storefront .stock-notify-button:is(:hover, :focus-visible) {
     .stock-notify-page { margin-top: 16px; }
 }
 @media (prefers-reduced-motion: reduce) { .stock-notify-button { transition: none; } .stock-notify-submit[aria-busy=true] .stock-notify-button-icon { animation: none; } }
+
+@media (max-width: 767px) {
+    .stock-notify-button-desktop-text { display: none; }
+}
