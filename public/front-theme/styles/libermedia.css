@@ -1387,11 +1387,10 @@ body.libermedia-storefront [data-mobile-nav-view-all] > span {
 
 /* Sage feedback keeps touch navigation in the Liber Media palette. */
 html[data-theme] body.libermedia-storefront [data-mobile-menu-panel] {
-    --mobile-menu-tint: #edf3ec;
-    --mobile-menu-accent: #245b42;
+    --mobile-menu-tint: #fff3eb;
+    --mobile-menu-accent: #ff5000;
 }
-html[data-theme] body.libermedia-storefront .desktop-mobile-menu-row:is(:hover, :active, .desktop-mobile-menu-row-active),
-html[data-theme] body.libermedia-storefront .desktop-mobile-menu-group[open] > .desktop-mobile-menu-row {
+html[data-theme] body.libermedia-storefront .desktop-mobile-menu-row:is(:hover, :active):not(.desktop-mobile-menu-row-active):not(details[open] > summary) {
     background: #edf3ec;
     color: #245b42;
 }
