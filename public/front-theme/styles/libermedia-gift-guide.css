@@ -122,7 +122,7 @@
     .lm-gift-results-heading > div { flex: 1 1 100%; }
     .lm-gift-results-heading > span { font-size: 12px; }
     .lm-gift-results { margin-top: 24px; scroll-margin-top: 150px; }
-    .lm-gift-form select, .lm-gift-sidebar select { font-size: 16px; }
+    .lm-gift-form select, .lm-gift-sidebar select { font-size: 13px; }
     .lm-gift-choices span { white-space: normal; font-size: 12px; padding-inline: 5px; }
     .lm-gift-voucher > a { white-space: normal; }
 }
