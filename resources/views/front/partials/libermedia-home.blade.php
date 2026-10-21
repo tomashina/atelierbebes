@@ -18,7 +18,7 @@
             <p class="herrera-hero-description">{{ __('Didaktičke igračke, kreativni setovi i školski pribor. Pronađite inspiraciju za svaki novi dan igre i učenja.') }}</p>
             <div class="herrera-hero-actions">
                 <a class="herrera-hero-primary-action" href="{{ route('categories.index') }}">{{ __('Istražite ponudu') }} <x-fa-icon name="arrow-right" /></a>
-                <a class="herrera-hero-secondary-action" href="{{ route('blog.index') }}"><x-fa-icon name="book-open" /> {{ __('Ideje i inspiracija') }}</a>
+                <a class="herrera-hero-secondary-action" href="{{ route('shop.promotions') }}"><x-fa-icon name="tags" /> {{ __('Akcije i popusti') }}</a>
             </div>
         </div>
         <aside class="herrera-hero-panel" aria-labelledby="libermedia-home-tools-title">
