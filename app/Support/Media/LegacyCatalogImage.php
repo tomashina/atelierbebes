@@ -63,6 +63,19 @@ class LegacyCatalogImage
             }
         }
 
+        // Preview category artwork can reference an imported product instead
+        // of an original category image. Resolve its remote image on staging.
+        if ($model instanceof Category) {
+            $previewProductId = $model->getMedia('category_banner')->merge($model->getMedia('category_icon'))
+                ->map(fn ($media) => (int) $media->getCustomProperty('preview_product_id', 0))
+                ->first(fn ($id) => $id > 0);
+            if ($previewProductId && ($product = Product::query()->find($previewProductId))) {
+                if ($image = self::first($product, $conversions, $preferWebp)) {
+                    return $image;
+                }
+            }
+        }
+
         return self::url(data_get($model->payload, 'opencart.image'));
     }
 
