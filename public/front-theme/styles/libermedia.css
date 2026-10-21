@@ -1384,3 +1384,14 @@ body.libermedia-storefront [data-mobile-nav-view-all] > span {
     text-decoration: underline;
     text-underline-offset: 4px;
 }
+
+/* Sage feedback keeps touch navigation in the Liber Media palette. */
+html[data-theme] body.libermedia-storefront [data-mobile-menu-panel] {
+    --mobile-menu-tint: #edf3ec;
+    --mobile-menu-accent: #245b42;
+}
+html[data-theme] body.libermedia-storefront .desktop-mobile-menu-row:is(:hover, :active, .desktop-mobile-menu-row-active),
+html[data-theme] body.libermedia-storefront .desktop-mobile-menu-group[open] > .desktop-mobile-menu-row {
+    background: #edf3ec;
+    color: #245b42;
+}
