@@ -36,4 +36,6 @@ Kod je preuzet iz lokalnog Herrera brancha `codex/herrera-b2b-foundation` (izvor
 
 Početna prikazuje šest brandova u širokom slideru i tri najnovija objavljena blog članka. Blog blok prati postavku bloga i ne ponavlja već postavljen aktivni CMS blog blok.
 
+Glavni izbornik prati originalni redoslijed (Brandovi, Akcije, Posebna ponuda, Blog, O nama, Kontakt), uz Poklon bon s ikonom skroz desno. Stavke, ikona i desno poravnanje uređuju se u **Sadržaj → Navigacija**; ondje su i kontakti te Facebook/Instagram gornje trake. Društvene mreže podnožja uređuju se u postavkama trgovine. `php artisan libermedia:configure-preview --navigation-only` postavlja samo ove podatke. Posebna ponuda i Poklon bon zadržavaju postojeće poveznice na `www.liber-media.hr` jer njihovi OpenCart moduli još nemaju Laravel zamjenu.
+
 Pozadinski motiv kombinira dječje ikone `robot`, `teddy-bear`, `balloons`, `paintbrush-pencil`, `duck`, `dinosaur` i `kite` (Font Awesome Pro 7.3.1, light) iz već instaliranog seta. Robot, medvjedić i baloni su najvidljiviji. Kist s olovkom dodaje motiv kreativnog rada, a patkica, dinosaur i zmaj ostaju diskretni sporedni detalji. Veliki obrisi dijele iste fiksne koordinate kroz gornju traku, pretragu, hero i obojene trake. Podloge tih površina koriste zelene tonove; narančasti logo i gumbi ostaju dio identiteta.

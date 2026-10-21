@@ -211,8 +211,14 @@
                             href="{{ $item['url'] ?? '#' }}"
                             @if (!empty($item['open_in_new_tab'])) target="_blank" rel="noopener noreferrer" @endif
                             @if (request()->url() === ($item['url'] ?? '')) aria-current="page" @endif
+                            @if (!empty($item['align_right'])) data-navigation-align="right" @endif
                             data-herrera-primary-link
-                        >{{ $item['label'] }}</a>
+                        >
+                            @if (($item['icon'] ?? '') === 'gift')
+                                <x-fa-icon :inline="true" name="gift" style="regular" class="navigation-item-icon" />
+                            @endif
+                            <span>{{ $item['label'] }}</span>
+                        </a>
                     @endforeach
                     @include('front.partials.resource-navigation', ['resourceHerreraPrimary' => true, 'resourceMobile' => false])
                 </nav>

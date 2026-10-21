@@ -157,11 +157,71 @@ class ContentNavigationFeatureTest extends TestCase
         $this->assertSame('page', $saved[1]['type']);
         $this->assertSame((int) $page->id, (int) $saved[1]['page_id']);
         $this->assertTrue((bool) $saved[1]['is_highlighted']);
+        $this->assertSame('', $saved[0]['icon']);
+        $this->assertFalse($saved[0]['align_right']);
         $this->assertSame(1240, (int) $appearance['container_width']);
         $this->assertSame(1100, (int) $appearance['header_content_width']);
         $this->assertSame('#ffdf00', $appearance['background_color']);
         $this->assertSame('O nama', $topBar['links'][0]['label']);
         $this->assertSame('facebook', $topBar['socials'][0]['network']);
+    }
+
+    public function test_admin_can_save_and_reload_navigation_icon_and_desktop_alignment(): void
+    {
+        $user = $this->makeAdminUser();
+
+        Livewire::actingAs($user)->test(NavigationManager::class)
+            ->call('addCustomItem')
+            ->set('form.items.0.label', 'Poklon bon')
+            ->set('form.items.0.url', '/poklon-bon')
+            ->set('form.items.0.icon', 'gift')
+            ->set('form.items.0.align_right', true)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        Livewire::actingAs($user)->test(NavigationManager::class)
+            ->assertSet('form.items.0.label', 'Poklon bon')
+            ->assertSet('form.items.0.icon', 'gift')
+            ->assertSet('form.items.0.align_right', true);
+
+        $entry = app(NavigationMenuService::class)->forLocale('en')[0];
+        $this->assertSame('Poklon bon', $entry['label']);
+        $this->assertSame('/poklon-bon', $entry['url']);
+        $this->assertSame('gift', $entry['icon']);
+        $this->assertTrue($entry['align_right']);
+    }
+
+    public function test_legacy_navigation_items_default_to_no_icon_and_standard_alignment(): void
+    {
+        app(SystemSettingsService::class)->put(NavigationMenuService::SETTINGS_KEY, [[
+            'type' => 'custom',
+            'label' => 'Poklon bon',
+            'url' => '/poklon-bon',
+        ]]);
+
+        $navigation = app(NavigationMenuService::class);
+        $configured = $navigation->configuredItems()[0];
+        $resolved = $navigation->forLocale('en')[0];
+
+        $this->assertSame('', $configured['icon']);
+        $this->assertFalse($configured['align_right']);
+        $this->assertSame('', $resolved['icon']);
+        $this->assertFalse($resolved['align_right']);
+    }
+
+    public function test_admin_cannot_save_an_unsupported_navigation_icon(): void
+    {
+        $user = $this->makeAdminUser();
+        $settings = app(SystemSettingsService::class);
+        $before = $settings->get(NavigationMenuService::SETTINGS_KEY, []);
+
+        Livewire::actingAs($user)->test(NavigationManager::class)
+            ->call('addCustomItem')
+            ->set('form.items.0.icon', 'invalid-icon')
+            ->call('save')
+            ->assertHasErrors(['form.items.0.icon' => 'in']);
+
+        $this->assertSame($before, $settings->get(NavigationMenuService::SETTINGS_KEY, []));
     }
 
     public function test_storefront_stylesheet_uses_admin_navigation_values(): void

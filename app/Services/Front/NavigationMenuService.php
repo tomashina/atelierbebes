@@ -234,6 +234,8 @@ class NavigationMenuService
 
             if (is_array($entry) && trim((string) ($entry['url'] ?? '')) !== '') {
                 $entry['is_highlighted'] = (bool) ($item['is_highlighted'] ?? false);
+                $entry['icon'] = $item['icon'];
+                $entry['align_right'] = $item['align_right'];
                 $resolved[] = $entry;
             }
         }
@@ -322,6 +324,8 @@ class NavigationMenuService
                 'open_in_new_tab' => (bool) ($item['open_in_new_tab'] ?? false),
                 'show_dropdown' => (bool) ($item['show_dropdown'] ?? true),
                 'is_highlighted' => (bool) ($item['is_highlighted'] ?? false),
+                'icon' => ($item['icon'] ?? '') === 'gift' ? 'gift' : '',
+                'align_right' => (bool) ($item['align_right'] ?? false),
                 'is_active' => (bool) ($item['is_active'] ?? true),
                 'sort_order' => (int) ($item['sort_order'] ?? $index),
                 'desktop_promo_image_path' => trim((string) ($item['desktop_promo_image_path'] ?? ($item['desktop_promo_image_url'] ?? ''))),

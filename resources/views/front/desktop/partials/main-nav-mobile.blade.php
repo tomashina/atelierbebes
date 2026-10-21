@@ -56,7 +56,12 @@
                     </ul>
                 </details>
             @else
-                <a href="{{ $item['url'] ?? '#' }}" class="desktop-mobile-menu-row desktop-mobile-menu-row--section flex min-h-[60px] items-center px-4 py-3 text-[16px] font-bold tracking-[-0.01em] hover:bg-slate-50" @if($target) target="{{ $target }}" rel="{{ $rel }}" @endif>{{ $item['label'] }}</a>
+                <a href="{{ $item['url'] ?? '#' }}" class="desktop-mobile-menu-row desktop-mobile-menu-row--section flex min-h-[60px] items-center gap-2 px-4 py-3 text-[16px] font-bold tracking-[-0.01em] hover:bg-slate-50" @if($target) target="{{ $target }}" rel="{{ $rel }}" @endif>
+                    @if (($item['icon'] ?? '') === 'gift')
+                        <x-fa-icon :inline="true" name="gift" style="regular" class="h-5 w-5 shrink-0" />
+                    @endif
+                    <span>{{ $item['label'] }}</span>
+                </a>
             @endif
         @endforeach
         @include('front.partials.resource-navigation', ['resourceMobile' => true])

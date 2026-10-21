@@ -90,6 +90,34 @@ body.libermedia-storefront :is(.checkout-shell, .mobile-checkout, .quick-order-b
 }
 
 /* White header, sage utility strip and forest green navigation. */
+@media (min-width: 1024px) {
+    body.libermedia-storefront .herrera-primary-navigation {
+        gap: clamp(18px, 2vw, 32px);
+    }
+
+    body.libermedia-storefront .herrera-header-layout:not(:has([data-herrera-quick-order])) .herrera-primary-navigation {
+        grid-column: 2 / -1;
+    }
+
+    body.libermedia-storefront .herrera-primary-navigation a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+    body.libermedia-storefront .herrera-primary-navigation [data-navigation-align="right"] {
+        order: 1;
+        margin-left: auto;
+    }
+
+    body.libermedia-storefront .herrera-primary-navigation .navigation-item-icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+}
+
 body.libermedia-storefront .site-main-header {
     --herrera-header-ink: var(--libermedia-ink);
     --herrera-header-muted: var(--libermedia-muted);

@@ -8,11 +8,10 @@ use App\Models\Content\Page\InfoPage;
 use App\Services\Front\NavigationMenuService;
 use App\Services\Settings\SystemSettingsService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class LibermediaConfigurePreview extends Command
 {
-    protected $signature = 'libermedia:configure-preview';
+    protected $signature = 'libermedia:configure-preview {--navigation-only : Update only admin-managed navigation, contacts and social links}';
 
     protected $description = 'Apply the Herrera visual foundation with Liber Media content and branding';
 
@@ -24,27 +23,47 @@ class LibermediaConfigurePreview extends Command
             return self::FAILURE;
         }
 
-        $source = DB::connection('libermedia_source')->table('oc_setting')->where('store_id', 0)->pluck('value', 'key');
-        $contactLinks = [];
-        $email = trim((string) $source->get('config_email', ''));
-        $phone = trim((string) $source->get('config_telephone', ''));
-        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $contactLinks[] = ['label' => $email, 'url' => 'mailto:'.$email, 'is_active' => true, 'sort_order' => 0];
-        }
-        if ($phone !== '') {
-            $contactLinks[] = ['label' => $phone, 'url' => 'tel:'.preg_replace('/[^+0-9]/', '', $phone), 'is_active' => true, 'sort_order' => 1];
-        }
         $aboutId = InfoPage::whereHas('translations', fn ($query) => $query->where('locale', 'hr')->where('slug', 'o-nama'))->value('id');
         $navigation = [
             ['type' => 'catalog', 'label' => 'Sve kategorije', 'url' => '/shop', 'is_active' => true, 'show_dropdown' => true, 'sort_order' => 0],
             ['type' => 'custom', 'label' => 'Brandovi', 'url' => '/brendovi', 'is_active' => true, 'sort_order' => 1],
             ['type' => 'custom', 'label' => 'Akcije', 'url' => '/akcije', 'is_active' => true, 'sort_order' => 2],
+            // These OpenCart extensions keep their existing live destinations.
+            ['type' => 'custom', 'label' => 'Posebna ponuda', 'url' => 'https://www.liber-media.hr/bundle-artikli', 'is_active' => true, 'sort_order' => 3],
+            ['type' => 'blog', 'label' => 'Blog', 'is_active' => true, 'sort_order' => 4],
         ];
         if ($aboutId) {
-            $navigation[] = ['type' => 'page', 'label' => 'O nama', 'page_id' => $aboutId, 'is_active' => true, 'sort_order' => 3];
+            $navigation[] = ['type' => 'page', 'label' => 'O nama', 'page_id' => $aboutId, 'is_active' => true, 'sort_order' => 5];
         }
-        $navigation[] = ['type' => 'custom', 'label' => 'Kontakt', 'url' => '/contact', 'is_active' => true, 'sort_order' => 4];
-        $navigation[] = ['type' => 'custom', 'label' => 'Blog', 'url' => '/blog', 'is_active' => true, 'sort_order' => 5];
+        $navigation[] = ['type' => 'contact', 'label' => 'Kontakt', 'is_active' => true, 'sort_order' => 6];
+        $navigation[] = ['type' => 'custom', 'label' => 'Poklon bon', 'url' => 'https://www.liber-media.hr/index.php?route=account/voucher', 'icon' => 'gift', 'align_right' => true, 'is_active' => true, 'sort_order' => 7];
+
+        $navigationSettings = [
+            NavigationMenuService::SETTINGS_KEY => $navigation,
+            NavigationMenuService::TOP_BAR_SETTINGS_KEY => [
+                'is_enabled' => true, 'height' => 34, 'font_size' => 12,
+                'background_color' => '#EDF3EC', 'text_color' => '#245B42', 'border_color' => '#DCE7DC',
+                'links' => [
+                    ['label' => 'info@liber-media.hr', 'url' => 'mailto:info@liber-media.hr', 'is_active' => true, 'sort_order' => 0],
+                    ['label' => '+385 95 388 8535', 'url' => 'tel:+385953888535', 'is_active' => true, 'sort_order' => 1],
+                ],
+                'socials' => [
+                    ['network' => 'facebook', 'url' => 'https://www.facebook.com/libermedia01', 'is_active' => true, 'sort_order' => 0],
+                    ['network' => 'instagram', 'url' => 'https://www.instagram.com/liber_media01/', 'is_active' => true, 'sort_order' => 1],
+                ],
+            ],
+            'store_social_facebook_url' => 'https://www.facebook.com/libermedia01',
+            'store_social_instagram_url' => 'https://www.instagram.com/liber_media01/',
+            'store_footer_social_facebook_enabled' => true,
+            'store_footer_social_instagram_enabled' => true,
+        ];
+
+        if ($this->option('navigation-only')) {
+            $settings->putMany($navigationSettings);
+            $this->info('Liber Media navigation, contacts and social links saved in admin settings.');
+
+            return self::SUCCESS;
+        }
 
         $settings->putMany([
             'store_brand_logo_path' => 'assets/brand/libermedia-logo.svg',
@@ -66,21 +85,13 @@ class LibermediaConfigurePreview extends Command
             'store_footer_col_3_title' => 'Korisne poveznice',
             'store_footer_col_3_title_translations' => ['hr' => 'Korisne poveznice'],
             'store_footer_col_3_custom_links' => "Moj račun|/auth/login\nBlog|/blog\nKontakt|/contact",
-            'store_footer_social_facebook_enabled' => false,
-            'store_footer_social_instagram_enabled' => false,
             'store_footer_social_tiktok_enabled' => false,
             'store_footer_social_youtube_enabled' => false,
-            NavigationMenuService::SETTINGS_KEY => $navigation,
-            NavigationMenuService::TOP_BAR_SETTINGS_KEY => [
-                'is_enabled' => true, 'height' => 34, 'font_size' => 12,
-                'background_color' => '#EDF3EC', 'text_color' => '#245B42', 'border_color' => '#DCE7DC',
-                'links' => $contactLinks, 'socials' => [],
-            ],
             NavigationMenuService::APPEARANCE_SETTINGS_KEY => [
                 'container_width' => 1860, 'header_content_width' => 1860,
                 'background_color' => '#245B42', 'text_color' => '#ffffff', 'highlight_color' => '#FF4D00',
             ],
-        ]);
+        ] + $navigationSettings);
         // The legacy shop has no category pictures. Use an existing product
         // photo from each category, without changing the original source data.
         $profile = config('media_profiles.models.'.Category::class);
