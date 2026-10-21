@@ -585,6 +585,11 @@ body.libermedia-storefront .libermedia-home-blog a:is(:hover, :focus-visible) {
 }
 
 @media (max-width: 1023px) {
+    body.libermedia-storefront .herrera-header-layout,
+    body.libermedia-storefront .site-main-header.is-sticky .herrera-header-layout {
+        grid-template-rows: 64px;
+    }
+
     body.libermedia-storefront .site-main-header .site-main-logo {
         width: 176px;
         max-width: 176px;
