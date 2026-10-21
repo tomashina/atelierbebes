@@ -132,7 +132,7 @@ body.libermedia-storefront :is(.site-top-bar-link, .site-top-bar-social-link):is
 }
 
 body.libermedia-storefront .herrera-header-layout .header-search-form {
-    background-color: var(--libermedia-surface-raised);
+    background-color: var(--libermedia-sage);
 }
 
 body.libermedia-storefront :is(.herrera-primary-navigation a, .herrera-header-quick-order, .herrera-mobile-shortcuts a) {
@@ -164,7 +164,7 @@ body.libermedia-storefront .header-search-suggestions-link:is(:hover, :focus-vis
 /* Warm hero and calm supporting bands share the Liber Media symbol. */
 body.libermedia-storefront :is(.herrera-hero, .herrera-b2b-hero) {
     border-color: var(--libermedia-line);
-    background-color: var(--libermedia-cream);
+    background-color: var(--libermedia-sage);
     background-image: var(--libermedia-pattern);
 }
 
@@ -552,7 +552,7 @@ html[data-theme=dark] body.libermedia-storefront .product-detail-card [data-prod
 }
 
 html[data-theme=dark] body.libermedia-storefront :is(.herrera-hero, .herrera-b2b-hero) {
-    background-color: var(--libermedia-cream);
+    background-color: var(--libermedia-sage);
 }
 
 html[data-theme=dark] body.libermedia-storefront :is(.herrera-eyebrow, .herrera-home-section-eyebrow, .herrera-category-support-eyebrow, .herrera-home-registration-eyebrow, .herrera-brand-strip__all, .herrera-category-module-link, .herrera-home-heading a, .herrera-home-registration-login),
