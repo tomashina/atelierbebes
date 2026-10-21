@@ -7,7 +7,7 @@
 
 <div class="product-purchase-information" data-product-purchase-information>
     @include('front.partials.legal-warranty-notice', ['warrantyVariant' => 'product'])
-    @if (str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera'))
+    @if (\App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))))
         @include('front.partials.herrera-product-specifications')
     @endif
     @include('front.partials.product-documents')

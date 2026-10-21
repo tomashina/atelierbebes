@@ -86,7 +86,9 @@
                                 ?? \App\Support\Media\MediaUrl::conversionOrNull($categoryMedia, 'icon_96x96', $preferWebp)
                                 ?? $categoryMedia->getUrl()))
                         : null;
-                    $categoryPhotoPath = ltrim((string) config('herrera-category-photography.'.$iconSlug, ''), '/');
+                    $categoryPhotoPath = str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera')
+                        ? ltrim((string) config('herrera-category-photography.'.$iconSlug, ''), '/')
+                        : '';
                     if (! $categoryImageUrl && $categoryPhotoPath !== '' && is_file(public_path($categoryPhotoPath))) {
                         $categoryImageUrl = asset($categoryPhotoPath);
                     }

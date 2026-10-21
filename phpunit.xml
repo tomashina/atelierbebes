@@ -20,6 +20,8 @@
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="STORE_B2B_ONLY" value="false" force="true"/>
+        <env name="STOREFRONT_THEME" value="auto" force="true"/>
+        <env name="STOREFRONT_HOME" value="auto" force="true"/>
         <env name="HERRERA_LOCAL_SAFE_MODE" value="false" force="true"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>

@@ -45,7 +45,7 @@
     $hotspotProductsById = collect($hotspotProducts ?? [])->mapWithKeys(
         fn ($row, $id) => [(int) $id => (array) $row]
     );
-    $isHerreraBlog = str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? '')), 'herrera');
+    $isHerreraBlog = \App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name')));
 @endphp
 
 @section('title', $translation?->title ?? __('ui.blog.page_title'))

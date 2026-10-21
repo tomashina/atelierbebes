@@ -76,7 +76,7 @@
         $categories = collect();
         $isFeaturedCategories = (string) $block->type === 'featured_categories';
         $usesHerreraCategoryTiles = $isFeaturedCategories && $overrideView === ''
-            && str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera');
+            && \App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name')));
         if ($isFeaturedCategories) {
             $categories = app(\App\Services\Content\FeaturedCategoriesService::class)->forBlock(
                 $block,

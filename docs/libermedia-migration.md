@@ -46,3 +46,9 @@ U `storage/app/private/` nalaze se:
 - `libermedia-reconciliation.json`: agregatna usporedba izvora i odredišta.
 
 Ove datoteke, baza, originalne slike i `.env` nisu verzionirani. Izvorna OpenCart trgovina nije mijenjana. Odlazna pošta ide u lokalni log; integracije nisu povezane s produkcijom.
+
+## Vizualna osnova
+
+Novi projekt koristi isti lokalni Herrera branch `codex/herrera-b2b-foundation` i izvorni commit `16948f5`. Izbor izgleda sada ima vlastitu postavku i ne ovisi o nazivu branda. Uključeni su Herrera raspored, stilovi i kartice uz zaseban Libermedia početni sadržaj. Izvorna Herrera baza i projekt nisu mijenjani.
+
+Prethodno prazna početna zamijenjena je Libermedia uvodom, kategorijama, izdvojenim proizvodima i brandovima iz uvezenog kataloga. Logotip je postavljen kao javni brand asset. Za kategorije bez izvorne slike uzeta je postojeća fotografija pripadajućeg proizvoda.

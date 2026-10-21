@@ -8,7 +8,7 @@
     $ctaUrl = trim((string) ($translation?->cta_url ?: route('categories.index')));
 @endphp
 
-@if (str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera'))
+@if (\App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))))
     @include('front.partials.herrera-home-categories', [
         'categories' => $categories,
         'locale' => $locale,

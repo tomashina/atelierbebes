@@ -1,7 +1,7 @@
 @extends('front.desktop.layouts.store')
 
-@section('title', str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera') ? __('herrera.page_title') : config('app.name', 'AG Shop').' Store')
-@section('main_class', 'mx-auto w-full max-w-7xl px-6 pt-0 pb-0'.(str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera') ? ' herrera-home-main' : ''))
+@section('title', str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera') ? __('herrera.page_title') : (string) ($storeSettings['branding']['store_name'] ?? config('app.name', 'AG Shop')))
+@section('main_class', 'mx-auto w-full max-w-7xl px-6 pt-0 pb-0'.(\App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))) ? ' herrera-home-main' : ''))
 
 @section('content')
     @php
@@ -16,7 +16,9 @@
         $homeBottomBlocks = $resolver->forPlacement('home.bottom', $locale, null, null, 'desktop');
         $homeBottomIsInstagramOnly = $homeBottomBlocks->isNotEmpty()
             && $homeBottomBlocks->every(fn ($item) => (string) data_get($item, 'block.type') === 'instagram_curated_grid');
-        $isHerreraHome = str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera');
+        $isHerreraHome = \App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name')));
+        $isLibermediaHome = config('storefront.home') === 'libermedia';
+        $homeFallbackView = $isLibermediaHome ? 'front.partials.libermedia-home' : 'front.partials.herrera-home';
         $hasManagedHerreraHomeCategories = $isHerreraHome
             && \Illuminate\Support\Facades\Schema::hasTable('content_block_slots')
             && \Illuminate\Support\Facades\Schema::hasTable('content_blocks')
@@ -83,7 +85,7 @@
             @include('front.partials.herrera-home-placement', ['items' => $homeHeroBlocks])
         </section>
     @elseif ($useHerreraHomeFallback)
-        @include('front.partials.herrera-home', ['herreraHomeSection' => 'hero'])
+        @include($homeFallbackView, ['herreraHomeSection' => 'hero'])
     @endif
 
     @if ($homeHeroBenefitsBlocks->isNotEmpty())
@@ -99,7 +101,7 @@
             @include('front.partials.herrera-home-placement', ['items' => $homeCategoriesBlocks])
         </section>
     @elseif ($useHerreraHomeFallback && ! $hasManagedHerreraHomeCategories)
-        @include('front.partials.herrera-home', ['herreraHomeSection' => 'categories'])
+        @include($homeFallbackView, ['herreraHomeSection' => 'categories'])
     @endif
 
     @if ($homeBeforeProductsBlocks->isNotEmpty())
@@ -109,7 +111,7 @@
     @endif
 
     @if ($useHerreraHomeFallback)
-        @include('front.partials.herrera-home', ['herreraHomeSection' => 'products'])
+        @include($homeFallbackView, ['herreraHomeSection' => 'products'])
     @endif
 
     @if ($homeAfterProductsBlocks->isNotEmpty())
@@ -119,11 +121,13 @@
     @endif
 
     @if ($useHerreraHomeFallback && ! $hasHomeBrandsBlock)
-        @include('front.partials.herrera-home', ['herreraHomeSection' => 'brands'])
-        @include('front.partials.herrera-popular-products')
+        @include($homeFallbackView, ['herreraHomeSection' => 'brands'])
+        @unless ($isLibermediaHome)
+            @include('front.partials.herrera-popular-products')
+        @endunless
     @endif
 
-    @if ($isHerreraHome && ! $hasHomeBrandsBlock)
+    @if ($isHerreraHome && ! $isLibermediaHome && ! $hasHomeBrandsBlock)
         @include('front.partials.herrera-popular-products')
     @endif
 
@@ -140,7 +144,7 @@
         && $homeCategoriesBlocks->isEmpty()
         && $homeAfterProductsBlocks->isEmpty()
         && $homeBottomBlocks->isEmpty()
-        && ! str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera')
+        && ! $isHerreraHome
     )
         <section class="border border-slate-200 bg-white p-10">
             <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Home</h1>

@@ -1,7 +1,7 @@
 @extends('front.desktop.layouts.store')
 
 @php
-    $isHerreraProductDetail = str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera');
+    $isHerreraProductDetail = \App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name')));
     $canViewPrices = $canViewPrices ?? app(\App\Services\Pricing\B2BAccessService::class)->canViewPrices(auth()->user());
     $translation = $product->translations->firstWhere('locale', $locale)
         ?? $product->translations->firstWhere('locale', $fallbackLocale);

@@ -1,11 +1,11 @@
 @extends('front.desktop.layouts.store')
 
 @php
-    $isHerreraCategoryIndex = str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera');
+    $isHerreraCategoryIndex = \App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name')));
 @endphp
 
 @section('title', __('ui.category_index.page_title'))
-@section('main_class', 'w-full px-0 pt-3 pb-4 sm:pt-3 sm:pb-6'.(str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera') ? ' herrera-wide-catalog-main' : ''))
+@section('main_class', 'w-full px-0 pt-3 pb-4 sm:pt-3 sm:pb-6'.(\App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))) ? ' herrera-wide-catalog-main' : ''))
 @section('body_class', 'category-index-page')
 
 @push('styles')

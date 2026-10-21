@@ -1,6 +1,6 @@
 @if ($categories->isEmpty())
     <div class="category-index-empty">{{ __('ui.category_index.empty') }}</div>
-@elseif (str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera'))
+@elseif (\App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))))
     @php
         // The Croatian slug identifies the shared photography and icon in every locale.
         $categories->load(['translations' => fn ($query) => $query

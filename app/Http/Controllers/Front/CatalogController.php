@@ -737,6 +737,7 @@ class CatalogController extends Controller
         $locale = app()->getLocale();
         $fallbackLocale = (string) config('app.locale');
         $isHerreraStore = str_contains(strtolower((string) app(SystemSettingsService::class)->get('store_brand_name', config('app.name', 'AG Shop'))), 'herrera');
+        $usesHerreraLayout = \App\Support\StorefrontTheme::usesHerreraLayout();
         $variant = $this->frontendVariant($request);
         $search = trim((string) $request->query('q', ''));
         $categorySlug = $slug;
@@ -1003,20 +1004,20 @@ class CatalogController extends Controller
             : collect();
 
         // Category navigation remains available when the product/filter panels are hidden.
-        $childCategories = ($isHerreraStore || ($showCategoryFilters && ! $promoOnly))
+        $childCategories = ($usesHerreraLayout || ($showCategoryFilters && ! $promoOnly))
             ? $category->children()
                 ->where('scope', Category::SCOPE_CATALOG)
                 ->currentlyVisible()
                 ->with(['translations' => fn ($q) => $q
                     ->where('scope', Category::SCOPE_CATALOG)
-                    ->whereIn('locale', array_unique([$locale, $fallbackLocale, ...($isHerreraStore ? ['hr'] : [])]))])
-                ->when($isHerreraStore, fn ($q) => $q->with('media'))
+                    ->whereIn('locale', array_unique([$locale, $fallbackLocale, ...($usesHerreraLayout ? ['hr'] : [])]))])
+                ->when($usesHerreraLayout, fn ($q) => $q->with('media'))
                 ->orderBy('sort_order')
                 ->orderBy('id')
                 ->get()
             : collect();
 
-        if ($isHerreraStore) {
+        if ($usesHerreraLayout) {
             // Share one recursive count batch between the carousel and sidebar.
             $this->withRecursiveCatalogProductCounts(
                 $childCategories,
@@ -1034,7 +1035,7 @@ class CatalogController extends Controller
                 ->values();
         } else {
             $subcategories = $showCategoryFilters ? $childCategories : collect();
-            if (! $isHerreraStore) {
+            if (! $usesHerreraLayout) {
                 $this->withRecursiveCatalogProductCounts(
                     $subcategories,
                     $this->hideOutOfStockProducts() || $availableOnly,
@@ -1077,7 +1078,7 @@ class CatalogController extends Controller
             'optionFilters' => $this->withSelectedFilters($optionFilters, $selectedOptionFilters),
             'attributeFilters' => $this->withSelectedFilters($attributeFilters, $selectedAttributeFilters),
             'subcategories' => $subcategories,
-            'subcategoryCards' => $isHerreraStore ? $childCategories : collect(),
+            'subcategoryCards' => $usesHerreraLayout ? $childCategories : collect(),
             'breadcrumbCategories' => $breadcrumbCategories,
             'topBlocks' => $topBlocks,
             'bottomBlocks' => $bottomBlocks,

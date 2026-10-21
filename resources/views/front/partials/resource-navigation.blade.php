@@ -13,6 +13,9 @@
         ['url' => route('supplier-catalogs.index'), 'label' => __('herrera_resources.catalogs_short')],
         ['url' => route('references.index'), 'label' => __('herrera_resources.references')],
     ];
+    if (config('storefront.home') === 'libermedia') {
+        $resourceLinks = [];
+    }
 @endphp
 @foreach ($resourceLinks as $resourceLink)
     @unless (in_array(rtrim((string) parse_url($resourceLink['url'], PHP_URL_PATH), '/'), $existingResourcePaths, true))

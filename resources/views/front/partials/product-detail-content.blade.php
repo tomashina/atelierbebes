@@ -15,7 +15,7 @@
     $firstDetailSectionId = $hasProductStory
         ? 'product-description'
         : ($hasSpecificationAttributes ? 'product-specifications' : 'product-comments');
-    $isHerreraProductContent = str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera');
+    $isHerreraProductContent = \App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name')));
     $productDescriptionHtml = (string) ($translation?->description ?? '');
     if ($isHerreraProductContent) {
         $compactProductSpecifications = $compactProductSpecifications ?? app(\App\Support\ProductSpecificationPresenter::class)

@@ -6,7 +6,7 @@
     }
 
     $authStoreName = trim((string) (($authBranding['store_name'] ?? null) ?: config('app.name', 'AG Shop')));
-    $isHerreraAuth = str_contains(strtolower($authStoreName), 'herrera');
+    $isHerreraAuth = \App\Support\StorefrontTheme::usesHerreraLayout($authStoreName);
     $authLogoUrl = trim((string) ($authBranding['logo_url'] ?? ''));
     $authLogoWidth = max(1, (int) ($authBranding['logo_width'] ?? 320));
     $authLogoHeight = max(1, (int) ($authBranding['logo_height'] ?? 145));

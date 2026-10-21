@@ -34,7 +34,7 @@ class NavigationMenuService
     {
         $locale = strtolower(trim($locale));
         $fallbackLocale = strtolower((string) config('app.locale', 'en'));
-        $isHerreraStore = str_contains(strtolower((string) $this->settings->get('store_brand_name', config('app.name', 'AG Shop'))), 'herrera');
+        $isHerreraStore = \App\Support\StorefrontTheme::usesHerreraLayout((string) $this->settings->get('store_brand_name', config('app.name', 'AG Shop')));
         $items = collect($this->configuredItems())
             ->filter(fn ($item): bool => (bool) ($item['is_active'] ?? true))
             ->sortBy(fn ($item): int => (int) ($item['sort_order'] ?? 0))

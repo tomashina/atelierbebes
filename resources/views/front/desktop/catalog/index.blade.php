@@ -3,7 +3,7 @@
 @section('body_class', ($isShopPage ?? false) ? 'catalog-category-page catalog-shop-page' : 'catalog-category-page')
 
 @php
-    $isHerreraCatalog = str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera');
+    $isHerreraCatalog = \App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name')));
     $isShopPage = (bool) ($isShopPage ?? false);
     $isManufacturerPage = (bool) ($isManufacturerPage ?? false);
     $manufacturerPageModel = $isManufacturerPage ? $manufacturer : null;
@@ -206,7 +206,7 @@
 @endphp
 
 @section('title', $isShopPage ? __('ui.shop.page_title') : (($translation?->name ?? __('ui.category.fallback_name')).' '.__('ui.category.products_suffix')))
-@section('main_class', 'w-full px-0 pt-3 pb-4 sm:pt-3 sm:pb-6'.(str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera') ? ' herrera-wide-catalog-main' : ''))
+@section('main_class', 'w-full px-0 pt-3 pb-4 sm:pt-3 sm:pb-6'.(\App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))) ? ' herrera-wide-catalog-main' : ''))
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('front-theme/styles/category-catalog.css') }}?v={{ filemtime(public_path('front-theme/styles/category-catalog.css')) }}">

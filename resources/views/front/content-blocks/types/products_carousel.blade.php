@@ -77,7 +77,7 @@
     $carouselGap = $categoryProductsMode ? '0rem' : '1.25rem';
     $carouselMobileGap = $categoryProductsMode ? '0rem' : '0.8rem';
     $carouselCount = max(1, $products->count());
-    $carouselContinuousCards = str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera');
+    $carouselContinuousCards = \App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name')));
     $carouselFallbackGap = $carouselContinuousCards ? '0rem' : $carouselGap;
     $carouselFallbackMobileGap = $carouselContinuousCards ? '0rem' : $carouselMobileGap;
     $carouselFallbackTabletGap = $carouselContinuousCards || $categoryProductsMode ? '0rem' : '1rem';

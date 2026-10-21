@@ -12,7 +12,7 @@
         $storefrontCssBundleIncludesLegacyAssets = true;
         $storefrontAssetVersion = app(\App\Support\AssetVersion::class)->current();
     @endphp
-    @if (str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera'))
+    @if (\App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))))
         <script data-storefront-page-reveal-boot>
             (() => {
                 const root = document.documentElement;
@@ -35,7 +35,7 @@
     <script defer src="{{ asset('front-theme/scripts/header-search-panel.js') }}?v={{ filemtime(public_path('front-theme/scripts/header-search-panel.js')) }}"></script>
     @include('front.partials.cookie-consent-head')
     @stack('head')
-    @unless (str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera'))
+    @unless (\App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))))
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
@@ -47,7 +47,7 @@
     {{-- Configurable storefront values remain external so product markup contains no inline CSS. --}}
     <link rel="stylesheet" data-storefront-settings href="{{ route('front.storefront.styles', ['v' => app(\App\Services\Front\StorefrontStylesService::class)->version()]) }}">
     <link rel="stylesheet" href="{{ asset('front-theme/styles/herrera.css') }}?v={{ filemtime(public_path('front-theme/styles/herrera.css')) }}-{{ $storefrontAssetVersion }}">
-    @if (str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera'))
+    @if (\App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))))
         <link rel="stylesheet" href="{{ asset('front-theme/styles/herrera-b2b.css') }}?v={{ filemtime(public_path('front-theme/styles/herrera-b2b.css')) }}-{{ $storefrontAssetVersion }}">
         <link rel="stylesheet" href="{{ asset('front-theme/styles/herrera-forms.css') }}?v={{ filemtime(public_path('front-theme/styles/herrera-forms.css')) }}-{{ $storefrontAssetVersion }}">
         <link rel="stylesheet" href="{{ asset('front-theme/styles/herrera-account.css') }}?v={{ filemtime(public_path('front-theme/styles/herrera-account.css')) }}-{{ $storefrontAssetVersion }}">
@@ -59,7 +59,7 @@
     @endif
     @stack('styles')
     <link rel="stylesheet" href="{{ asset('front-theme/styles/manufacturer-logos.css') }}?v={{ filemtime(public_path('front-theme/styles/manufacturer-logos.css')) }}">
-    @if (str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera'))
+    @if (\App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))))
         <link rel="stylesheet" href="{{ asset('front-theme/styles/herrera-typography.css') }}?v={{ filemtime(public_path('front-theme/styles/herrera-typography.css')) }}-{{ $storefrontAssetVersion }}">
         <link rel="stylesheet" href="{{ asset('front-theme/styles/herrera-surfaces.css') }}?v={{ filemtime(public_path('front-theme/styles/herrera-surfaces.css')) }}-{{ $storefrontAssetVersion }}">
     @endif
@@ -74,9 +74,10 @@
     $mainNavigation = $navigationService->forLocale((string) app()->getLocale());
     $topBar = $navigationService->topBar();
     $storeBrandName = trim((string) (($storeSettings['branding']['store_name'] ?? null) ?: config('app.name', 'AG Shop')));
-    $herreraStorefront = str_contains(strtolower($storeBrandName), 'herrera');
+    $isHerreraBrand = str_contains(strtolower($storeBrandName), 'herrera');
+    $herreraStorefront = \App\Support\StorefrontTheme::usesHerreraLayout($storeBrandName);
     $storeBrandLogoUrl = trim((string) ($storeSettings['branding']['logo_url'] ?? ''));
-    $storeBrandDarkLogoUrl = $herreraStorefront && parse_url($storeBrandLogoUrl, PHP_URL_PATH) === '/assets/brand/herrera-logo.svg'
+    $storeBrandDarkLogoUrl = $isHerreraBrand && parse_url($storeBrandLogoUrl, PHP_URL_PATH) === '/assets/brand/herrera-logo.svg'
         ? asset('assets/brand/herrera-logo-dark.svg').'?v='.filemtime(public_path('assets/brand/herrera-logo-dark.svg'))
         : '';
     $storeBrandLogoRawWidth = (int) ($storeSettings['branding']['logo_width'] ?? 0);
@@ -502,9 +503,9 @@
             $newsletterCaptchaSiteKey = trim((string) ($storeSettings['captcha']['recaptcha_v3_site_key'] ?? ''));
             $newsletterCaptchaEnabled = (bool) ($storeSettings['captcha']['recaptcha_v3_enabled'] ?? false) && $newsletterCaptchaSiteKey !== '';
             $newsletterSettings = is_array($storeSettings['newsletter'] ?? null) ? $storeSettings['newsletter'] : [];
-            $newsletterTitle = trim((string) ($newsletterSettings['title'] ?? '')) ?: __($herreraStorefront ? 'herrera.footer.newsletter_title' : 'ui.front.desktop.newsletter.title');
-            $newsletterSubtitle = trim((string) ($newsletterSettings['subtitle'] ?? '')) ?: __($herreraStorefront ? 'herrera.footer.newsletter_subtitle' : 'ui.front.desktop.newsletter.subtitle');
-            $newsletterButtonLabel = trim((string) ($newsletterSettings['button_label'] ?? '')) ?: __($herreraStorefront ? 'herrera.footer.newsletter_button' : 'ui.front.desktop.newsletter.button');
+            $newsletterTitle = trim((string) ($newsletterSettings['title'] ?? '')) ?: __($isHerreraBrand ? 'herrera.footer.newsletter_title' : 'ui.front.desktop.newsletter.title');
+            $newsletterSubtitle = trim((string) ($newsletterSettings['subtitle'] ?? '')) ?: __($isHerreraBrand ? 'herrera.footer.newsletter_subtitle' : 'ui.front.desktop.newsletter.subtitle');
+            $newsletterButtonLabel = trim((string) ($newsletterSettings['button_label'] ?? '')) ?: __($isHerreraBrand ? 'herrera.footer.newsletter_button' : 'ui.front.desktop.newsletter.button');
             $newsletterConsentLabel = trim((string) ($newsletterSettings['consent_label'] ?? '')) ?: __('ui.front.desktop.newsletter.consent');
             $footerContactTitle = trim((string) ($storeSettings['footer']['contact_title'] ?? '')) ?: __('ui.front.desktop.footer.support');
             $footerContactIntro = trim((string) ($storeSettings['footer']['contact_intro'] ?? '')) ?: __('ui.front.desktop.footer.webshop_queries');
@@ -523,7 +524,7 @@
             <div class="grid gap-4 lg:grid-cols-[1.2fr_1fr] lg:items-center">
                 <div>
                     @if ($herreraStorefront)
-                        <p class="herrera-newsletter-eyebrow">{{ __('herrera.footer.newsletter_eyebrow') }}</p>
+                        <p class="herrera-newsletter-eyebrow">{{ $isHerreraBrand ? __('herrera.footer.newsletter_eyebrow') : $storeBrandName.' '.__('novosti') }}</p>
                     @endif
                     <h3 class="text-xl font-bold leading-tight text-slate-900">{{ $newsletterTitle }}</h3>
                     <p class="mt-1 text-sm text-slate-600">{{ $newsletterSubtitle }}</p>
@@ -645,7 +646,7 @@
 
                 return ['title' => $title, 'links' => $links];
             })->values();
-            if ($herreraStorefront) {
+            if ($isHerreraBrand) {
                 $footerColumns = \App\Support\HerreraFooterNavigation::columns($footerColumns);
             }
         @endphp

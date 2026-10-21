@@ -80,7 +80,7 @@
             <div class="herrera-home-heading herrera-brand-strip__heading">
                 <div>
                     <p class="herrera-home-section-eyebrow">{{ __('herrera.brands_eyebrow') }}</p>
-                    <h2 id="herrera-brand-strip-title">{{ __('herrera.brands_title') }}</h2>
+                    <h2 id="herrera-brand-strip-title">{{ $brandStripTitle ?? __('herrera.brands_title') }}</h2>
                 </div>
                 <div class="herrera-brand-strip__actions">
                     <a class="herrera-brand-strip__all" href="{{ route('manufacturers.index') }}">{{ __('herrera.brands_all') }} <x-fa-icon name="arrow-right" /></a>
