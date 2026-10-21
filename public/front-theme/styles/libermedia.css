@@ -1218,3 +1218,14 @@ body.libermedia-storefront .site-footer .store-footer-bottom { padding-block: 16
     body.libermedia-storefront .site-footer-mobile-links :is(p, a) { font-size: 13px; line-height: 1.7; }
     body.libermedia-storefront .lm-footer-benefits .lm-benefits { padding-block: 22px; }
 }
+
+body.libermedia-storefront .lm-footer-payments { padding: 0 0 26px; text-align: center; }
+body.libermedia-storefront .lm-footer-payments > p { margin: 0 0 12px; font-size: 12px; font-weight: 600; color: var(--libermedia-footer-text); }
+body.libermedia-storefront .lm-footer-payment-logos { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; }
+body.libermedia-storefront .lm-footer-payment-logo { display: inline-flex; align-items: center; justify-content: center; width: 138px; height: 66px; padding: 8px; box-sizing: border-box; border: 1px solid #e3e8e4; border-radius: 8px; background: #fff; }
+body.libermedia-storefront .lm-footer-payment-logo img { display: block; width: auto; height: auto; max-width: 88px; max-height: 32px; object-fit: contain; }
+body.libermedia-storefront .lm-footer-payment-logo--gateway img { width: 118px; height: 50px; max-width: none; max-height: none; }
+@media (max-width: 639px) {
+    body.libermedia-storefront .lm-footer-payments { padding-top: 20px; }
+    body.libermedia-storefront .lm-footer-payment-logos { gap: 8px; }
+}

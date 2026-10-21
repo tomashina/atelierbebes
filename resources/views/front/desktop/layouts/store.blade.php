@@ -784,6 +784,10 @@
             @endforeach
         </div>
 
+        @if (\App\Support\StorefrontTheme::usesLibermediaBrand())
+            @include('front.partials.libermedia-payment-logos')
+        @endif
+
         @unless ($herreraStorefront)
         <div class="site-footer-payments">
             <div class="site-footer-payment-logos flex flex-wrap items-center justify-center gap-2.5">
