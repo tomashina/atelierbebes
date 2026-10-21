@@ -57,7 +57,7 @@ class BlogController extends Controller
             ])
             ->orderByDesc('published_at')
             ->orderByDesc('id')
-            ->paginate(12)->withQueryString();
+            ->paginate(30)->withQueryString();
 
         $topBlocks = app(ContentBlockResolver::class)->forPlacement('blog.top', $locale, null, null, $variant);
         $bottomBlocks = app(ContentBlockResolver::class)->forPlacement('blog.bottom', $locale, null, null, $variant);

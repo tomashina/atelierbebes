@@ -1394,3 +1394,9 @@ html[data-theme] body.libermedia-storefront .desktop-mobile-menu-row:is(:hover, 
     background: #edf3ec;
     color: #245b42;
 }
+
+/* Purchase form rules must not square off the product favourite button. */
+html[data-theme] body.libermedia-storefront .product-detail-shell [data-ga4-add-to-cart-form] button.product-detail-wishlist[type="submit"],
+html[data-theme] body.libermedia-storefront button.product-detail-wishlist {
+    border-radius: var(--libermedia-button-radius, 8px) !important;
+}

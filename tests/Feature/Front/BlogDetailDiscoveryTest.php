@@ -23,6 +23,18 @@ class BlogDetailDiscoveryTest extends TestCase
         app(SystemSettingsService::class)->putMany(['store_brand_name' => 'Liber Media', 'catalog_use_blog' => true]);
     }
 
+    public function test_blog_lists_thirty_articles_per_page(): void
+    {
+        for ($index = 1; $index <= 31; $index++) {
+            $this->article('pagination-'.$index);
+        }
+
+        $response = $this->get(route('blog.index'))->assertOk();
+        $this->assertSame(30, $response->viewData('posts')->perPage());
+        $this->assertCount(30, $response->viewData('posts'));
+        $this->assertCount(1, $this->get(route('blog.index', ['page' => 2]))->assertOk()->viewData('posts'));
+    }
+
     public function test_related_articles_share_a_visible_blog_category_and_are_public_with_usable_translations(): void
     {
         $current = $this->article('roman-empire');
