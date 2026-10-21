@@ -1161,3 +1161,19 @@ body.libermedia-storefront .herrera-b2b-tools a {
     body.libermedia-storefront .lm-mobile-availability-check svg { width: 11px; height: 11px; }
     body.libermedia-storefront .lm-mobile-availability.is-active .lm-mobile-availability-check { border-color: var(--libermedia-link); background: var(--libermedia-link); color: #fff; }
 }
+
+body.libermedia-storefront .herrera-b2b-hero .libermedia-hero-headline {
+    max-width: 680px;
+    margin: 0;
+    color: var(--libermedia-ink);
+    font-size: clamp(32px, 3.5vw, 56px);
+    font-weight: 750;
+    line-height: 1.08;
+    letter-spacing: -.045em;
+}
+@media (max-width: 767px) {
+    body.libermedia-storefront .herrera-b2b-hero .libermedia-hero-headline {
+        max-width: 420px;
+        font-size: clamp(25px, 7.4vw, 44px);
+    }
+}
