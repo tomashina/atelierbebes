@@ -16,7 +16,7 @@
             <p class="herrera-eyebrow">{{ __('ZA IGRU, UČENJE I ODRASTANJE.') }}</p>
             <h1 id="libermedia-home-title" class="sr-only">{{ __('Didaktičke igračke i oprema za vrtiće - Liber Media') }}</h1>
             <h2 class="libermedia-hero-headline"><span class="herrera-hero-headline-line">{{ __('Velike ideje.') }} </span><span class="herrera-hero-headline-line">{{ __('Za male istraživače.') }}</span></h2>
-            <p class="herrera-hero-description">{{ __('Didaktičke igračke, kreativni setovi i školski pribor. Pronađite inspiraciju za svaki novi dan igre i učenja.') }}</p>
+            <p class="herrera-hero-description">{{ __('Didaktičke igračke, kreativni setovi i školski pribor za svaki novi dan igre i učenja.') }}</p>
             <div class="herrera-hero-actions">
                 <a class="herrera-hero-primary-action" href="{{ route('categories.index') }}">{{ __('Istražite ponudu') }} <x-fa-icon name="arrow-right" /></a>
                 <a class="herrera-hero-secondary-action" href="{{ route('shop.promotions') }}"><x-fa-icon name="tag" style="light" /> {{ __('Akcije i popusti') }}</a>
