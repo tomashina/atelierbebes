@@ -172,19 +172,19 @@
             @endif
             <a href="{{ $productUrl }}" class="block">
                 @if ($headingLevel === 2)
-                    <h2 class="text-[12px] font-extrabold uppercase leading-[1.25] text-slate-900 sm:text-[13px]">{{ $productName }}</h2>
+                    <h2 class="product-card-title text-[12px] font-extrabold uppercase leading-[1.25] text-slate-900 sm:text-[13px]">{{ $productName }}</h2>
                 @else
-                    <h3 class="text-[12px] font-extrabold uppercase leading-[1.25] text-slate-900 sm:text-[13px]">{{ $productName }}</h3>
+                    <h3 class="product-card-title text-[12px] font-extrabold uppercase leading-[1.25] text-slate-900 sm:text-[13px]">{{ $productName }}</h3>
                 @endif
             </a>
             @if ($productBrand !== '')
-                <p class="mt-1 text-[11px] font-bold uppercase leading-tight text-slate-400 sm:text-[12px]">{{ $productBrand }}</p>
+                <p class="product-card-brand mt-1 text-[11px] font-bold uppercase leading-tight text-slate-400 sm:text-[12px]" title="{{ $productBrand }}">{{ $productBrand }}</p>
             @endif
             @if ($materialLabel !== '')
                 <p class="mt-1 text-[10px] leading-tight text-slate-500 sm:text-[11px]">{{ $materialLabel }}</p>
             @endif
             @include('front.partials.product-identifiers')
-            <div class="product-card-lined-price mt-auto pt-4">
+            <div class="product-card-lined-price mt-auto pt-4" data-product-price-kind="{{ $isB2BPrice ? 'b2b' : 'b2c' }}">
                 @if (! $canViewPrices)
                     @include('front.partials.b2b-price-access', ['compact' => true])
                     <div class="product-card-energy-documents">
@@ -192,11 +192,11 @@
                         <x-front.energy-information-sheet-link :declaration="$energyDeclaration ?? null" />
                     </div>
                 @else
-                <p class="text-[11px] leading-none {{ $isB2BPrice ? 'font-semibold text-cyan-800' : 'text-slate-700' }}">
+                <p class="product-card-price-label text-[11px] leading-none {{ $isB2BPrice ? 'font-semibold text-cyan-800' : 'text-slate-700' }}">
                     {{ $isB2BPrice ? __('ui.product.b2b_contract_price') : __('ui.shop.filters.price') }}
                 </p>
                 @if (! empty($oldPrice))
-                    <p class="mt-1 text-[11px] leading-none text-slate-500 line-through sm:text-[12px]">{{ $oldPrice }}</p>
+                    <p class="product-card-old-price mt-1 text-[11px] leading-none text-slate-500 line-through sm:text-[12px]">{{ $oldPrice }}</p>
                 @endif
                 <div class="product-card-price-row mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
                     <p class="product-card-current-price text-[14px] font-extrabold leading-none text-slate-900 sm:text-[15px]">{{ $price }}</p>
@@ -207,7 +207,7 @@
                 </div>
                 @include('front.partials.b2b-tax-note', ['includesTax' => $displayIncludesTax ?? true])
                 @if (! empty($lowest30DaysPrice))
-                    <p class="mt-1 text-[9px] leading-tight text-slate-500 sm:text-[10px]">{{ __('ui.product.lowest_price_30_days', ['price' => $lowest30DaysPrice]) }}</p>
+                    <p class="product-card-lowest-price mt-1 text-[9px] leading-tight text-slate-500 sm:text-[10px]" aria-label="{{ __('ui.product.lowest_price_30_days', ['price' => $lowest30DaysPrice]) }}" title="{{ __('ui.product.lowest_price_30_days', ['price' => $lowest30DaysPrice]) }}">{{ \App\Support\StorefrontTheme::usesLibermediaBrand() ? __('Najniža cijena (30 dana): :price', ['price' => $lowest30DaysPrice]) : __('ui.product.lowest_price_30_days', ['price' => $lowest30DaysPrice]) }}</p>
                 @endif
                 @endif
             </div>

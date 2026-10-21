@@ -9,7 +9,6 @@
                 <a class="lm-button" href="{{ route('categories.show', ['slug' => 'skolske-torbe-i-ruksaci'], false) }}">Pronađi svoju torbu <x-fa-icon name="arrow-right" /></a>
             </div>
             <div class="lm-campaign-bag-images" aria-hidden="true">
-                <span class="lm-campaign-orbit"></span>
                 <img class="lm-bag lm-bag--back" src="/assets/libermedia/home/schoolbag-jurassic.webp" alt="" width="1000" height="1000" loading="lazy">
                 <img class="lm-bag lm-bag--front" src="/assets/libermedia/home/schoolbag-unicorn.webp" alt="" width="1000" height="1000" loading="lazy">
             </div>
@@ -30,7 +29,7 @@
                 <p>Otkrijte igre za znatiželjne prstiće i glavice.</p>
                 <a class="lm-button lm-button--green" href="{{ route('categories.show', ['slug' => 'didakticke-igre-za-djecu'], false) }}">Otkrij igre <x-fa-icon name="arrow-right" /></a>
             </div>
-            <img class="lm-campaign-product lm-montessori-product" src="/assets/libermedia/home/learning-numbers.jpg" alt="Drvena edukativna igra s brojevima i oblicima" width="800" height="800" loading="lazy">
+            <img class="lm-campaign-product lm-montessori-product" src="/assets/libermedia/home/montessori-play.webp" alt="Drvena umetaljka s geometrijskim oblicima u bojama" width="1024" height="768" loading="lazy">
         </article>
     </div>
 </section>

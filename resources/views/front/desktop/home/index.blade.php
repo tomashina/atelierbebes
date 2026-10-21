@@ -89,7 +89,7 @@
     @endif
 
     @if ($homeHeroBenefitsBlocks->isNotEmpty())
-        <section class="mt-8">
+        <section class="{{ $isLibermediaHome ? 'lm-benefits-placement' : 'mt-8' }}">
             @include('front.partials.herrera-home-placement', ['items' => $homeHeroBenefitsBlocks])
         </section>
     @endif

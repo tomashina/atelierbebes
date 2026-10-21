@@ -130,7 +130,6 @@
             @endforeach
             @if ($showLibermediaBundleTile)
                 <a href="https://www.liber-media.hr/bundle-artikli" class="herrera-category-tile libermedia-category-bundle" data-libermedia-category-bundle>
-                    <x-fa-icon name="gifts" style="light" class="libermedia-category-bundle-watermark" />
                     <span class="libermedia-category-bundle-icon"><x-fa-icon name="gift" style="light" /></span>
                     <span class="libermedia-category-bundle-copy">
                         <span class="libermedia-category-bundle-eyebrow">{{ __('Više igre, više uštede') }}</span>
