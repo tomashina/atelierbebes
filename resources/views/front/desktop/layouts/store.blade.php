@@ -617,6 +617,8 @@
         </section>
         @endif
 
+        @yield('home-footer-benefits')
+
         @include('front.partials.legal-warranty-notice', ['warrantyVariant' => 'footer'])
 
         @if ((bool) ($benefitsBar['enabled'] ?? true) && $footerBenefits->isNotEmpty())

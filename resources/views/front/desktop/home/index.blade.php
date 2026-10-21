@@ -89,9 +89,17 @@
     @endif
 
     @if ($homeHeroBenefitsBlocks->isNotEmpty())
-        <section class="{{ $isLibermediaHome ? 'lm-benefits-placement' : 'mt-8' }}">
-            @include('front.partials.herrera-home-placement', ['items' => $homeHeroBenefitsBlocks])
-        </section>
+        @if ($isLibermediaHome)
+            @section('home-footer-benefits')
+                <div class="lm-footer-benefits">
+                    @include('front.partials.herrera-home-placement', ['items' => $homeHeroBenefitsBlocks])
+                </div>
+            @endsection
+        @else
+            <section class="mt-8">
+                @include('front.partials.herrera-home-placement', ['items' => $homeHeroBenefitsBlocks])
+            </section>
+        @endif
     @endif
 
     @if ($isHerreraHome && $homeCategoriesBlocks->isNotEmpty() && $homeCategoriesBlocks->every(fn ($item) => (string) data_get($item, 'block.type') === 'featured_categories'))

@@ -1196,3 +1196,25 @@ body.libermedia-storefront .herrera-b2b-hero .libermedia-hero-headline {
     body.libermedia-storefront .herrera-b2b-hero .herrera-hero-actions a { width: auto; padding-inline: 8px; }
     body.libermedia-storefront .herrera-b2b-hero .herrera-hero-primary-action svg { display: none; }
 }
+
+body.libermedia-storefront .lm-footer-benefits {
+    position: relative;
+    background: #fff;
+    box-shadow: 0 0 0 100vmax #fff;
+    clip-path: inset(0 -100vmax);
+}
+body.libermedia-storefront .site-footer .lm-footer-benefits a { color: var(--libermedia-ink); }
+body.libermedia-storefront .lm-footer-benefits .lm-benefits { border-bottom: 0; padding-block: 26px; }
+body.libermedia-storefront .site-footer-links { column-gap: 40px; padding-top: 36px; padding-bottom: 30px; }
+body.libermedia-storefront .site-footer :is(.site-footer-contact-title, .site-footer-column-title) { font-size: 16px; line-height: 1.4; font-weight: 650; color: #fff; }
+body.libermedia-storefront .site-footer-contact-details { max-width: 34ch; margin-top: 14px; }
+body.libermedia-storefront .site-footer :is(.site-footer-contact-details p, .site-footer-contact-intro, .site-footer-link-list) { font-size: 13px; line-height: 1.7; }
+body.libermedia-storefront .site-footer-link-list { margin-top: 14px; gap: 7px; }
+body.libermedia-storefront .site-footer-contact-phone { display: inline-block; margin-block: 3px; font-size: 18px; }
+body.libermedia-storefront .site-footer-contact-details p:last-child { margin-top: 14px; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+body.libermedia-storefront .site-footer .store-footer-bottom { padding-block: 16px; font-size: 12px; }
+@media (max-width: 1023px) {
+    body.libermedia-storefront .site-footer-mobile-links summary { padding-block: 15px; font-size: 14px; }
+    body.libermedia-storefront .site-footer-mobile-links :is(p, a) { font-size: 13px; line-height: 1.7; }
+    body.libermedia-storefront .lm-footer-benefits .lm-benefits { padding-block: 22px; }
+}
