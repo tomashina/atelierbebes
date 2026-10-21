@@ -47,11 +47,12 @@ class LibermediaConfigurePreview extends Command
         $navigation[] = ['type' => 'custom', 'label' => 'Blog', 'url' => '/blog', 'is_active' => true, 'sort_order' => 5];
 
         $settings->putMany([
-            'store_brand_logo_path' => 'assets/brand/libermedia-logo.png',
-            'store_brand_logo_width' => 190, 'store_brand_logo_height' => 70,
+            'store_brand_logo_path' => 'assets/brand/libermedia-logo.svg',
+            'store_brand_logo_dark_path' => 'assets/brand/libermedia-logo-dark.svg',
+            'store_brand_logo_width' => 220, 'store_brand_logo_height' => 40,
             'store_announcement_enabled' => true,
             'store_announcement_text' => 'Liber Media · Didaktičke igračke i oprema za vrtiće',
-            'store_announcement_background_color' => '#00B5CC', 'store_announcement_text_color' => '#ffffff',
+            'store_announcement_background_color' => '#FF4D00', 'store_announcement_text_color' => '#ffffff',
             'store_benefits_bar_enabled' => false,
             'store_search_autocomplete_enabled' => true,
             'store_pricing_b2c_enabled' => true,
@@ -72,12 +73,12 @@ class LibermediaConfigurePreview extends Command
             NavigationMenuService::SETTINGS_KEY => $navigation,
             NavigationMenuService::TOP_BAR_SETTINGS_KEY => [
                 'is_enabled' => true, 'height' => 34, 'font_size' => 12,
-                'background_color' => '#32373B', 'text_color' => '#ffffff', 'border_color' => '#32373B',
+                'background_color' => '#EDF3EC', 'text_color' => '#245B42', 'border_color' => '#DCE7DC',
                 'links' => $contactLinks, 'socials' => [],
             ],
             NavigationMenuService::APPEARANCE_SETTINGS_KEY => [
                 'container_width' => 1860, 'header_content_width' => 1860,
-                'background_color' => '#00B5CC', 'text_color' => '#ffffff', 'highlight_color' => '#32373B',
+                'background_color' => '#245B42', 'text_color' => '#ffffff', 'highlight_color' => '#FF4D00',
             ],
         ]);
         // The legacy shop has no category pictures. Use an existing product

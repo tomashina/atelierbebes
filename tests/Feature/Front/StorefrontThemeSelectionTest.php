@@ -19,6 +19,8 @@ class StorefrontThemeSelectionTest extends TestCase
         config(['storefront.theme' => 'herrera', 'storefront.home' => 'libermedia', 'commerce.b2b_only' => false]);
         app(SystemSettingsService::class)->putMany([
             'store_brand_name' => 'Liber Media',
+            'store_brand_logo_path' => 'assets/brand/libermedia-logo.svg',
+            'store_brand_logo_dark_path' => 'assets/brand/libermedia-logo-dark.svg',
             'store_pricing_b2c_enabled' => true,
         ]);
 
@@ -27,6 +29,9 @@ class StorefrontThemeSelectionTest extends TestCase
                 ->assertSee('storefront herrera-storefront', false)
                 ->assertSee('herrera-b2b.css', false)
                 ->assertSee('herrera-typography.css', false)
+                ->assertSee('libermedia-storefront', false)
+                ->assertSee('libermedia.css', false)
+                ->assertSee('/assets/brand/libermedia-logo.svg', false)
                 ->assertSee('data-herrera-header', false)
                 ->assertSee('Liber Media')
                 ->assertSee('Liber Media novosti')
@@ -39,6 +44,8 @@ class StorefrontThemeSelectionTest extends TestCase
         }
 
         $this->get('/')->assertOk()->assertSee('data-libermedia-home-hero', false)
+            ->assertSee('/assets/brand/libermedia-logo-dark.svg', false)
+            ->assertSee('data-store-brand-logo-dark', false)
             ->assertDontSee('data-herrera-category-support', false);
         $this->assertFalse(config('commerce.b2b_only'));
     }

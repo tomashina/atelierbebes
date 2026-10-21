@@ -241,6 +241,7 @@ class StoreSettingsService
         return [
             'store_name' => (string) $this->settings->get('store_brand_name', config('app.name', 'AG Shop')),
             'logo_url' => $this->assetUrl($optimizedLogoPath !== '' ? $optimizedLogoPath : $logoPath),
+            'dark_logo_url' => $this->assetUrl((string) $this->settings->get('store_brand_logo_dark_path', '')),
             'logo_width' => (int) $this->settings->get('store_brand_logo_width', 0),
             'logo_height' => (int) $this->settings->get('store_brand_logo_height', 0),
             'favicon_url' => $this->assetUrl((string) $this->settings->get('store_brand_favicon_path', '')),

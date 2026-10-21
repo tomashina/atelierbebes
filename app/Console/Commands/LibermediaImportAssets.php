@@ -97,7 +97,8 @@ class LibermediaImportAssets extends Command
         }
         $source = $db->table('oc_setting')->where('store_id', 0)->pluck('value', 'key');
         $settings->putMany([
-            'store_brand_name' => 'Liber Media', 'store_brand_logo_path' => 'assets/brand/libermedia-logo.png',
+            'store_brand_name' => 'Liber Media', 'store_brand_logo_path' => 'assets/brand/libermedia-logo.svg',
+            'store_brand_logo_dark_path' => 'assets/brand/libermedia-logo-dark.svg',
             'store_brand_logo_optimized_path' => '', 'store_footer_contact_title' => 'Liber Media',
             'store_footer_email_sales' => $source->get('config_email', ''), 'store_footer_email_support' => $source->get('config_email', ''),
             'store_footer_phone' => $source->get('config_telephone', ''), 'store_footer_address' => $source->get('config_address', ''),

@@ -51,10 +51,11 @@
         ];
     })->filter()->sortBy('priority')->values();
     $brandStripCount = $brandStripItems->count();
+    $brandStripVisibleCount = max(1, (int) ($brandStripVisibleCount ?? 7));
     $brandStripPrevious = trim(str_replace(['&laquo;', '&raquo;'], '', __('pagination.previous')));
     $brandStripNext = trim(str_replace(['&laquo;', '&raquo;'], '', __('pagination.next')));
     $brandStripOptions = [
-        'type' => $brandStripCount > 1 ? 'loop' : 'slide', 'rewind' => false, 'perPage' => min(7, max(1, $brandStripCount)),
+        'type' => $brandStripCount > 1 ? 'loop' : 'slide', 'rewind' => false, 'perPage' => min($brandStripVisibleCount, max(1, $brandStripCount)),
         'perMove' => 1, 'gap' => '12px', 'drag' => $brandStripCount > 1, 'snap' => true,
         'focus' => 0, 'padding' => 0, 'autoWidth' => false,
         'pagination' => false, 'arrows' => $brandStripCount > 1, 'updateOnMove' => true, 'speed' => 420,

@@ -29,3 +29,9 @@ Kod je preuzet iz lokalnog Herrera brancha `codex/herrera-b2b-foundation` (izvor
 `STOREFRONT_THEME=herrera` uključuje isti raspored, tipografiju i komponente neovisno o nazivu trgovine. `STOREFRONT_HOME=libermedia` prikazuje Libermedia uvod, stvarne kategorije, proizvode i brandove. Logo i podaci ostaju Liber Media.
 
 `libermedia:configure-preview` postavlja lokalnu navigaciju, zaglavlje i footer te iz postojećih proizvoda priprema fotografije glavnih kategorija kojima izvor nema sliku. B2C prikaz cijena uključen je za Libermedia pregled.
+
+## Liber Media identitet
+
+`STOREFRONT_BRAND=libermedia` uključuje narančasto-zelenu paletu neovisno o rasporedu. Glavni logo je vektorski `public/assets/brand/libermedia-logo.svg`, uz svijetlu varijantu za tamni prikaz. Brand narančasta je `#FF4D00`, dopunska zelena `#245B42`, uz tople svijetle podloge.
+
+Početna prikazuje šest brandova u širokom slideru i tri najnovija objavljena blog članka. Blog blok prati postavku bloga i ne ponavlja već postavljen aktivni CMS blog blok.

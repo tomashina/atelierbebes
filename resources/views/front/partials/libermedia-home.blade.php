@@ -145,5 +145,5 @@
 @endif
 
 @if (in_array($herreraHomeSection, ['all', 'brands'], true))
-    @include('front.partials.herrera-brand-strip', ['brandStripTitle' => __('Brandovi za igru i učenje')])
+    @include('front.partials.herrera-brand-strip', ['brandStripTitle' => __('Brandovi za igru i učenje'), 'brandStripVisibleCount' => 6])
 @endif

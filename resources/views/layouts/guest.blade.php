@@ -63,8 +63,11 @@
     @if ($isHerreraAuth)
         <link rel="stylesheet" href="{{ asset('front-theme/styles/herrera-typography.css') }}?v={{ filemtime(public_path('front-theme/styles/herrera-typography.css')) }}">
     @endif
+    @if (\App\Support\StorefrontTheme::usesLibermediaBrand($authStoreName))
+        <link rel="stylesheet" href="{{ asset('front-theme/styles/libermedia.css') }}?v={{ filemtime(public_path('front-theme/styles/libermedia.css')) }}">
+    @endif
 </head>
-<body class="commerce-body store-auth-body{{ $isHerreraAuth ? ' herrera-storefront' : '' }}">
+<body class="commerce-body store-auth-body{{ $isHerreraAuth ? ' herrera-storefront' : '' }}{{ \App\Support\StorefrontTheme::usesLibermediaBrand($authStoreName) ? ' libermedia-storefront' : '' }}">
     <header class="store-auth-header">
         <div class="store-auth-header-inner">
             <a href="{{ route('home') }}" class="store-auth-brand" aria-label="{{ $authStoreName }}">

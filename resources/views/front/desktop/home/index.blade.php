@@ -137,6 +137,10 @@
         </section>
     @endif
 
+    @if ($isLibermediaHome)
+        @include('front.partials.libermedia-home-blog')
+    @endif
+
     @if (
         $homeHeroBlocks->isEmpty()
         && $homeHeroBenefitsBlocks->isEmpty()
