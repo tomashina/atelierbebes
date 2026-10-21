@@ -36,4 +36,4 @@ Kod je preuzet iz lokalnog Herrera brancha `codex/herrera-b2b-foundation` (izvor
 
 Početna prikazuje šest brandova u širokom slideru i tri najnovija objavljena blog članka. Blog blok prati postavku bloga i ne ponavlja već postavljen aktivni CMS blog blok.
 
-Pozadinski motiv koristi priloženi Liber Media znak u zelenoj varijanti. Veliki znak dijeli iste fiksne koordinate kroz gornju traku, pretragu, hero i obojene trake. Podloge tih površina koriste zelene tonove; narančasti logo i gumbi ostaju dio identiteta.
+Pozadinski motiv koristi ikonu didaktičkih kockica `cubes-stacked` (Font Awesome Pro 7.3.1, light) iz već instaliranog seta. Veliki obrisi dijele iste fiksne koordinate kroz gornju traku, pretragu, hero i obojene trake. Podloge tih površina koriste zelene tonove; narančasti logo i gumbi ostaju dio identiteta.

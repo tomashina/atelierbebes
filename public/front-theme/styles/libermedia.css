@@ -17,7 +17,7 @@ body.libermedia-storefront {
     --libermedia-footer: #1f4c39;
     --libermedia-footer-text: #dbe9df;
     --libermedia-footer-accent: #ffad83;
-    --libermedia-pattern: url("/assets/brand/libermedia-symbol-pattern.svg");
+    --libermedia-pattern: url("/assets/brand/libermedia-play-pattern.svg");
 
     --storefront-bg: var(--libermedia-surface);
     --storefront-surface: var(--libermedia-surface);
@@ -511,7 +511,7 @@ html[data-theme=dark] body.libermedia-storefront {
     --libermedia-line: #3b493e;
     --libermedia-line-strong: #768675;
     --libermedia-footer: #14291e;
-    --libermedia-pattern: url("/assets/brand/libermedia-symbol-pattern-dark.svg");
+    --libermedia-pattern: url("/assets/brand/libermedia-play-pattern-dark.svg");
     --storefront-bg: #111713;
     --storefront-surface: var(--libermedia-surface);
     --storefront-surface-raised: var(--libermedia-surface-raised);
@@ -583,8 +583,8 @@ html[data-theme=dark] body.libermedia-storefront #cc-main {
     --cc-btn-secondary-hover-color: var(--libermedia-green);
 }
 
-/* A single oversized symbol is clipped by each band on the same viewport
-   coordinates, so top bar, search and content show parts of the same mark. */
+/* Large stacking-block outlines share viewport coordinates across the
+   top bar, search and green content bands. */
 body.libermedia-storefront .site-top-bar,
 body.libermedia-storefront .herrera-header-layout .header-search-form,
 body.libermedia-storefront .herrera-b2b-hero,
