@@ -63,3 +63,66 @@
 .lm-gift-sidebar select { display: block; width: 100%; margin-top: 8px; border: 1px solid #d2ded1; border-radius: 4px; font-size: 12px; padding: 10px 28px 10px 8px; }
 .lm-gift-sidebar p { color: #687469; font-size: 12px; line-height: 1.6; }
 @media(max-width:1024px) { .lm-gift-catalog-layout { grid-template-columns: 1fr; } .lm-gift-sidebar { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } .lm-gift-sidebar h3, .lm-gift-sidebar p { grid-column: 1 / -1; margin: 0; } .lm-gift-sidebar label { margin: 0; } .lm-gift-toolbar .catalog-desktop-toolbar-toggles { flex-wrap: wrap; } }
+
+/* The shared catalog toolbar starts at desktop widths; gift filters also
+   need explicit layout rules on phones and tablets. */
+.lm-gift-toolbar .catalog-desktop-toolbar-toggles,
+.lm-gift-toolbar .catalog-desktop-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+.lm-gift-toolbar .catalog-toolbar-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 46px;
+    padding: 10px 12px;
+    border: 1px solid #dce5da;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1.4;
+    cursor: pointer;
+}
+.lm-gift-toolbar .catalog-switch { flex: 0 0 42px; }
+.lm-gift-toolbar .catalog-grid-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 46px;
+    border: 1px solid #dce5da;
+    color: #65736b;
+}
+.lm-gift-toolbar .catalog-grid-toggle.is-active {
+    background: #ff5100;
+    border-color: #ff5100;
+    color: #fff;
+}
+.lm-gift-catalog-layout > *, .lm-gift-results-heading > div { min-width: 0; }
+@media (max-width: 1024px) {
+    .lm-gift-toolbar { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px; }
+    .lm-gift-toolbar .catalog-desktop-toolbar-toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .lm-gift-toolbar .catalog-desktop-toolbar-actions { display: block; }
+    .lm-gift-toolbar .catalog-grid-toggle { display: none; }
+    .lm-gift-toolbar select { display: block; width: 100%; max-width: none; min-height: 44px; border: 1px solid #dce5da; border-radius: 6px; padding: 10px 34px 10px 12px; background-color: #fff; font-size: 13px; }
+    .lm-gift-sidebar { border-radius: 8px; padding: 16px; gap: 12px; }
+    .lm-gift-sidebar h3 { font-size: 14px; }
+    .lm-gift-sidebar p { display: none; }
+    .lm-gift-sidebar select { min-height: 44px; font-weight: 400; }
+    .lm-gift-catalog-layout { gap: 16px; }
+}
+@media (max-width: 599px) {
+    .lm-gift-toolbar .catalog-desktop-toolbar-toggles { grid-template-columns: 1fr; }
+    .lm-gift-toolbar .catalog-toolbar-toggle { width: 100%; border-radius: 6px; font-size: 12px; }
+    .lm-gift-results-heading { flex-wrap: wrap; gap: 6px; }
+    .lm-gift-results-heading > div { flex: 1 1 100%; }
+    .lm-gift-results-heading > span { font-size: 12px; }
+    .lm-gift-results { margin-top: 24px; scroll-margin-top: 150px; }
+    .lm-gift-form select, .lm-gift-sidebar select { font-size: 16px; }
+    .lm-gift-choices span { white-space: normal; font-size: 12px; padding-inline: 5px; }
+    .lm-gift-voucher > a { white-space: normal; }
+}
