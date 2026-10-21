@@ -110,6 +110,19 @@ class LegacyCatalogImageFeatureTest extends TestCase
         $this->assertCount(0, LegacyCatalogImage::gallery($demo));
     }
 
+    public function test_category_preview_uses_its_source_product_when_local_artwork_is_missing(): void
+    {
+        Storage::fake('public');
+        $product = $this->product();
+        $category = Category::query()->create(['scope' => Category::SCOPE_CATALOG, 'code' => 'preview-category', 'is_active' => true]);
+        $media = $category->addMedia(UploadedFile::fake()->image('preview.jpg', 20, 20))
+            ->withCustomProperties(['preview_product_id' => $product->id])->toMediaCollection('category_banner');
+        Storage::disk('public')->deleteDirectory((string) $media->id);
+        $category->unsetRelation('media');
+        $this->assertSame('https://www.herrera.hr/image/catalog/products/00023.jpg', LegacyCatalogImage::first($category));
+        Http::assertNothingSent();
+    }
+
     public function test_guest_product_images_gallery_search_and_schema_keep_b2b_prices_private(): void
     {
         config(['commerce.b2b_only' => true]);
