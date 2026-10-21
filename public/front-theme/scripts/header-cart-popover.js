@@ -53,6 +53,11 @@
             const safeCount = Number.isFinite(count) ? Math.max(0, count) : 0;
             document.querySelectorAll('[data-cart-count]').forEach((node) => {
                 node.textContent = String(safeCount);
+                const link = node.closest('a');
+                const label = link?.getAttribute('aria-label');
+                if (label) {
+                    link.setAttribute('aria-label', label.replace(/:\s*\d+\s*$/, `: ${safeCount}`));
+                }
             });
         };
 

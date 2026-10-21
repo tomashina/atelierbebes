@@ -20,7 +20,7 @@
         @include('front.desktop.account.partials.nav', ['current' => 'dashboard'])
 
         <div class="min-w-0 space-y-8">
-            @if ($b2bAccount)
+            @if ($b2bAccount && ! \App\Support\StorefrontTheme::usesLibermediaBrand())
                 @php
                     $b2bStatus = \App\Models\User\B2BAccount::statusOptions()[$b2bAccount->status] ?? $b2bAccount->status;
                     $b2bApproved = (app(\App\Services\Pricing\B2BAccessService::class)->b2cEnabled() ? app(\App\Services\Pricing\B2BAccessService::class)->approvedAccount(auth()->user()) !== null : $canViewPrices) && $b2bAccount->contractIsActive();
@@ -82,7 +82,7 @@
                 @endif
             </div>
 
-            @if ($b2bAccount && $b2bApproved)
+            @if ($b2bAccount && ! \App\Support\StorefrontTheme::usesLibermediaBrand() && $b2bApproved)
                 <section class="border border-slate-200 bg-white p-5" data-account-order-shortcuts>
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <div>

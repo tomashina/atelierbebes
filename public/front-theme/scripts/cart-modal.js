@@ -108,7 +108,21 @@
 
         root.addEventListener('keydown', function (event) {
             if (event.key === 'Escape') {
+                event.preventDefault();
                 close();
+                return;
+            }
+
+            if (event.key === 'Tab') {
+                const first = refs.closeButton;
+                const last = refs.cartButton;
+                if (event.shiftKey && (document.activeElement === first || document.activeElement === refs.panel)) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
             }
         });
 

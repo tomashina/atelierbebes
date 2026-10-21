@@ -110,11 +110,13 @@
                 {{ __('ui.auth.register.go_to_login') }}
             </a>
 
+            @unless (\App\Support\StorefrontTheme::usesLibermediaBrand())
             <div class="mt-6 border-t border-slate-200 pt-5">
                 <p class="text-xs font-semibold uppercase tracking-wide text-cyan-700">{{ __('Kupujete za tvrtku?') }}</p>
                 <p class="mt-2 text-sm text-slate-600">{{ __('Zatražite B2B račun za ugovorene cijene i brzu kupnju.') }}</p>
                 <a href="{{ route('front.auth.b2b-register') }}" class="commerce-secondary-action mt-4 px-6 py-2.5 text-sm">{{ __('B2B registracija') }}</a>
             </div>
+            @endunless
         </aside>
     </section>
 

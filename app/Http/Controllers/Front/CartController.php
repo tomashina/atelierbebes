@@ -9,6 +9,7 @@ use App\Models\Catalog\Product\ProductOptionValue;
 use App\Services\Front\CartService;
 use App\Services\Front\CartStaffAccess;
 use App\Services\Pricing\B2BAccessService;
+use App\Support\StorefrontTheme;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -117,11 +118,15 @@ class CartController extends Controller
 
         $message = $ok ? __('ui.cart.status.added') : __('ui.cart.status.unavailable');
         if ($request->expectsJson() || $request->ajax()) {
+            $access = app(B2BAccessService::class);
+            $showModal = ! $access->requiresApprovedAccount()
+                || (StorefrontTheme::usesLibermediaBrand() && $access->b2cEnabled());
+
             return response()->json([
                 'ok' => $ok,
                 'message' => $message,
                 'summary' => $this->cart->summary(),
-                'confirmation' => app(B2BAccessService::class)->requiresApprovedAccount() ? 'notice' : 'modal',
+                'confirmation' => $showModal ? 'modal' : 'notice',
             ], $ok ? 200 : 422);
         }
 

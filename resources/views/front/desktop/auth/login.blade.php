@@ -12,6 +12,7 @@
     @php
         $captchaSiteKey = trim((string) ($storeSettings['captcha']['recaptcha_v3_site_key'] ?? ''));
         $captchaEnabled = (bool) ($storeSettings['captcha']['recaptcha_v3_enabled'] ?? false) && $captchaSiteKey !== '';
+        $libermediaStorefront = \App\Support\StorefrontTheme::usesLibermediaBrand();
     @endphp
 
     <section class="commerce-hero">
@@ -77,7 +78,7 @@
             <a href="{{ route(! app(\App\Services\Pricing\B2BAccessService::class)->allowsPrivateCustomers() ? 'front.auth.b2b-register' : 'front.auth.register', ['intended' => (string) request('intended', route('account.dashboard'))]) }}" class="commerce-secondary-action mt-5 px-6 py-2.5 text-sm">
                 {{ ! app(\App\Services\Pricing\B2BAccessService::class)->allowsPrivateCustomers() ? __('ui.b2b.pricing.register') : __('Registracija privatnog kupca') }}
             </a>
-            @if (app(\App\Services\Pricing\B2BAccessService::class)->b2cEnabled())
+            @if (! $libermediaStorefront && app(\App\Services\Pricing\B2BAccessService::class)->b2cEnabled())
                 <a href="{{ route('front.auth.b2b-register', ['intended' => request('intended', route('account.dashboard'))]) }}" class="commerce-secondary-action mt-3 px-6 py-2.5 text-sm">{{ __('Registracija tvrtke') }}</a>
             @endif
         </aside>

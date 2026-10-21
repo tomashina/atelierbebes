@@ -16,6 +16,8 @@
     $showCategoryModuleHeading = (bool) ($showCategoryHeading ?? true);
     $showHerreraCategorySupport = (bool) ($showCategorySupport ?? request()->routeIs('home'))
         && str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera');
+    $usesLibermediaCategories = \App\Support\StorefrontTheme::usesLibermediaBrand((string) ($storeSettings['branding']['store_name'] ?? config('app.name')));
+    $showLibermediaBundleTile = $usesLibermediaCategories && request()->routeIs('home');
     $preferWebp = (bool) ($storeSettings['images']['use_webp'] ?? false);
     $categoryIcons = [
         'rasvjeta' => 'lightbulb',
@@ -37,6 +39,17 @@
         'extra-popusti' => 'tag',
         'zeljezarija' => 'toolbox',
         'svijece-i-upaljaci' => 'candle-holder',
+    ];
+    $libermediaCategoryIcons = [
+        'didakticke-igracke' => ['icon' => 'teddy-bear', 'tone' => 'green'],
+        'skolski-pribor' => ['icon' => 'pen-ruler', 'tone' => 'orange'],
+        'kocke-za-djecu' => ['icon' => 'cubes-stacked', 'tone' => 'green'],
+        'skolske-torbe-i-ruksaci' => ['icon' => 'backpack', 'tone' => 'orange'],
+        'hobby-art' => ['icon' => 'paintbrush-pencil', 'tone' => 'green'],
+        'guralica-i-njihalica-za-bebe' => ['icon' => 'car-side', 'tone' => 'orange'],
+        'romobil-i-tricikl-za-djecu' => ['icon' => 'scooter', 'tone' => 'green'],
+        'robot-i-stem-igracke' => ['icon' => 'robot', 'tone' => 'orange'],
+        'kreativni-setovi-za-crtanje-i-igru' => ['icon' => 'palette', 'tone' => 'green'],
     ];
 @endphp
 
@@ -73,6 +86,12 @@
                     $categorySlug = (string) ($categoryTranslation?->slug ?? $category->id);
                     $iconSlug = (string) ($category->translations->firstWhere('locale', 'hr')?->slug ?? $categorySlug);
                     $categoryIcon = $categoryIcons[$iconSlug] ?? 'boxes-stacked';
+                    $categoryIconTone = null;
+                    if ($usesLibermediaCategories) {
+                        $libermediaCategoryIcon = $libermediaCategoryIcons[$iconSlug] ?? ['icon' => 'shapes', 'tone' => 'green'];
+                        $categoryIcon = $libermediaCategoryIcon['icon'];
+                        $categoryIconTone = $libermediaCategoryIcon['tone'];
+                    }
                     $categoryMedia = collect([
                         $category->getFirstMedia('category_banner'),
                         $category->getFirstMedia('category_icon'),
@@ -94,7 +113,7 @@
                     }
                     $categoryImageUrl ??= \App\Support\Media\LegacyCatalogImage::first($category);
                 @endphp
-                <a href="{{ route('categories.show', ['slug' => $categorySlug]) }}" class="herrera-category-tile {{ $categoryImageUrl ? 'has-image' : 'is-icon-only' }}" data-category-card="{{ $category->id }}" data-featured-category="{{ $category->id }}">
+                <a href="{{ route('categories.show', ['slug' => $categorySlug]) }}" class="herrera-category-tile {{ $categoryImageUrl ? 'has-image' : 'is-icon-only' }}" data-category-card="{{ $category->id }}" data-featured-category="{{ $category->id }}" @if ($categoryIconTone) data-category-icon-tone="{{ $categoryIconTone }}" @endif>
                     <span class="herrera-category-tile-media">
                         @if ($categoryImageUrl)
                             <img src="{{ $categoryImageUrl }}" alt="" width="144" height="144" loading="lazy" decoding="async">
@@ -109,6 +128,18 @@
                     </span>
                 </a>
             @endforeach
+            @if ($showLibermediaBundleTile)
+                <a href="https://www.liber-media.hr/bundle-artikli" class="herrera-category-tile libermedia-category-bundle" data-libermedia-category-bundle>
+                    <x-fa-icon name="gifts" style="light" class="libermedia-category-bundle-watermark" />
+                    <span class="libermedia-category-bundle-icon"><x-fa-icon name="gift" style="light" /></span>
+                    <span class="libermedia-category-bundle-copy">
+                        <span class="libermedia-category-bundle-eyebrow">{{ __('Više igre, više uštede') }}</span>
+                        <span class="libermedia-category-bundle-title">{{ __('Kupi u kompletu i uštedi') }}</span>
+                        <span class="libermedia-category-bundle-description">{{ __('Otkrijte odabrane komplete za igru i učenje.') }}</span>
+                    </span>
+                    <span class="libermedia-category-bundle-cta">{{ __('Pogledajte ponudu') }} <x-fa-icon name="arrow-right" /></span>
+                </a>
+            @endif
             @if ($showHerreraCategorySupport)
                 <article class="herrera-category-tile herrera-category-support" aria-label="{{ __('herrera.category_support.title') }}" data-herrera-category-support>
                     <div class="herrera-category-support-copy">

@@ -12,6 +12,7 @@ use App\Services\Front\AddressDirectoryService;
 use App\Services\Front\StoreSettingsService;
 use App\Services\Pricing\B2BAccessService;
 use App\Services\User\DefaultCustomerGroupAssigner;
+use App\Support\StorefrontTheme;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -187,8 +188,12 @@ class AuthController extends Controller
             ->with('status', __('ui.auth.reset.status'));
     }
 
-    public function showB2BRegister(Request $request): View
+    public function showB2BRegister(Request $request): View|RedirectResponse
     {
+        if (StorefrontTheme::usesLibermediaBrand()) {
+            return redirect()->route('front.auth.register', $request->only('intended'));
+        }
+
         return view($this->frontendView($request, 'auth.b2b-register'), [
             'countryOptions' => $this->addressDirectory->countries((string) app()->getLocale()),
             'placesAssetUrl' => $this->addressDirectory->placesAssetUrl(),
@@ -197,6 +202,10 @@ class AuthController extends Controller
 
     public function registerB2B(Request $request): RedirectResponse
     {
+        if (StorefrontTheme::usesLibermediaBrand()) {
+            return redirect()->route('front.auth.register', $request->only('intended'));
+        }
+
         $captchaSettings = $this->storeSettings->captcha();
         $captchaEnabled = $this->recaptchaIsEnabled($captchaSettings);
 

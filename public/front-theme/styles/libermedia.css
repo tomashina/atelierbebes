@@ -428,6 +428,64 @@ body.libermedia-storefront .libermedia-home-blog a:is(:hover, :focus-visible) {
     }
 }
 
+/* Product confirmation keeps the familiar dialog, in the store's own palette. */
+body.libermedia-storefront .product-cart-modal {
+    --product-cart-modal-brand: var(--libermedia-action);
+    --product-cart-modal-accent: var(--libermedia-orange);
+}
+
+body.libermedia-storefront .product-cart-modal-panel {
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    border-color: var(--libermedia-line);
+    border-top-color: var(--libermedia-orange);
+    border-radius: 14px;
+    background: var(--libermedia-surface);
+}
+
+body.libermedia-storefront :is(.product-cart-modal-status, .product-cart-modal-actions, .product-cart-modal-detail) {
+    border-color: var(--libermedia-line);
+    background: var(--libermedia-sage);
+}
+
+body.libermedia-storefront .product-cart-modal-status-icon {
+    background: var(--libermedia-green);
+    box-shadow: 0 5px 14px rgb(36 91 66 / 18%);
+}
+
+body.libermedia-storefront :is(.product-cart-modal-status-title, .product-cart-modal-name, .product-cart-modal-detail-label) {
+    color: var(--libermedia-ink);
+}
+
+body.libermedia-storefront :is(.product-cart-modal-image-wrap, .product-cart-modal-detail, .product-cart-modal-action) {
+    border-radius: 7px;
+}
+
+body.libermedia-storefront .product-cart-modal-image-wrap {
+    border-color: var(--libermedia-line);
+}
+
+body.libermedia-storefront .product-cart-modal-action-secondary {
+    border-color: var(--libermedia-green);
+    color: var(--libermedia-green);
+}
+
+body.libermedia-storefront .product-cart-modal-action-secondary:is(:hover, :focus-visible) {
+    border-color: var(--libermedia-green-hover);
+    background: #e2ece1;
+    color: var(--libermedia-green-hover);
+}
+
+body.libermedia-storefront .product-cart-modal-action-primary:is(:hover, :focus-visible) {
+    border-color: var(--libermedia-action-hover);
+    background: var(--libermedia-action-hover);
+}
+
+body.libermedia-storefront .product-cart-modal-close:is(:hover, :focus-visible) {
+    background: #e2ece1;
+    color: var(--libermedia-green);
+}
+
 @media (max-width: 767px) {
     body.libermedia-storefront .libermedia-home-blog-grid {
         grid-template-columns: minmax(0, 1fr);

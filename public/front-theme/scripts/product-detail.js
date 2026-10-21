@@ -848,12 +848,12 @@ document.addEventListener('DOMContentLoaded', function () {
             return 1;
         }
 
-        return Math.min(99, Math.max(1, value));
+        return Math.min(999, Math.max(1, value));
     };
 
-    const confirmAdded = function (form, payload) {
+    const confirmAdded = function (form, payload, optionLabel, quantity) {
         if (window.TermolCartModal) {
-            window.TermolCartModal.confirm(form, selectedOptionLabel(form), currentQty(form), payload);
+            window.TermolCartModal.confirm(form, optionLabel, quantity, payload);
         }
     };
 
@@ -892,6 +892,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             const formData = new FormData(form);
+            const quantity = currentQty(form);
+            const optionLabel = selectedOptionLabel(form);
 
             try {
                 const response = await fetch(form.action, {
@@ -926,10 +928,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 }));
 
                 if (window.ShopAnalytics && typeof window.ShopAnalytics.trackAddToCartFromForm === 'function') {
-                    window.ShopAnalytics.trackAddToCartFromForm(form, currentQty(form), selectedOptionLabel(form));
+                    window.ShopAnalytics.trackAddToCartFromForm(form, quantity, optionLabel);
                 }
 
-                confirmAdded(form, payload);
+                confirmAdded(form, payload, optionLabel, quantity);
             } catch (error) {
                 // Keep UI stable on network errors.
             }

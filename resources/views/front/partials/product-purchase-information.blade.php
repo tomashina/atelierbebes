@@ -40,7 +40,7 @@
                         <dd>{{ $categoryName }}</dd>
                     </div>
                 @endif
-                @if ($canViewPrices)
+                @if ($canViewPrices && ! \App\Support\StorefrontTheme::usesLibermediaBrand())
                 <div class="product-information-row">
                     <dt>{{ __('ui.product.availability') }}</dt>
                     <dd class="{{ $productAvailable ? 'is-available' : 'is-unavailable' }}">

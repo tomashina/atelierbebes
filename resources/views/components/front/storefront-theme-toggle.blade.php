@@ -1,5 +1,6 @@
 @props(['mobile' => false])
 
+@unless (\App\Support\StorefrontTheme::usesLibermediaBrand((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))))
 <button
     type="button"
     class="storefront-theme-toggle {{ $mobile ? 'storefront-theme-toggle--mobile responsive-header-action' : '' }}"
@@ -15,3 +16,4 @@
     <x-fa-icon name="lightbulb-on" style="light" :inline="true" data-theme-icon="light" />
     <x-fa-icon name="lightbulb" style="light" :inline="true" data-theme-icon="dark" />
 </button>
+@endunless

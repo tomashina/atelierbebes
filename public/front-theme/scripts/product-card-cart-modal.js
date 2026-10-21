@@ -74,7 +74,7 @@
         const currentQty = function (form) {
             const input = form.querySelector('input[name="quantity"]');
             const value = Number.parseInt(String(input ? input.value : '1'), 10);
-            return Number.isNaN(value) ? 1 : Math.min(99, Math.max(1, value));
+            return Number.isNaN(value) ? 1 : Math.min(999, Math.max(1, value));
         };
 
         const submit = async function (form) {
@@ -85,6 +85,8 @@
             const optionError = form.querySelector('[data-option-error]');
 
             form.dataset.cartSubmitting = '1';
+            const quantity = currentQty(form);
+            const optionLabel = selectedOptionLabel(form);
 
             try {
                 const response = await fetch(form.action, {
@@ -115,9 +117,6 @@
                 document.dispatchEvent(new CustomEvent('cart:updated', {
                     detail: { summary: payload.summary || null },
                 }));
-
-                const quantity = currentQty(form);
-                const optionLabel = selectedOptionLabel(form);
 
                 if (window.ShopAnalytics?.trackAddToCartFromForm) {
                     window.ShopAnalytics.trackAddToCartFromForm(form, quantity, optionLabel);

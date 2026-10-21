@@ -1,3 +1,5 @@
+{{-- Liber Media uses one light appearance, so do not restore an older dark preference. --}}
+@unless (\App\Support\StorefrontTheme::usesLibermediaBrand((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))))
 {{-- Restore the explicit preference before any styles paint; light is the default. --}}
 <script data-storefront-theme-boot>
     (() => {
@@ -11,3 +13,4 @@
     })();
 </script>
 <script defer src="{{ asset('front-theme/scripts/storefront-theme.js') }}?v={{ filemtime(public_path('front-theme/scripts/storefront-theme.js')) }}"></script>
+@endunless

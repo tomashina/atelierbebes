@@ -185,10 +185,14 @@ function harness({ keys = Array.from({ length: 20 }, (_, index) => `${index + 1}
     root.top = 36;
     root.getBoundingClientRect = () => ({ top: root.top });
     const trigger = root.appendChild(new Element('a', { data: { headerCartTrigger: '' } }));
+    trigger.setAttribute('aria-label', `Košarica: ${keys.length}`);
     const popover = root.appendChild(new Element('div', { data: { headerCartPopover: '', previewUrl: '/cart/preview' } }));
     popover.offsetTop = 87;
     const initialContent = popover.appendChild(content(keys));
     const count = trigger.appendChild(new Element('span', { data: { cartCount: '' } }));
+    const mobileCart = document.body.appendChild(new Element('a'));
+    mobileCart.setAttribute('aria-label', `Košarica: ${keys.length}`);
+    const mobileCount = mobileCart.appendChild(new Element('span', { data: { cartCount: '' } }));
 
     document.createElement = (tag) => {
         assert.equal(tag, 'template');
@@ -220,7 +224,7 @@ function harness({ keys = Array.from({ length: 20 }, (_, index) => `${index + 1}
     vm.runInNewContext(script, { document, window, fetch, Node, Element, HTMLFormElement, CustomEvent, FormData, AbortController });
 
     return {
-        document, window, root, trigger, popover, count, requests, initialContent,
+        document, window, root, trigger, popover, count, mobileCart, mobileCount, requests, initialContent,
         get currentContent() { return popover.querySelector('[data-header-cart-content]'); },
         advance(duration) {
             const end = now + duration;
@@ -256,6 +260,21 @@ function assertOpen(page, expected) {
     assert.equal(page.trigger.getAttribute('aria-expanded'), String(expected));
     assert.equal(page.popover.getAttribute('aria-hidden'), String(!expected));
 }
+
+test('cart updates immediately synchronize visible and accessible desktop and mobile counts before preview refresh', () => {
+    const page = harness();
+    page.document.emit('cart:updated', { detail: { summary: { item_qty: 2 } } });
+
+    assert.equal(page.count.textContent, '2');
+    assert.equal(page.mobileCount.textContent, '2');
+    assert.equal(page.trigger.getAttribute('aria-label'), 'Košarica: 2');
+    assert.equal(page.mobileCart.getAttribute('aria-label'), 'Košarica: 2');
+    assert.equal(page.requests.length, 1);
+
+    page.document.emit('cart:updated', { detail: { summary: { item_qty: 0 } } });
+    assert.equal(page.trigger.getAttribute('aria-label'), 'Košarica: 0');
+    assert.equal(page.mobileCart.getAttribute('aria-label'), 'Košarica: 0');
+});
 
 test('opening fits remaining viewport space; resize and scroll refit only while open', () => {
     const page = harness();
