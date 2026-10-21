@@ -66,7 +66,7 @@
             if ((string) $block->type === 'products_carousel') {
                 $products = $products
                     ->filter(function ($product): bool {
-                        return $product->media
+                        return \App\Support\Media\LegacyCatalogImage::url(data_get($product->payload, 'opencart.image')) !== null || $product->media
                             ->contains(fn ($media): bool => \App\Support\Media\MediaUrl::hasUsableSource($media, ['card_720w', 'card_480w', 'card_320w']));
                     })
                     ->values();
@@ -202,7 +202,7 @@
                     ->limit($itemsLimit)
                     ->get()
                     ->filter(function ($product): bool {
-                        return $product->media
+                        return \App\Support\Media\LegacyCatalogImage::url(data_get($product->payload, 'opencart.image')) !== null || $product->media
                             ->contains(fn ($media): bool => \App\Support\Media\MediaUrl::hasUsableSource($media, ['card_720w', 'card_480w', 'card_320w']));
                     })
                     ->values();

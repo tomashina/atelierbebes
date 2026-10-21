@@ -29,7 +29,8 @@
 
             return $path !== '' && is_file(public_path($path));
         });
-        $hasUploadedLogo = \App\Support\Media\MediaUrl::hasUsableOriginal($manufacturer->getFirstMedia('manufacturer_logo'));
+        $hasUploadedLogo = \App\Support\Media\MediaUrl::hasUsableOriginal($manufacturer->getFirstMedia('manufacturer_logo'))
+            || (\App\Support\StorefrontTheme::usesLibermediaBrand() && \App\Support\Media\LegacyCatalogImage::url(data_get($manufacturer->payload, 'opencart.image')) !== null);
 
         // Only real uploaded logos or verified local artwork belong in the carousel.
         // Imported manufacturer image fields may contain product photos.

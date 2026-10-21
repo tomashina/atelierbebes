@@ -501,7 +501,7 @@ class ProductController extends Controller
             )->map(function (ShippingMethod $method): ShippingMethod {
                 $ranges = collect(data_get($method->settings, 'opencart_xshippingpro.ranges', []));
                 $paid = $ranges->first(fn ($range): bool => (float) ($range['cost'] ?? 0) > 0);
-                $free = $ranges->first(fn ($range): bool => (float) ($range['cost'] ?? 0) === 0);
+                $free = $ranges->first(fn ($range): bool => (float) ($range['cost'] ?? 0) === 0.0);
                 if ($paid !== null) {
                     $method->price = (float) $paid['cost'];
                 }
