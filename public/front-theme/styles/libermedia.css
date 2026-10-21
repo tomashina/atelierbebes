@@ -1357,3 +1357,20 @@ body.libermedia-storefront .lm-footer-payment-logo img { display: block; width: 
         opacity: 1;
     }
 }
+
+@media (max-width: 767px) {
+    body.libermedia-storefront .product-floating-cart,
+    body.libermedia-storefront #page .product-floating-cart {
+        right: 0;
+        bottom: 0;
+        left: 0;
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: 0;
+    }
+
+    body.libermedia-storefront .product-floating-cart-shell {
+        padding: 10px max(12px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+    }
+}
