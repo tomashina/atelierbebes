@@ -35,7 +35,7 @@ class ReviewController extends Controller
             ])
             ->orderByDesc('reviewed_at')
             ->orderByDesc('id')
-            ->paginate(12)
+            ->paginate(30)
             ->withQueryString();
 
         return view('front.desktop.reviews.index', [

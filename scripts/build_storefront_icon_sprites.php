@@ -35,6 +35,9 @@ $icons = [
         'xmark',
     ],
     'regular' => [
+        'basket-shopping',
+        'circle-user',
+        'magnifying-glass',
         'arrow-right',
         'envelope',
         'heart',
@@ -43,6 +46,9 @@ $icons = [
         'user',
     ],
     'light' => [
+        'bag-shopping',
+        'magnifying-glass',
+        'user',
         'battery-half',
         'bolt',
         'boxes-stacked',

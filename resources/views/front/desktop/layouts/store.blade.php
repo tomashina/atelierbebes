@@ -295,7 +295,7 @@
                         data-header-search-input
                     >
                     <button type="submit" class="header-search-submit" aria-label="{{ __('ui.shop.filters.search') }}">
-                        <x-fa-icon :inline="$herreraStorefront" name="magnifying-glass" />
+                        <x-fa-icon :inline="$herreraStorefront" name="magnifying-glass" :style="$libermediaStorefront ? 'regular' : 'solid'" />
                     </button>
                     @if ($herreraStorefront)
                         <button type="button" class="header-search-panel-close" aria-label="{{ __('Zatvori pretragu') }}" data-header-search-close>
@@ -339,12 +339,12 @@
                 <x-front.storefront-theme-toggle />
                 @auth
                     <a href="{{ route('account.dashboard') }}" class="inline-flex min-w-[136px] items-center justify-center gap-2 border-r border-slate-200 px-4 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-black">
-                        <x-fa-icon :inline="$herreraStorefront" name="user" style="regular" class="h-5 w-5" />
+                        <x-fa-icon :inline="$herreraStorefront" :name="$libermediaStorefront ? 'circle-user' : 'user'" style="regular" class="h-5 w-5" />
                         {{ __('ui.front.desktop.account') }}
                     </a>
                 @else
                     <a href="{{ route('front.auth.login') }}" class="inline-flex min-w-[136px] items-center justify-center gap-2 border-r border-slate-200 px-4 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-black">
-                        <x-fa-icon :inline="$herreraStorefront" name="user" style="regular" class="h-5 w-5" />
+                        <x-fa-icon :inline="$herreraStorefront" :name="$libermediaStorefront ? 'circle-user' : 'user'" style="regular" class="h-5 w-5" />
                         {{ $libermediaStorefront || app(\App\Services\Pricing\B2BAccessService::class)->b2cEnabled() ? __('Prijavi se') : ($herreraStorefront ? __('herrera.header.login') : __('ui.front.desktop.account')) }}
                     </a>
                 @endauth
@@ -365,7 +365,7 @@
                         aria-expanded="false"
                         data-header-cart-trigger
                     >
-                        <x-fa-icon :inline="$herreraStorefront" name="bag-shopping" class="header-cart-trigger-icon" />
+                        <x-fa-icon :inline="$herreraStorefront" :name="$libermediaStorefront ? 'basket-shopping' : 'bag-shopping'" :style="$libermediaStorefront ? 'regular' : 'solid'" class="header-cart-trigger-icon" />
                         <span class="header-count-badge header-cart-count" data-cart-count>
                             {{ (int) $cartSummary['item_qty'] }}
                         </span>
@@ -379,7 +379,7 @@
             </div>
 
             <div class="responsive-header-actions flex h-full items-stretch border-l border-slate-200 lg:hidden">
-                @if ($herreraStorefront)
+                @if ($herreraStorefront && ! $libermediaStorefront)
                     <button
                         type="button"
                         class="responsive-header-action inline-flex w-12 items-center justify-center border-r border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 hover:text-black sm:w-14"
@@ -394,11 +394,11 @@
                 <x-front.storefront-theme-toggle :mobile="true" />
                 @auth
                     <a href="{{ route('account.dashboard') }}" class="responsive-header-action inline-flex w-12 items-center justify-center border-r border-slate-200 text-slate-700 transition hover:bg-slate-50 hover:text-black sm:w-14 lg:w-16" aria-label="{{ __('ui.front.desktop.account') }}">
-                        <x-fa-icon :inline="$herreraStorefront" name="user" style="regular" class="h-5 w-5" />
+                        <x-fa-icon :inline="$herreraStorefront" :name="$libermediaStorefront ? 'circle-user' : 'user'" style="regular" class="h-5 w-5" />
                     </a>
                 @else
                     <a href="{{ route('front.auth.login') }}" class="responsive-header-action inline-flex w-12 items-center justify-center border-r border-slate-200 text-slate-700 transition hover:bg-slate-50 hover:text-black sm:w-14 lg:w-16" aria-label="{{ __('ui.front.desktop.sign_in') }}">
-                        <x-fa-icon :inline="$herreraStorefront" name="user" style="regular" class="h-5 w-5" />
+                        <x-fa-icon :inline="$herreraStorefront" :name="$libermediaStorefront ? 'circle-user' : 'user'" style="regular" class="h-5 w-5" />
                     </a>
                 @endauth
 
@@ -410,7 +410,7 @@
                 </a>
 
                 <a href="{{ route('cart.index') }}" class="responsive-header-action relative inline-flex h-full w-12 items-center justify-center border-r border-slate-200 text-slate-900 transition hover:bg-slate-50 hover:text-black sm:w-14 lg:w-16" aria-label="{{ __('ui.front.desktop.cart') }}: {{ (int) $cartSummary['item_qty'] }}">
-                    <x-fa-icon :inline="$herreraStorefront" name="bag-shopping" class="h-6 w-6" />
+                    <x-fa-icon :inline="$herreraStorefront" :name="$libermediaStorefront ? 'basket-shopping' : 'bag-shopping'" :style="$libermediaStorefront ? 'regular' : 'solid'" class="h-6 w-6" />
                     <span class="header-count-badge absolute right-0.5 top-2.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold" data-cart-count>
                         {{ (int) $cartSummary['item_qty'] }}
                     </span>
@@ -440,6 +440,12 @@
                     <span>{{ __('herrera.header.categories') }}</span>
                     <x-fa-icon :inline="$herreraStorefront" name="arrow-right" />
                 </a>
+                @endif
+                @if ($libermediaStorefront)
+                    <button type="button" class="lm-mobile-search-toggle" aria-label="{{ __('ui.front.desktop.search') }}" aria-expanded="false" aria-controls="header-search-panel" data-header-search-toggle>
+                        <x-fa-icon name="magnifying-glass" style="regular" :inline="true" />
+                        <span>Pretraži</span>
+                    </button>
                 @endif
                 @if (! $libermediaStorefront && (! app(\App\Services\Pricing\B2BAccessService::class)->b2cEnabled() || app(\App\Services\Pricing\B2BAccessService::class)->approvedAccount(auth()->user())))
                 <a href="{{ route('account.b2b.quick-order') }}">
@@ -536,6 +542,9 @@
             $footerContactIntro = trim((string) ($storeSettings['footer']['contact_intro'] ?? '')) ?: __('ui.front.desktop.footer.webshop_queries');
             $footerContactAddress = trim((string) ($storeSettings['footer']['address'] ?? ''));
             $footerContactEmails = \App\Support\FooterContactPresenter::emails($storeSettings['footer'] ?? []);
+            if ($libermediaStorefront) {
+                $footerContactAddress = preg_replace('/[ \t]+(?=Ime banke:)/u', "\n", $footerContactAddress) ?? $footerContactAddress;
+            }
             $footerContactAddressBlocks = \App\Support\FooterContactPresenter::addressBlocks($footerContactAddress);
             $footerBenefits = collect($benefitsBar['items'] ?? [])
                 ->map(fn ($item) => trim((string) $item))
@@ -690,7 +699,7 @@
                         <p class="text-slate-500">{{ $footerContactIntro }}</p>
                     @endif
                     @if (!empty($storeSettings['footer']['phone'] ?? ''))
-                        <p><a href="tel:{{ preg_replace('/\\s+/', '', (string) $storeSettings['footer']['phone']) }}" class="text-base font-semibold text-slate-900 transition hover:text-slate-700">{{ $storeSettings['footer']['phone'] }}</a></p>
+                        <p><a href="tel:{{ preg_replace('/\\s+/', '', (string) $storeSettings['footer']['phone']) }}" class="text-base font-semibold text-slate-900 transition hover:text-slate-700">@if ($libermediaStorefront)<x-fa-icon name="phone" style="regular" :inline="true" class="lm-footer-phone-icon" />@endif{{ $storeSettings['footer']['phone'] }}</a></p>
                     @endif
                     @foreach ($footerContactEmails as $footerContactEmail)
                         <p><a href="mailto:{{ $footerContactEmail }}" class="transition hover:text-slate-900">{{ $footerContactEmail }}</a></p>
@@ -731,7 +740,7 @@
                         <p class="site-footer-contact-intro">{{ $footerContactIntro }}</p>
                     @endif
                     @if (!empty($storeSettings['footer']['phone'] ?? ''))
-                        <p><a href="tel:{{ preg_replace('/\\s+/', '', (string) $storeSettings['footer']['phone']) }}" class="site-footer-contact-phone transition">{{ $storeSettings['footer']['phone'] }}</a></p>
+                        <p><a href="tel:{{ preg_replace('/\\s+/', '', (string) $storeSettings['footer']['phone']) }}" class="site-footer-contact-phone transition">@if ($libermediaStorefront)<x-fa-icon name="phone" style="regular" :inline="true" class="lm-footer-phone-icon" />@endif{{ $storeSettings['footer']['phone'] }}</a></p>
                     @endif
                     @foreach ($footerContactEmails as $footerContactEmail)
                         <p><a href="mailto:{{ $footerContactEmail }}" class="transition">{{ $footerContactEmail }}</a></p>
@@ -784,10 +793,6 @@
             @endforeach
         </div>
 
-        @if (\App\Support\StorefrontTheme::usesLibermediaBrand())
-            @include('front.partials.libermedia-payment-logos')
-        @endif
-
         @unless ($herreraStorefront)
         <div class="site-footer-payments">
             <div class="site-footer-payment-logos flex flex-wrap items-center justify-center gap-2.5">
@@ -837,6 +842,9 @@
                 © {{ now()->year }} {{ $storeName }}. {{ $copyrightText }}
             </div>
             <div class="store-footer-bottom-links flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+                @if ($libermediaStorefront)
+                    @include('front.partials.libermedia-payment-logos')
+                @endif
                 @foreach ($bottomLinks as $link)
                     <a href="{{ $link['url'] }}" class="store-footer-bottom-link transition">{{ $link['label'] }}</a>
                 @endforeach

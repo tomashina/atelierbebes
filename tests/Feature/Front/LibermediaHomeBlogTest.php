@@ -53,7 +53,7 @@ class LibermediaHomeBlogTest extends TestCase
         $response = $this->get('/')->assertOk()
             ->assertSee('data-libermedia-home-blog', false)
             ->assertSee('LIBER MEDIA BLOG')
-            ->assertSee('Svi članci')
+            ->assertSee('Vidi sve')
             ->assertSee('href="'.route('blog.index').'"', false)
             ->assertSeeInOrder(['Najnoviji članak', 'Drugi članak', 'Treći članak', 'Četvrti članak', 'Peti članak'])
             ->assertSee('Sažetak: Najnoviji članak')

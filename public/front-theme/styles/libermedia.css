@@ -587,7 +587,7 @@ body.libermedia-storefront .libermedia-home-blog a:is(:hover, :focus-visible) {
 @media (max-width: 1023px) {
     body.libermedia-storefront .herrera-header-layout,
     body.libermedia-storefront .site-main-header.is-sticky .herrera-header-layout {
-        grid-template-rows: 64px;
+        grid-template-rows: 52px;
     }
 
     body.libermedia-storefront .site-main-header .site-main-logo {
@@ -1219,13 +1219,130 @@ body.libermedia-storefront .site-footer .store-footer-bottom { padding-block: 16
     body.libermedia-storefront .lm-footer-benefits .lm-benefits { padding-block: 22px; }
 }
 
-body.libermedia-storefront .lm-footer-payments { padding: 0 0 26px; text-align: center; }
-body.libermedia-storefront .lm-footer-payments > p { margin: 0 0 12px; font-size: 12px; font-weight: 600; color: var(--libermedia-footer-text); }
-body.libermedia-storefront .lm-footer-payment-logos { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; }
-body.libermedia-storefront .lm-footer-payment-logo { display: inline-flex; align-items: center; justify-content: center; width: 138px; height: 66px; padding: 8px; box-sizing: border-box; border: 1px solid #e3e8e4; border-radius: 8px; background: #fff; }
-body.libermedia-storefront .lm-footer-payment-logo img { display: block; width: auto; height: auto; max-width: 88px; max-height: 32px; object-fit: contain; }
-body.libermedia-storefront .lm-footer-payment-logo--gateway img { width: 118px; height: 50px; max-width: none; max-height: none; }
+/* One column rhythm for newsletter, shopping benefits and footer navigation. */
+@media (min-width: 1024px) {
+    body.libermedia-storefront .site-footer {
+        --lm-footer-grid-gap: 32px;
+    }
+    body.libermedia-storefront .site-footer-links,
+    body.libermedia-storefront .lm-footer-benefits .lm-benefits,
+    body.libermedia-storefront .site-footer-newsletter > div {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        column-gap: var(--lm-footer-grid-gap);
+    }
+    body.libermedia-storefront .site-footer-newsletter > div > :is(div, form) {
+        grid-column: span 2;
+        min-width: 0;
+    }
+    body.libermedia-storefront .lm-footer-benefits .lm-benefits {
+        padding-inline: 0;
+    }
+    body.libermedia-storefront .lm-footer-benefits .lm-benefits > :is(div, a) {
+        justify-content: flex-start;
+        align-items: center;
+        gap: 12px;
+    }
+    body.libermedia-storefront .site-footer-link-column {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 1023px) {
+    body.libermedia-storefront .herrera-mobile-shortcuts .lm-mobile-search-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-width: 96px;
+        min-height: 44px;
+        margin-left: auto;
+        padding: 0 10px;
+        color: var(--libermedia-green);
+        font-size: 12px;
+        font-weight: 600;
+    }
+    body.libermedia-storefront .lm-mobile-search-toggle .fa6-icon { width: 20px; height: 20px; }
+    body.libermedia-storefront .lm-mobile-search-toggle:focus-visible { outline: 2px solid var(--libermedia-green); outline-offset: -3px; }
+    body.libermedia-storefront .herrera-header-layout .responsive-header-action > svg { width: 23px; height: 23px; }
+}
+
+@media (max-width: 1023px) {
+    body.libermedia-storefront .herrera-header-layout .responsive-header-brand { padding-block: 0; }
+    body.libermedia-storefront .herrera-header-layout .responsive-header-action > svg { width: 22px; height: 22px; }
+}
+
+@media (max-width: 1023px) {
+    body.libermedia-storefront .herrera-header-layout .responsive-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        height: 44px;
+    }
+    body.libermedia-storefront .herrera-header-layout .responsive-header-action {
+        display: inline-flex;
+        flex: 0 0 40px;
+        width: 40px !important;
+        height: 44px;
+        padding: 0;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+    body.libermedia-storefront .herrera-header-layout .responsive-header-action > .fa6-icon {
+        display: block;
+        flex: 0 0 22px;
+        width: 22px;
+        height: 22px;
+        margin: 0;
+        vertical-align: middle;
+    }
+    body.libermedia-storefront .herrera-header-layout .responsive-header-action .header-count-badge {
+        top: 0;
+        right: 0;
+    }
+}
+
+@media (max-width: 1023px) {
+    body.libermedia-storefront .herrera-header-layout .responsive-header-actions [data-mobile-menu-open],
+    body.libermedia-storefront .herrera-header-layout .responsive-header-actions [data-wishlist-link].hidden {
+        display: none;
+    }
+}
+
+body.libermedia-storefront .site-footer .site-footer-contact-phone,
+body.libermedia-storefront .site-footer .site-footer-mobile-links a[href^="tel:"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #fff;
+}
+body.libermedia-storefront .site-footer .lm-footer-phone-icon {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+    color: inherit;
+}
+
+html[data-theme] body.libermedia-storefront .site-footer a.site-footer-contact-phone,
+html[data-theme] body.libermedia-storefront .site-footer .site-footer-mobile-links a[href^="tel:"] {
+    color: #fff;
+}
+@media (min-width: 1024px) {
+    body.libermedia-storefront .store-footer-bottom { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+}
+@media (max-width: 1023px) {
+    body.libermedia-storefront .site-footer .store-footer-bottom { justify-items: center; text-align: center; gap: 14px; }
+    body.libermedia-storefront .store-footer-bottom-links { justify-content: center; }
+}
+
+/* Payment marks from one coordinated monochrome SVG set. */
+body.libermedia-storefront .store-footer-bottom .lm-footer-payments { margin: 0; padding: 0; background: transparent; text-align: center; }
+body.libermedia-storefront .lm-footer-payments > p { display: none; }
+body.libermedia-storefront .lm-footer-payment-logos { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; }
+body.libermedia-storefront .lm-footer-payment-logo { display: inline-flex; flex: 0 0 56px; align-items: center; justify-content: center; width: 56px; height: 34px; padding: 0; border: 0; background: transparent; }
+body.libermedia-storefront .lm-footer-payment-logo img { display: block; width: 52px; height: 34px; max-width: none; max-height: none; object-fit: contain; filter: none; }
 @media (max-width: 639px) {
-    body.libermedia-storefront .lm-footer-payments { padding-top: 20px; }
     body.libermedia-storefront .lm-footer-payment-logos { gap: 8px; }
+    body.libermedia-storefront .lm-footer-payment-logo { flex-basis: 46px; width: 46px; height: 30px; }
+    body.libermedia-storefront .lm-footer-payment-logo img { width: 46px; height: 30px; }
 }

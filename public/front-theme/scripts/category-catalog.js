@@ -1,5 +1,41 @@
 /* Category catalog interactions. Loaded with defer and safe to cache. */
 (() => {
+    // Keep category descriptions compact on phones, with full text available.
+    if (document.body.classList.contains('libermedia-storefront')) {
+        const descriptionViewport = window.matchMedia('(max-width: 767px)');
+        document.querySelectorAll('[data-category-short-description] .catalog-description, [data-category-long-description] .catalog-description').forEach((description, index) => {
+            const firstHeading = description.firstElementChild?.matches('h1,h2,h3,h4,h5,h6')
+                ? description.firstElementChild : null;
+            const body = document.createElement('div');
+            body.className = 'catalog-description-mobile-body';
+            body.id = `category-description-${index}`;
+            [...description.childNodes].forEach((node) => { if (node !== firstHeading) body.appendChild(node); });
+            description.appendChild(body);
+            const toggle = document.createElement('button');
+            toggle.type = 'button';
+            toggle.className = 'catalog-description-mobile-toggle';
+            toggle.setAttribute('aria-controls', body.id);
+            toggle.hidden = true;
+            description.appendChild(toggle);
+            let expanded = false;
+            const sync = () => {
+                const lineHeight = parseFloat(getComputedStyle(body).lineHeight);
+                const needsToggle = descriptionViewport.matches && body.scrollHeight > lineHeight * 3 + 2;
+                description.classList.toggle('is-mobile-collapsible', needsToggle);
+                description.classList.toggle('is-mobile-expanded', expanded);
+                toggle.hidden = !needsToggle;
+                toggle.setAttribute('aria-expanded', String(expanded));
+                toggle.textContent = expanded ? 'Vidi manje' : 'Vidi više';
+            };
+            toggle.addEventListener('click', () => { expanded = !expanded; sync(); });
+            body.addEventListener('focusin', () => { if (!expanded && descriptionViewport.matches) { expanded = true; sync(); } });
+            descriptionViewport.addEventListener('change', sync);
+            window.addEventListener('resize', sync, { passive: true });
+            document.fonts?.ready.then(sync);
+            sync();
+        });
+    }
+
     const buildCleanFormUrl = (form) => {
         const url = new URL(form.action, window.location.origin);
         const colsField = form.querySelector('[name="cols"]');

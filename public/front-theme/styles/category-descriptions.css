@@ -114,3 +114,37 @@
     .catalog-description--long { padding-top: 24px; }
     .catalog-description { font-size: 14px; line-height: 1.75; }
 }
+
+body.libermedia-storefront .catalog-description-mobile-toggle[hidden] { display: none; }
+.catalog-description-mobile-body > :first-child { margin-top: 0; }
+@media (max-width: 767px) {
+    body.libermedia-storefront .catalog-description.is-mobile-collapsible:not(.is-mobile-expanded) .catalog-description-mobile-body {
+        max-height: 5.4em;
+        overflow: hidden;
+        mask-image: linear-gradient(to bottom, #000 50%, transparent 100%);
+    }
+    body.libermedia-storefront .catalog-description-mobile-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        margin-top: 4px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--libermedia-green);
+        font-size: 13px;
+        font-weight: 650;
+        cursor: pointer;
+    }
+    body.libermedia-storefront .catalog-description-mobile-toggle::after {
+        content: '';
+        width: 7px;
+        height: 7px;
+        margin-top: -4px;
+        border-right: 1.5px solid currentColor;
+        border-bottom: 1.5px solid currentColor;
+        transform: rotate(45deg);
+    }
+    body.libermedia-storefront .catalog-description-mobile-toggle[aria-expanded=true]::after { margin-top: 4px; transform: rotate(225deg); }
+}

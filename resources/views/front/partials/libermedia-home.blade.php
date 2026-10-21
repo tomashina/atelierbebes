@@ -35,7 +35,7 @@
 @endif
 
 @if (in_array($herreraHomeSection, ['all', 'categories'], true))
-    @include('front.partials.herrera-home-categories', ['title' => __('Pronađite svoju kategoriju'), 'showCategorySupport' => false])
+    @include('front.partials.herrera-home-categories', ['title' => __('Istraži kategorije'), 'showCategorySupport' => false])
 @endif
 
 @if (in_array($herreraHomeSection, ['all', 'products'], true))

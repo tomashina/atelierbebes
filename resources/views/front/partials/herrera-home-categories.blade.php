@@ -10,14 +10,21 @@
         ->orderBy('id')
         ->get();
     $categoryTitle = trim((string) ($title ?? __('herrera.categories')));
+    if (\App\Support\StorefrontTheme::usesLibermediaBrand() && $categoryTitle === 'Pronađite svoju kategoriju') {
+        $categoryTitle = __('Istraži kategorije');
+    }
     $categorySubtitle = trim((string) ($subtitle ?? ''));
     $categoryCtaLabel = trim((string) ($ctaLabel ?? __('herrera.all_categories')));
+    if (\App\Support\StorefrontTheme::usesLibermediaBrand()) {
+        $categoryCtaLabel = __('Vidi sve');
+    }
     $categoryCtaUrl = trim((string) ($ctaUrl ?? route('categories.index')));
     $showCategoryModuleHeading = (bool) ($showCategoryHeading ?? true);
     $showHerreraCategorySupport = (bool) ($showCategorySupport ?? request()->routeIs('home'))
         && str_contains(strtolower((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))), 'herrera');
     $usesLibermediaCategories = \App\Support\StorefrontTheme::usesLibermediaBrand((string) ($storeSettings['branding']['store_name'] ?? config('app.name')));
     $showLibermediaBundleTile = $usesLibermediaCategories && request()->routeIs('home');
+    $showLibermediaGiftTile = $usesLibermediaCategories && request()->routeIs('categories.index');
     $preferWebp = (bool) ($storeSettings['images']['use_webp'] ?? false);
     $categoryIcons = [
         'rasvjeta' => 'lightbulb',
@@ -128,6 +135,17 @@
                     </span>
                 </a>
             @endforeach
+            @if ($showLibermediaGiftTile)
+                <a href="{{ route('gift-guide.index') }}" class="herrera-category-tile libermedia-category-bundle" data-libermedia-category-gift>
+                    <span class="libermedia-category-bundle-icon"><x-fa-icon name="gift" style="light" /></span>
+                    <span class="libermedia-category-bundle-copy">
+                        <span class="libermedia-category-bundle-eyebrow">{{ __('Mali znak pažnje, velika radost') }}</span>
+                        <span class="libermedia-category-bundle-title">{{ __('Tražiš poklon?') }}</span>
+                        <span class="libermedia-category-bundle-description">{{ __('Odaberi dob, interese i budžet. Pronađi poklon koji donosi osmijeh.') }}</span>
+                    </span>
+                    <span class="libermedia-category-bundle-cta">{{ __('Pronađi poklon') }} <x-fa-icon name="arrow-right" /></span>
+                </a>
+            @endif
             @if ($showLibermediaBundleTile)
                 <a href="{{ route('bundles.index') }}" class="herrera-category-tile libermedia-category-bundle" data-libermedia-category-bundle>
                     <span class="libermedia-category-bundle-icon"><x-fa-icon name="gift" style="light" /></span>

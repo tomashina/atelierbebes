@@ -73,30 +73,30 @@ class LibermediaReviewsIndexTest extends TestCase
     {
         $this->travelTo(now()->startOfDay());
         $product = $this->product('many-reviews');
-        foreach (range(1, 13) as $number) {
+        foreach (range(1, 31) as $number) {
             $this->review($product, 'Recenzija broj '.$number.'.', [
                 'rating' => $number === 1 ? 1 : 5,
-                'reviewed_at' => now()->subDays(14 - $number),
+                'reviewed_at' => now()->subDays(32 - $number),
             ]);
         }
 
         $firstPage = $this->get(route('reviews.index', ['source' => 'home']))->assertOk()
-            ->assertSeeInOrder(['Recenzija broj 13.', 'Recenzija broj 12.', 'Recenzija broj 2.'])
+            ->assertSeeInOrder(['Recenzija broj 31.', 'Recenzija broj 30.', 'Recenzija broj 2.'])
             ->assertDontSee('Recenzija broj 1.')
-            ->assertSee('data-reviews-total="13"', false)
-            ->assertSee('data-reviews-average="4.69"', false)
-            ->assertSee('4,7')
+            ->assertSee('data-reviews-total="31"', false)
+            ->assertSee('data-reviews-average="4.87"', false)
+            ->assertSee('4,9')
             ->assertSee('Sljedeća')
-            ->assertViewHas('reviews', fn ($reviews): bool => $reviews->perPage() === 12
-                && $reviews->total() === 13 && $reviews->count() === 12
+            ->assertViewHas('reviews', fn ($reviews): bool => $reviews->perPage() === 30
+                && $reviews->total() === 31 && $reviews->count() === 30
                 && str_contains($reviews->nextPageUrl(), 'source=home'));
-        $this->assertSame(12, substr_count($firstPage->getContent(), 'data-home-review-rating='));
+        $this->assertSame(30, substr_count($firstPage->getContent(), 'data-home-review-rating='));
 
         $secondPage = $this->get(route('reviews.index', ['page' => 2]))->assertOk()
             ->assertSee('Recenzija broj 1.')
             ->assertDontSee('Recenzija broj 2.')
-            ->assertSee('data-reviews-total="13"', false)
-            ->assertSee('data-reviews-average="4.69"', false)
+            ->assertSee('data-reviews-total="31"', false)
+            ->assertSee('data-reviews-average="4.87"', false)
             ->assertSee('Prethodna');
         $this->assertSame(1, substr_count($secondPage->getContent(), 'data-home-review-rating='));
 

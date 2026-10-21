@@ -122,3 +122,48 @@ body.libermedia-storefront .libermedia-home-blog-carousel .splide__arrow:focus-v
         transition: none;
     }
 }
+
+@media (max-width: 767px) {
+    body.libermedia-storefront .libermedia-home-blog-carousel .herrera-home-heading {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+    body.libermedia-storefront .libermedia-home-blog-carousel .herrera-home-heading > div { min-width: 0; }
+    body.libermedia-storefront .libermedia-home-blog-carousel .herrera-home-heading h2 { font-size: 24px; line-height: 1.25; }
+    body.libermedia-storefront .libermedia-home-blog-carousel .libermedia-home-blog-actions {
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        gap: 16px;
+    }
+    body.libermedia-storefront .libermedia-home-blog-carousel .herrera-home-products-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 40px;
+        padding: 10px 15px;
+        border: 1px solid var(--libermedia-green);
+        border-radius: var(--libermedia-button-radius, 8px);
+        background: var(--libermedia-green);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 650;
+        line-height: 1.4;
+        white-space: nowrap;
+    }
+    body.libermedia-storefront .libermedia-home-blog-carousel .herrera-home-products-link svg { width: 14px; height: 14px; color: inherit; }
+    body.libermedia-storefront .libermedia-home-blog-carousel .herrera-home-products-link:is(:hover, :focus-visible) { background: var(--libermedia-action-hover); border-color: var(--libermedia-action-hover); color: #fff; }
+}
+
+@media (max-width: 767px) {
+    html[data-theme] body.libermedia-storefront .libermedia-home-blog-carousel .libermedia-home-blog-actions > a.herrera-home-products-link,
+    html[data-theme] body.libermedia-storefront .libermedia-home-blog-carousel .libermedia-home-blog-actions > a.herrera-home-products-link > svg {
+        color: #fff;
+    }
+}

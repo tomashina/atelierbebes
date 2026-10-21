@@ -52,7 +52,7 @@
                 <h2 id="libermedia-home-blog-title">{{ __('Ideje za igru i učenje') }}</h2>
             </div>
             <div class="libermedia-home-blog-actions">
-                <a class="herrera-home-products-link" href="{{ route('blog.index') }}">{{ __('Svi članci') }} <x-fa-icon name="arrow-right" /></a>
+                <a class="herrera-home-products-link" href="{{ route('blog.index') }}">{{ __('Vidi sve') }} <x-fa-icon name="arrow-right" /></a>
                 @if ($homeBlogCount > 1)
                     <div class="splide__arrows">
                         <button class="splide__arrow splide__arrow--prev" type="button" aria-label="Prethodni članci" disabled><x-fa-icon name="chevron-right" /></button>
