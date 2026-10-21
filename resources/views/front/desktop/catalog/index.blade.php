@@ -305,6 +305,14 @@
                         <span class="catalog-mobile-filter-active-dot" aria-hidden="true"></span>
                     @endif
                 </button>
+                @if ($canViewPrices && \App\Support\StorefrontTheme::usesLibermediaBrand())
+                    <a href="{{ $catalogUrl(['available_only' => $availableOnlyEnabled ? null : 1, 'page' => null]) }}"
+                       class="lm-mobile-availability {{ $availableOnlyEnabled ? 'is-active' : '' }}"
+                       aria-label="{{ $availableOnlyLabel }} — {{ $availableOnlyEnabled ? 'uključeno' : 'isključeno' }}">
+                        <span class="lm-mobile-availability-check" aria-hidden="true">@if ($availableOnlyEnabled)<x-fa-icon name="check" />@endif</span>
+                        <span>Odmah dostupno</span>
+                    </a>
+                @endif
                 <div class="catalog-mobile-grid-group">
                 @foreach ([1, 2] as $cols)
                     <a
