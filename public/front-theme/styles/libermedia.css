@@ -1089,6 +1089,7 @@ body.libermedia-storefront #cc-main :is(.cm__btn, .pm__btn) {
 
 /* Legacy commerce styles mark these radii important; keep the override scoped. */
 body.libermedia-storefront .product-card-lined .product-card-lined-controls .product-card-lined-cart,
+body.libermedia-storefront .product-detail-wishlist,
 body.libermedia-storefront .cart-remove-action,
 body.libermedia-storefront.mobile-commerce-body :is(.commerce-primary-action, .gradient-blue, .btn-border) {
     border-radius: var(--libermedia-button-radius) !important;
