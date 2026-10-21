@@ -38,6 +38,7 @@
                     >
                     @if ($hoverImageUrl)
                         <img
+                            data-product-card-hover-image
                             src="{{ $hoverImageUrl }}"
                             @if (!empty($hoverImageSrcset)) srcset="{{ $hoverImageSrcset }}" @endif
                             sizes="{{ $imageSizes }}"

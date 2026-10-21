@@ -1346,3 +1346,14 @@ body.libermedia-storefront .lm-footer-payment-logo img { display: block; width: 
     body.libermedia-storefront .lm-footer-payment-logo { flex-basis: 46px; width: 46px; height: 30px; }
     body.libermedia-storefront .lm-footer-payment-logo img { width: 46px; height: 30px; }
 }
+
+/* Touch screens keep the primary image visible in every product grid. */
+@media (max-width: 767px), (hover: none), (pointer: coarse) {
+    body.libermedia-storefront [data-product-card-image-frame] > [data-product-card-hover-image] {
+        display: none;
+    }
+
+    body.libermedia-storefront [data-product-card-image-frame][data-image-state] > img[data-product-card-image] {
+        opacity: 1;
+    }
+}
