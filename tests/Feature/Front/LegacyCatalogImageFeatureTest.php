@@ -36,6 +36,15 @@ class LegacyCatalogImageFeatureTest extends TestCase
         Http::assertNothingSent();
     }
 
+    public function test_libermedia_can_use_remote_api_images_without_downloading_them(): void
+    {
+        config(['legacy_media.origin' => 'https://www.liber-media.hr', 'legacy_media.directories' => ['catalog', 'api', 'uploads']]);
+        $this->assertSame('https://www.liber-media.hr/image/api/4.jpg', LegacyCatalogImage::url('api/4.jpg'));
+        $this->assertNull(LegacyCatalogImage::url('api/../private.jpg'));
+        $this->assertNull(LegacyCatalogImage::url('https://evil.test/image/api/4.jpg'));
+        Http::assertNothingSent();
+    }
+
     #[DataProvider('unsafePaths')]
     public function test_it_rejects_unsafe_or_non_catalog_sources(mixed $path): void
     {

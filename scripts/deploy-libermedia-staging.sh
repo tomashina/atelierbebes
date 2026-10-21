@@ -11,6 +11,7 @@ mkdir -p /home/amds/.libermedia-backups
 backup_root="/home/amds/.libermedia-backups/$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$backup_root"
 rsync -a --backup --backup-dir="$backup_root" --exclude=.git --exclude=.env --exclude=vendor --exclude=node_modules --exclude=storage --exclude=public/storage --exclude=public/image --exclude=bootstrap/cache --exclude=database/database.sqlite "$source_root/" "$target_root/"
+chmod 755 "$target_root"
 cd "$target_root"
 mkdir -p storage/framework/{cache/data,sessions,views} storage/logs storage/app/public bootstrap/cache
 "$php_bin" /home/amds/bin/composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
