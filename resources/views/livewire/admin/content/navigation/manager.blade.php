@@ -310,6 +310,7 @@
                                 <label for="navigation-icon-{{ $index }}" class="mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{{ __('admin.content.navigation.icon') }}</label>
                                 <select id="navigation-icon-{{ $index }}" wire:model.live="form.items.{{ $index }}.icon" data-tom-select data-tom-no-search="1" class="admin-search-input admin-select w-full rounded-xl border px-3 py-2 text-sm">
                                     <option value="">{{ __('admin.content.navigation.icon_none') }}</option>
+                                    <option value="ticket">Poklon bon</option>
                                     <option value="gift">{{ __('admin.content.navigation.icon_gift') }}</option>
                                 </select>
                                 @error('form.items.'.$index.'.icon') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror

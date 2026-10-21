@@ -324,7 +324,7 @@ class NavigationMenuService
                 'open_in_new_tab' => (bool) ($item['open_in_new_tab'] ?? false),
                 'show_dropdown' => (bool) ($item['show_dropdown'] ?? true),
                 'is_highlighted' => (bool) ($item['is_highlighted'] ?? false),
-                'icon' => ($item['icon'] ?? '') === 'gift' ? 'gift' : '',
+                'icon' => in_array($item['icon'] ?? '', ['gift', 'ticket'], true) ? $item['icon'] : '',
                 'align_right' => (bool) ($item['align_right'] ?? false),
                 'is_active' => (bool) ($item['is_active'] ?? true),
                 'sort_order' => (int) ($item['sort_order'] ?? $index),

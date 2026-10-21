@@ -26,7 +26,8 @@
             <nav class="herrera-b2b-tools" aria-label="{{ __('Istražite Liber Media') }}">
                 <a href="{{ route('categories.index') }}"><x-fa-icon name="shapes" /><span>{{ __('Igračke koje potiču maštu') }}</span><x-fa-icon name="arrow-right" /></a>
                 <a href="{{ route('blog.index') }}"><x-fa-icon name="book-open" /><span>{{ __('Ideje za igru i učenje') }}</span><x-fa-icon name="arrow-right" /></a>
-                <a href="{{ route('contact.create') }}"><x-fa-icon name="comments" /><span>{{ __('Pomoć pri odabiru') }}</span><x-fa-icon name="arrow-right" /></a>
+                <a href="{{ route('gift-guide.index') }}"><x-fa-icon name="gift" /><span>{{ __('Tražiš poklon?') }}</span><x-fa-icon name="arrow-right" /></a>
+                <a href="{{ route('gift-vouchers.create') }}"><x-fa-icon name="ticket" /><span>{{ __('Poklon bon') }}</span><x-fa-icon name="arrow-right" /></a>
             </nav>
             <p class="herrera-b2b-tools-note">{{ __('Liber Media · Didaktičke igračke i oprema za vrtiće.') }}</p>
         </aside>

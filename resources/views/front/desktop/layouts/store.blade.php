@@ -224,8 +224,8 @@
                             @if (!empty($item['align_right'])) data-navigation-align="right" @endif
                             data-herrera-primary-link
                         >
-                            @if (($item['icon'] ?? '') === 'gift')
-                                <x-fa-icon :inline="true" name="gift" style="regular" class="navigation-item-icon" />
+                            @if (in_array($item['icon'] ?? '', ['gift', 'ticket'], true))
+                                <x-fa-icon :inline="true" :name="$item['icon']" style="regular" class="navigation-item-icon" />
                             @endif
                             <span>{{ $item['label'] }}</span>
                         </a>

@@ -38,7 +38,8 @@ class LibermediaConfigurePreview extends Command
             $navigation[] = ['type' => 'page', 'label' => 'O nama', 'page_id' => $aboutId, 'is_active' => true, 'sort_order' => 5];
         }
         $navigation[] = ['type' => 'contact', 'label' => 'Kontakt', 'is_active' => true, 'sort_order' => 6];
-        $navigation[] = ['type' => 'custom', 'label' => 'Poklon bon', 'url' => '/poklon-bon', 'icon' => 'gift', 'align_right' => true, 'is_active' => true, 'sort_order' => 7];
+        $navigation[] = ['type' => 'custom', 'label' => 'Tražiš poklon?', 'url' => '/savjeti-za-poklone', 'icon' => 'gift', 'align_right' => true, 'is_active' => true, 'sort_order' => 7];
+        $navigation[] = ['type' => 'custom', 'label' => 'Poklon bon', 'url' => '/poklon-bon', 'icon' => 'ticket', 'align_right' => true, 'is_active' => true, 'sort_order' => 8];
 
         $navigationSettings = [
             NavigationMenuService::SETTINGS_KEY => $navigation,

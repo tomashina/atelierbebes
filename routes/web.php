@@ -129,6 +129,8 @@ Route::middleware(['front.customer-impersonation', 'front.locale', 'front.device
         Route::get('bundle-artikli', [\App\Http\Controllers\Front\BundleController::class, 'index'])->name('bundles.index');
         Route::post('bundle-artikli/{bundle}', [\App\Http\Controllers\Front\BundleController::class, 'store'])->middleware('throttle:30,1')->name('bundles.store');
 
+        Route::get('savjeti-za-poklone', \App\Http\Controllers\Front\GiftGuideController::class)->name('gift-guide.index');
+
         Route::get('poklon-bon', [\App\Http\Controllers\Front\GiftVoucherController::class, 'create'])->name('gift-vouchers.create');
         Route::post('poklon-bon', [\App\Http\Controllers\Front\GiftVoucherController::class, 'store'])->middleware('throttle:10,1')->name('gift-vouchers.store');
         Route::get('poklon-bon/narudzba/{orderNumber}', [\App\Http\Controllers\Front\GiftVoucherController::class, 'purchaseStatus'])->middleware('signed')->name('gift-vouchers.purchase');

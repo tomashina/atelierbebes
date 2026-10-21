@@ -1,0 +1,4 @@
+---
+deployment:
+  tasks:
+    - /bin/bash /home/amds/repositories/libermedia-new/scripts/deploy-libermedia-staging.sh
