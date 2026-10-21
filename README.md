@@ -35,3 +35,5 @@ Kod je preuzet iz lokalnog Herrera brancha `codex/herrera-b2b-foundation` (izvor
 `STOREFRONT_BRAND=libermedia` uključuje narančasto-zelenu paletu neovisno o rasporedu. Glavni logo je vektorski `public/assets/brand/libermedia-logo.svg`, uz svijetlu varijantu za tamni prikaz. Brand narančasta je `#FF4D00`, dopunska zelena `#245B42`, uz tople svijetle podloge.
 
 Početna prikazuje šest brandova u širokom slideru i tri najnovija objavljena blog članka. Blog blok prati postavku bloga i ne ponavlja već postavljen aktivni CMS blog blok.
+
+Pozadinski motiv koristi priloženi Liber Media znak u zelenoj varijanti. Na širokom prikazu znak dijeli iste fiksne koordinate kroz gornju traku, pretragu, hero i obojene trake; na manjim prikazima prilagođava se širini površine.

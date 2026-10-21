@@ -17,7 +17,7 @@ body.libermedia-storefront {
     --libermedia-footer: #1f4c39;
     --libermedia-footer-text: #dbe9df;
     --libermedia-footer-accent: #ffad83;
-    --libermedia-pattern: linear-gradient(135deg, transparent 54%, rgb(255 77 0 / 5%) 54%, rgb(255 77 0 / 5%) 67%, transparent 67%);
+    --libermedia-pattern: url("/assets/brand/libermedia-symbol-pattern.svg");
 
     --storefront-bg: var(--libermedia-surface);
     --storefront-surface: var(--libermedia-surface);
@@ -120,7 +120,6 @@ body.libermedia-storefront .store-auth-brand-logo {
 
 body.libermedia-storefront .site-top-bar {
     background-color: var(--libermedia-sage);
-    background-image: none;
 }
 
 body.libermedia-storefront :is(.site-top-bar-link, .site-top-bar-social-link, .site-top-bar-announcement) {
@@ -134,7 +133,6 @@ body.libermedia-storefront :is(.site-top-bar-link, .site-top-bar-social-link):is
 
 body.libermedia-storefront .herrera-header-layout .header-search-form {
     background-color: var(--libermedia-surface-raised);
-    background-image: none;
 }
 
 body.libermedia-storefront :is(.herrera-primary-navigation a, .herrera-header-quick-order, .herrera-mobile-shortcuts a) {
@@ -163,7 +161,7 @@ body.libermedia-storefront .header-search-suggestions-link:is(:hover, :focus-vis
     color: var(--libermedia-link);
 }
 
-/* Warm hero and calm supporting bands reuse Herrera's existing motif. */
+/* Warm hero and calm supporting bands share the Liber Media symbol. */
 body.libermedia-storefront :is(.herrera-hero, .herrera-b2b-hero) {
     border-color: var(--libermedia-line);
     background-color: var(--libermedia-cream);
@@ -513,7 +511,7 @@ html[data-theme=dark] body.libermedia-storefront {
     --libermedia-line: #3b493e;
     --libermedia-line-strong: #768675;
     --libermedia-footer: #14291e;
-    --libermedia-pattern: linear-gradient(135deg, transparent 54%, rgb(255 119 58 / 6%) 54%, rgb(255 119 58 / 6%) 67%, transparent 67%);
+    --libermedia-pattern: url("/assets/brand/libermedia-symbol-pattern-dark.svg");
     --storefront-bg: #111713;
     --storefront-surface: var(--libermedia-surface);
     --storefront-surface-raised: var(--libermedia-surface-raised);
@@ -583,4 +581,39 @@ html[data-theme=dark] body.libermedia-storefront #cc-main {
     --cookie-footer-blue: #245b42;
     --cookie-footer-blue-dark: #17422e;
     --cc-btn-secondary-hover-color: var(--libermedia-green);
+}
+
+/* A single oversized symbol is clipped by each band on the same viewport
+   coordinates, so top bar, search and content show parts of the same mark. */
+body.libermedia-storefront .site-top-bar,
+body.libermedia-storefront .herrera-header-layout .header-search-form,
+body.libermedia-storefront .herrera-b2b-hero,
+body.libermedia-storefront .herrera-catalog-heading-band::before,
+body.libermedia-storefront .herrera-brand-strip::before,
+body.libermedia-storefront .herrera-home-registration::before,
+body.libermedia-storefront .site-footer-newsletter::before {
+    background-image: var(--libermedia-pattern);
+    background-size: clamp(1000px, 98vw, 1900px) auto;
+    background-position: center -64px;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* These bands use a full-width pseudo element; keep the symbol on one layer. */
+body.libermedia-storefront :is(.herrera-catalog-heading-band, .herrera-brand-strip, .herrera-home-registration, .site-footer-newsletter) {
+    background-image: none;
+}
+
+@media (max-width: 1023px) {
+    body.libermedia-storefront .site-top-bar,
+    body.libermedia-storefront .herrera-header-layout .header-search-form,
+    body.libermedia-storefront .herrera-b2b-hero,
+    body.libermedia-storefront .herrera-catalog-heading-band::before,
+    body.libermedia-storefront .herrera-brand-strip::before,
+    body.libermedia-storefront .herrera-home-registration::before,
+    body.libermedia-storefront .site-footer-newsletter::before {
+        background-size: max(720px, 130vw) auto;
+        background-position: center -40px;
+        background-attachment: scroll;
+    }
 }
