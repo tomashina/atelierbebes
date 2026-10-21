@@ -38,3 +38,5 @@ Thumbs.db
 /termol-public-build-*.zip
 /public/build.zip
 /database/sql/
+/work/
+/public/image/

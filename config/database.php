@@ -30,6 +30,19 @@ return [
     */
 
     'connections' => [
+        'libermedia_source' => [
+            'driver' => 'mysql',
+            'host' => env('LIBERMEDIA_SOURCE_HOSTNAME', '127.0.0.1'),
+            'port' => env('LIBERMEDIA_SOURCE_PORT', '3306'),
+            'database' => env('LIBERMEDIA_SOURCE_DATABASE', 'libermedia'),
+            'username' => env('LIBERMEDIA_SOURCE_USERNAME', 'root'),
+            'password' => env('LIBERMEDIA_SOURCE_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'options' => extension_loaded('pdo_mysql') ? [PDO::MYSQL_ATTR_INIT_COMMAND => 'SET SESSION TRANSACTION READ ONLY'] : [],
+        ],
 
         // Optional local-only administrator for creating disposable rehearsal copies.
         // Never point this connection at either hosted shop.
