@@ -29,6 +29,25 @@ class HerreraProductShippingPresentationTest extends TestCase
         $this->legacyDestination('foreign', 20, ['SI', 'HU', 'IT'], 15, 200, 201, 0);
     }
 
+    public function test_libermedia_product_uses_domestic_source_ranges_instead_of_fallback_cost(): void
+    {
+        config(['storefront.brand' => 'libermedia', 'commerce.b2b_only' => false]);
+        foreach (['HR', 'SI'] as $country) {
+            ShippingMethod::create(['code' => 'lm-'.$country, 'name' => 'Delivery '.$country,
+                'is_active' => true, 'price' => 10, 'pricing_type' => 'flat',
+                'settings' => ['import_source' => 'libermedia', 'destination_country_codes' => [$country],
+                    'opencart_xshippingpro' => ['ranges' => [
+                        ['start' => 0, 'end' => 40, 'cost' => 5],
+                        ['start' => 40.01, 'end' => 10000000, 'cost' => 0],
+                    ]]]]);
+        }
+        $methods = $this->get(route('products.show', ['slug' => 'shipping-product']))->assertOk()->viewData('shippingMethods');
+        $this->assertCount(1, $methods);
+        $this->assertSame('lm-HR', $methods->first()->code);
+        $this->assertEquals(5, $methods->first()->price);
+        $this->assertEquals(40, $methods->first()->free_over);
+    }
+
     public function test_legacy_ranges_are_grouped_and_show_destination_thresholds_and_taxable_net_shipping(): void
     {
         $this->actingAs($this->buyer([9]));

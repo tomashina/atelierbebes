@@ -493,6 +493,23 @@ class ProductController extends Controller
 
     private function groupShippingMethodsForProduct(Collection $methods, string $locale): Collection
     {
+        if (\App\Support\StorefrontTheme::usesLibermediaBrand()) {
+            // The imported base cost is a fallback; xshippingpro ranges are authoritative.
+            $methods = $methods->filter(fn (ShippingMethod $method): bool =>
+                data_get($method->settings, 'import_source') === 'libermedia'
+                && in_array('HR', data_get($method->settings, 'destination_country_codes', []), true)
+            )->map(function (ShippingMethod $method): ShippingMethod {
+                $ranges = collect(data_get($method->settings, 'opencart_xshippingpro.ranges', []));
+                $paid = $ranges->first(fn ($range): bool => (float) ($range['cost'] ?? 0) > 0);
+                $free = $ranges->first(fn ($range): bool => (float) ($range['cost'] ?? 0) === 0);
+                if ($paid !== null) {
+                    $method->price = (float) $paid['cost'];
+                }
+                $method->free_over = $free !== null && $paid !== null ? (float) $paid['end'] : null;
+                return $method;
+            })->values();
+        }
+
         $countryNames = collect(CountryCatalog::all())->keyBy('code');
         $countryNameKey = str_starts_with($locale, 'hr') ? 'name_hr' : 'name_en';
         $displayNet = app(\App\Services\Pricing\B2BAccessService::class)->displaysNet(auth()->user());
