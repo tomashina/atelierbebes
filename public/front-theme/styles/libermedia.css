@@ -17,7 +17,7 @@ body.libermedia-storefront {
     --libermedia-footer: #1f4c39;
     --libermedia-footer-text: #dbe9df;
     --libermedia-footer-accent: #ffad83;
-    --libermedia-pattern: url("/assets/brand/libermedia-nursery-pattern.svg?v=children-1");
+    --libermedia-pattern: url("/assets/brand/libermedia-nursery-pattern.svg?v=children-2");
 
     --storefront-bg: var(--libermedia-surface);
     --storefront-surface: var(--libermedia-surface);
@@ -511,7 +511,7 @@ html[data-theme=dark] body.libermedia-storefront {
     --libermedia-line: #3b493e;
     --libermedia-line-strong: #768675;
     --libermedia-footer: #14291e;
-    --libermedia-pattern: url("/assets/brand/libermedia-nursery-pattern-dark.svg?v=children-1");
+    --libermedia-pattern: url("/assets/brand/libermedia-nursery-pattern-dark.svg?v=children-2");
     --storefront-bg: #111713;
     --storefront-surface: var(--libermedia-surface);
     --storefront-surface-raised: var(--libermedia-surface-raised);
@@ -593,7 +593,7 @@ body.libermedia-storefront .herrera-brand-strip::before,
 body.libermedia-storefront .herrera-home-registration::before,
 body.libermedia-storefront .site-footer-newsletter::before {
     background-image: var(--libermedia-pattern);
-    background-size: clamp(1000px, 98vw, 1900px) auto;
+    background-size: clamp(1000px, 98vw, 1400px) auto;
     background-position: center -64px;
     background-repeat: no-repeat;
     background-attachment: fixed;
