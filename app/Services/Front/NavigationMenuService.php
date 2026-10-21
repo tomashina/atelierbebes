@@ -50,7 +50,7 @@ class NavigationMenuService
             }
         }
         $cacheKey = hash('sha256', serialize([
-            'subcategory-photography-v2', $isHerreraStore, $locale, $fallbackLocale, request()->getSchemeAndHttpHost(), config('app.url'), $revision, $items->all(),
+            'subcategory-photography-v3', $isHerreraStore, $locale, $fallbackLocale, request()->getSchemeAndHttpHost(), config('app.url'), $revision, $items->all(),
         ]));
 
         if (isset($this->resolvedCache[$cacheKey])) {
@@ -104,7 +104,7 @@ class NavigationMenuService
             ->get();
 
         $categoriesById = $categories->keyBy('id');
-        if ($isHerreraStore && $categories->isNotEmpty()
+        if ($isHerreraStore && ! \App\Support\StorefrontTheme::usesLibermediaBrand() && $categories->isNotEmpty()
             && $items->contains(fn ($item): bool => in_array($item['type'] ?? '', ['category', 'catalog'], true))) {
             // Fetch only populated category IDs once; propagate presence up the loaded tree.
             $populatedIds = Product::query()

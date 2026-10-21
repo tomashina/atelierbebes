@@ -432,7 +432,7 @@ class HerreraOpenCartImportService
             $this->translation('catalog_manufacturer_translations', 'manufacturer_id', $id, 'hr', $row['name'], 'manufacturer_id='.$row['manufacturer_id']);
         });
         $this->each('category', function (array $row): void {
-            $this->mapped('category', $row['category_id'], 'categories', ['scope' => 'catalog', 'code' => 'herrera-oc-category-'.$row['category_id'], 'is_active' => (bool) $row['status'], 'show_in_menu' => (bool) ($row['top'] ?? true), 'sort_order' => max(0, $row['sort_order']), 'payload' => $this->json(['opencart' => $row])], $row);
+            $this->mapped('category', $row['category_id'], 'categories', ['scope' => 'catalog', 'code' => 'herrera-oc-category-'.$row['category_id'], 'is_active' => (bool) $row['status'], 'show_in_menu' => (int) ($row['parent_id'] ?? 0) > 0 || (bool) ($row['top'] ?? true), 'sort_order' => max(0, $row['sort_order']), 'payload' => $this->json(['opencart' => $row])], $row);
         });
         $this->each('category', function (array $row): void {
             $id = $this->id('category', $row['category_id']);

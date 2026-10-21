@@ -50,7 +50,7 @@
             </summary>
             <ul class="desktop-mobile-menu-children">
                 <li>
-                    <a href="{{ $child['url'] ?? '#' }}" class="desktop-mobile-depth-{{ min(4, max(0, (int) $level + 1)) }} desktop-mobile-menu-row flex min-h-[52px] items-center py-3 font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900" data-mobile-nav-link @if($target) target="{{ $target }}" rel="{{ $rel }}" @endif>{{ __('View All') }}</a>
+                    <a href="{{ $child['url'] ?? '#' }}" class="desktop-mobile-depth-{{ min(4, max(0, (int) $level + 1)) }} desktop-mobile-menu-row flex min-h-[52px] items-center py-3 font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900" data-mobile-nav-link data-mobile-nav-view-all @if($target) target="{{ $target }}" rel="{{ $rel }}" @endif><span>{{ __('View All') }}</span><x-fa-icon name="arrow-right" class="h-4 w-4" /></a>
                 </li>
                 @foreach ($children as $nestedChild)
                     @include('front.desktop.partials.main-nav-mobile-child', ['child' => $nestedChild, 'level' => $level + 1])

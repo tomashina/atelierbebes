@@ -1026,7 +1026,7 @@ class CatalogController extends Controller
                 $manufacturerId
             );
             $childCategories = $childCategories
-                ->filter(fn (Category $child): bool => (int) $child->products_count > 0)
+                ->filter(fn (Category $child): bool => \App\Support\StorefrontTheme::usesLibermediaBrand() || (int) $child->products_count > 0)
                 ->values();
         }
 

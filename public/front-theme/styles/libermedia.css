@@ -1374,3 +1374,13 @@ body.libermedia-storefront .lm-footer-payment-logo img { display: block; width: 
         padding: 10px max(12px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
     }
 }
+
+body.libermedia-storefront [data-mobile-nav-view-all] {
+    justify-content: space-between;
+    gap: 16px;
+    color: var(--libermedia-green);
+}
+body.libermedia-storefront [data-mobile-nav-view-all] > span {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
