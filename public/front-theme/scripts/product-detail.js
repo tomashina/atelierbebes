@@ -653,6 +653,31 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
+        // Keep the selected variant's purchase action and availability request in sync.
+        const available = selected ? localStock > 0 : form.dataset.productDefaultPurchasable === '1';
+        form.dataset.productSelectionAvailable = available ? '1' : '0';
+        if (floatingCart) {
+            floatingCart.setAttribute('aria-label', available ? (form.querySelector('[data-product-purchase-submit]')?.getAttribute('aria-label') || 'Dodaj u košaricu') : 'Obavijesti me o dostupnosti');
+        }
+        const controls = [form, document.querySelector('[data-product-floating-cart]')].filter(Boolean);
+        controls.forEach(function (container) {
+            container.querySelectorAll('[data-product-purchase-submit], [data-product-floating-submit], [data-stock-notify-quantity]').forEach(function (node) {
+                node.hidden = !available;
+            });
+            container.querySelectorAll('[data-stock-notify-trigger]').forEach(function (trigger) {
+                trigger.hidden = available;
+                const optionId = selected ? String(selected.value || '') : '';
+                trigger.dataset.productOptionValueId = optionId;
+                const url = new URL(trigger.href, window.location.origin);
+                if (optionId) {
+                    url.searchParams.set('product_option_value_id', optionId);
+                } else {
+                    url.searchParams.delete('product_option_value_id');
+                }
+                trigger.href = url.toString();
+            });
+        });
+
         const input = form.querySelector('input[name="quantity"]');
         if (input) {
             input.max = String(Math.max(1, Math.min(99, localStock + supplierStock)));
@@ -859,6 +884,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
     forms.forEach(function (form) {
         initLinkedOptionSelectors(form);
+
+        // Availability e-mails link directly to the variant that has returned.
+        const initialOptionId = new URLSearchParams(window.location.search).get('product_option_value_id');
+        if (initialOptionId) {
+            const initialOption = Array.from(form.querySelectorAll('input[name="product_option_value_id"], select[name="product_option_value_id"] option')).find(function (node) {
+                return String(node.value) === initialOptionId && Number.parseInt(String(node.dataset.optionStock || '0'), 10) > 0;
+            });
+            if (initialOption && initialOption.tagName === 'INPUT' && !initialOption.disabled) {
+                initialOption.checked = true;
+            } else if (initialOption && initialOption.tagName === 'OPTION') {
+                const primary = form.querySelector('[data-linked-option-primary]');
+                const parentId = String(initialOption.dataset.parentId || '');
+                if (primary && parentId && Array.from(primary.options).some(function (option) { return option.value === parentId && !option.disabled; })) {
+                    primary.value = parentId;
+                    primary.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+                const select = initialOption.closest('select');
+                if (select && !select.disabled && !initialOption.disabled) select.value = initialOptionId;
+            }
+        }
+
         syncSkuDisplay(form);
         syncPriceDisplay(form);
         syncStockDisplay(form);
@@ -875,6 +921,10 @@ document.addEventListener('DOMContentLoaded', function () {
             event.preventDefault();
 
             const optionError = form.querySelector('[data-option-error]');
+            if (form.dataset.productSelectionAvailable === '0') {
+                form.querySelector('[data-stock-notify-trigger]')?.click();
+                return;
+            }
             if (hasOptions(form) && !optionSelected(form)) {
                 if (optionError) {
                     optionError.textContent = String(form.dataset.optionErrorRequired || optionError.textContent || '');

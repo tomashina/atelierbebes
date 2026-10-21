@@ -220,6 +220,64 @@
         }
     };
 
+    const bindStickyComments = function () {
+        if (!document.body.classList.contains('libermedia-storefront')) {
+            return;
+        }
+        const lower = document.querySelector('[data-product-detail-lower]');
+        const comments = lower?.querySelector('#product-comments');
+        if (!comments || !lower.querySelector('#product-description')) {
+            return;
+        }
+        const header = document.querySelector('.site-main-header');
+        let frameRequested = false;
+        const measure = function () {
+            frameRequested = false;
+            const headerStyle = header ? window.getComputedStyle(header).position : '';
+            const headerBottom = header && (headerStyle === 'fixed' || headerStyle === 'sticky')
+                ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
+            // Tall review columns remain readable with normal page scrolling, then pin at their bottom.
+            const top = Math.min(headerBottom + 16, window.innerHeight - comments.getBoundingClientRect().height - 24);
+            comments.style.setProperty('--product-comments-sticky-top', Math.round(top) + 'px');
+            lower.style.setProperty('--product-detail-scroll-offset', Math.ceil(headerBottom + 16) + 'px');
+        };
+        const schedule = function () {
+            if (!frameRequested) {
+                frameRequested = true;
+                window.requestAnimationFrame(measure);
+            }
+        };
+        window.addEventListener('resize', schedule, { passive: true });
+        if (typeof window.ResizeObserver === 'function') {
+            const observer = new window.ResizeObserver(schedule);
+            observer.observe(comments);
+            if (header) observer.observe(header);
+        }
+        if (header && typeof window.MutationObserver === 'function') {
+            new window.MutationObserver(schedule).observe(header, { attributes: true, attributeFilter: ['class'] });
+        }
+        const revealComments = function () {
+            measure();
+            const target = window.matchMedia('(min-width: 1100px)').matches ? lower : comments;
+            const offset = Number.parseFloat(lower.style.getPropertyValue('--product-detail-scroll-offset')) || 16;
+            window.scrollTo({ top: Math.max(0, window.scrollY + target.getBoundingClientRect().top - offset), behavior: 'auto' });
+        };
+        document.querySelectorAll('a[href$="#product-comments"]').forEach(function (link) {
+            if (new URL(link.href, window.location.href).pathname !== window.location.pathname) return;
+            link.addEventListener('click', function (event) {
+                if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                event.preventDefault();
+                window.history.pushState(null, '', '#product-comments');
+                window.requestAnimationFrame(revealComments);
+            });
+        });
+        if (window.location.hash === '#product-comments') {
+            if (document.readyState === 'complete') window.requestAnimationFrame(revealComments);
+            else window.addEventListener('load', function () { window.requestAnimationFrame(revealComments); }, { once: true });
+        }
+        schedule();
+    };
+
     const bindComments = function () {
         const toggle = document.querySelector('[data-comment-form-toggle]');
         const panel = document.querySelector('[data-comment-form-panel]');
@@ -361,6 +419,7 @@
     ready(function () {
         bindSwatches();
         bindDetailNavigation();
+        bindStickyComments();
         bindComments();
         bindSizeGuide();
         initProductCarousels();

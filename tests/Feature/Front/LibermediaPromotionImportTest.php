@@ -23,7 +23,7 @@ class LibermediaPromotionImportTest extends TestCase
         $group = CustomerGroup::query()->create(['code' => 'default', 'name' => 'Default', 'is_active' => true, 'payload' => ['opencart' => ['customer_group_id' => 1]]]);
         $other = CustomerGroup::query()->create(['code' => 'business', 'name' => 'Business', 'is_active' => true]);
         $product = Product::query()->create(['code' => 'test', 'sku' => 'test', 'base_price' => '10.0049', 'is_active' => true, 'stock_qty' => 5]);
-        $catalog = PriceCatalog::query()->create(['name' => 'Source', 'source_system' => 'herrera-opencart', 'source_snapshot' => 'libermedia', 'status' => 'draft', 'currency_code' => 'EUR', 'metadata' => ['import_complete' => true]]);
+        $catalog = PriceCatalog::query()->create(['name' => 'Source', 'source_system' => 'herrera-opencart', 'source_snapshot' => config('database.connections.libermedia_source.database'), 'status' => 'draft', 'currency_code' => 'EUR', 'metadata' => ['import_complete' => true]]);
         $catalog->entries()->create(['source_key' => 'product:42', 'product_id' => $product->id, 'kind' => 'base', 'price' => '10.0049', 'is_active' => true, 'payload' => ['opencart' => ['product_id' => 42]]]);
         $base = ['product_id' => $product->id, 'kind' => 'special', 'customer_group_id' => $group->id, 'minimum_quantity' => 1, 'is_active' => true, 'payload' => ['opencart' => ['product_id' => 42]]];
         $catalog->entries()->create($base + ['source_key' => 'product_special:1', 'price' => '6.0060', 'priority' => 0]);

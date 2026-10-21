@@ -10,12 +10,12 @@ class B2BAccessService
 {
     public function requiresApprovedAccount(): bool
     {
-        return (bool) config('commerce.b2b_only', true);
+        return ! config('commerce.b2c_only') && (bool) config('commerce.b2b_only', true);
     }
 
     public function b2cEnabled(): bool
     {
-        return (bool) app(\App\Services\Settings\SystemSettingsService::class)->get('store_pricing_b2c_enabled', false);
+        return config('commerce.b2c_only') || (bool) app(\App\Services\Settings\SystemSettingsService::class)->get('store_pricing_b2c_enabled', false);
     }
 
     public function allowsPrivateCustomers(): bool
@@ -32,7 +32,7 @@ class B2BAccessService
 
     public function approvedAccount(?User $user): ?B2BAccount
     {
-        if (! $user) {
+        if (config('commerce.b2c_only') || ! $user) {
             return null;
         }
 

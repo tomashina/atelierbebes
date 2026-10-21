@@ -7,7 +7,7 @@
     ];
     $attributes = $product->relationLoaded('attributes')
         ? $product->attributes->reject(
-            fn ($attribute): bool => $attribute->isMsanManaged(),
+            fn ($attribute): bool => $attribute->isMsanManaged() || (bool) data_get($attribute->payload, 'filter_only'),
         )
         : collect();
     $attributeOrder = collect($preferredAttributeOrder)

@@ -21,6 +21,9 @@ class EnsureAdminAbility
             return $next($request);
         }
 
+        if (config('commerce.b2c_only') && ($request->routeIs('admin.b2b-prices*') || $request->routeIs('admin.users.b2b*'))) {
+            abort(404);
+        }
         $user = $request->user();
         abort_unless($user, 401);
 

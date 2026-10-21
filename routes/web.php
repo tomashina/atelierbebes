@@ -22,6 +22,7 @@ use App\Http\Controllers\Front\NewsletterController;
 use App\Http\Controllers\Front\PageController;
 use App\Http\Controllers\Front\ProductController;
 use App\Http\Controllers\Front\ReturnRequestController;
+use App\Http\Controllers\Front\ReviewController;
 use App\Http\Controllers\Front\StorefrontController;
 use App\Http\Controllers\Front\StorefrontStylesController;
 use App\Http\Controllers\Front\WishlistController;
@@ -111,6 +112,7 @@ Route::middleware(['front.customer-impersonation', 'front.locale', 'front.device
         })->name('front.locale.switch');
 
         Route::get('/', [StorefrontController::class, 'home'])->name('home');
+        Route::get('iskustva-kupaca', [ReviewController::class, 'index'])->name('reviews.index');
 
         Route::get('search/autocomplete', [CatalogController::class, 'autocomplete'])->name('search.autocomplete');
         Route::get('shop', [CatalogController::class, 'index'])->name('shop.index');
@@ -123,6 +125,18 @@ Route::middleware(['front.customer-impersonation', 'front.locale', 'front.device
             ->middleware('throttle:60,1')->name('products.energy.document');
         Route::post('product/{slug}/comments', [ProductController::class, 'storeComment'])->name('products.comments.store');
         Route::post('product/fit-finder/preferences', [ProductController::class, 'storeFitFinderPreferences'])->name('products.fit_finder.preferences');
+
+        Route::get('bundle-artikli', [\App\Http\Controllers\Front\BundleController::class, 'index'])->name('bundles.index');
+        Route::post('bundle-artikli/{bundle}', [\App\Http\Controllers\Front\BundleController::class, 'store'])->middleware('throttle:30,1')->name('bundles.store');
+
+        Route::get('poklon-bon', [\App\Http\Controllers\Front\GiftVoucherController::class, 'create'])->name('gift-vouchers.create');
+        Route::post('poklon-bon', [\App\Http\Controllers\Front\GiftVoucherController::class, 'store'])->middleware('throttle:10,1')->name('gift-vouchers.store');
+        Route::get('poklon-bon/narudzba/{orderNumber}', [\App\Http\Controllers\Front\GiftVoucherController::class, 'purchaseStatus'])->middleware('signed')->name('gift-vouchers.purchase');
+
+        Route::get('obavijesti-o-dostupnosti', [\App\Http\Controllers\Front\StockNotificationController::class, 'create'])->name('stock-notifications.create');
+        Route::post('obavijesti-o-dostupnosti', [\App\Http\Controllers\Front\StockNotificationController::class, 'store'])->middleware('throttle:10,1')->name('stock-notifications.store');
+        Route::get('obavijesti-o-dostupnosti/odjava/{token}', [\App\Http\Controllers\Front\StockNotificationController::class, 'unsubscribe'])->where('token', '[a-zA-Z0-9]{64}')->name('stock-notifications.unsubscribe');
+        Route::post('obavijesti-o-dostupnosti/odjava/{token}', [\App\Http\Controllers\Front\StockNotificationController::class, 'cancel'])->where('token', '[a-zA-Z0-9]{64}')->middleware('throttle:20,1')->name('stock-notifications.cancel');
 
         Route::get('brendovi', [ManufacturerController::class, 'index'])->name('manufacturers.index');
         Route::redirect('brandovi', '/brendovi', 301);
@@ -168,6 +182,8 @@ Route::middleware(['front.customer-impersonation', 'front.locale', 'front.device
         Route::delete('cart/items/{product}', [CartController::class, 'destroy'])->name('cart.items.destroy');
         Route::post('cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon.apply');
         Route::delete('cart/coupon', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
+        Route::post('cart/gift-voucher', [CartController::class, 'applyGiftVoucher'])->middleware('throttle:10,1')->name('cart.gift-voucher.apply');
+        Route::delete('cart/gift-voucher', [CartController::class, 'removeGiftVoucher'])->name('cart.gift-voucher.remove');
         Route::delete('cart', [CartController::class, 'clear'])->name('cart.clear');
 
         Route::get('wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
@@ -293,7 +309,7 @@ Route::middleware(['front.customer-impersonation', 'front.locale', 'front.device
 Route::get('dashboard', function (Request $request) {
     $user = $request->user();
 
-    if ($user && $user->b2bAccount()->exists()) {
+    if (! config('commerce.b2c_only') && $user && $user->b2bAccount()->exists()) {
         return redirect()->route('account.dashboard');
     }
 
@@ -320,12 +336,15 @@ Route::middleware(['admin.locale', 'auth', 'verified', 'admin.access', 'admin.ma
         Route::get('categories/{category}/edit', function (Category $category) {
             return view('admin.categories.edit', compact('category'));
         })->name('categories.edit');
+        Route::view('bundles', 'admin.bundles')->name('bundles');
+        Route::view('stock-notifications', 'admin.stock-notifications')->name('stock-notifications');
         Route::view('products', 'admin.products')->name('products');
         Route::view('products/create', 'admin.products.create')->name('products.create');
         Route::get('products/{product}/edit', function (Product $product) {
             return view('admin.products.edit', compact('product'));
         })->name('products.edit');
         Route::view('orders', 'admin.orders.index')->name('orders');
+        Route::view('gift-vouchers', 'admin.gift-vouchers')->name('gift-vouchers');
         Route::get('customer-offers', [\App\Http\Controllers\Admin\CustomerOfferController::class, 'index'])->name('customer-offers.index');
         Route::get('customer-offers/create', [\App\Http\Controllers\Admin\CustomerOfferController::class, 'create'])->name('customer-offers.create');
         Route::get('customer-offers/customers', [\App\Http\Controllers\Admin\CustomerOfferController::class, 'customers'])->name('customer-offers.customers');

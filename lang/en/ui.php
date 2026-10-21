@@ -630,6 +630,7 @@ return [
             'form_title' => 'I have an account',
             'remember' => 'Remember me',
             'forgot_password' => 'Forgot your password?',
+            'admin_hint' => 'Sign in to manage the store.',
             'submit' => 'Sign in',
             'submitting' => 'Signing in...',
             'new_customer_eyebrow' => 'New customer',

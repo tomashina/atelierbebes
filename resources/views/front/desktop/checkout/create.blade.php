@@ -52,23 +52,27 @@
 
     @push('styles')
         <link rel="stylesheet" href="{{ asset('front-theme/styles/checkout.css') }}?v={{ filemtime(public_path('front-theme/styles/checkout.css')) }}">
+        <link rel="stylesheet" href="{{ asset('front-theme/styles/gift-vouchers.css') }}?v={{ filemtime(public_path('front-theme/styles/gift-vouchers.css')) }}">
+        <link rel="stylesheet" href="{{ asset('front-theme/styles/libermedia-checkout.css') }}?v={{ filemtime(public_path('front-theme/styles/libermedia-checkout.css')) }}">
     @endpush
 
     <div class="checkout-shell">
-    <section class="checkout-page-header">
+    <section class="checkout-page-header lm-page-title">
         <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">{{ __('ui.checkout.title') }}</h1>
         <p class="mt-2 text-slate-600">{{ __('ui.checkout.subtitle') }}</p>
     </section>
 
     @guest
         <section class="checkout-login-card">
+            <div class="checkout-section-header">
             <label class="inline-flex items-center gap-2 text-sm text-slate-700">
                 <input id="checkout-login-toggle" type="checkbox" class="h-4 w-4 border-slate-300 text-slate-900 focus:ring-0" data-checkout-login-toggle aria-controls="checkout-login-panel" aria-expanded="{{ $showLoginForm ? 'true' : 'false' }}" @checked($showLoginForm)>
                 {{ __('ui.checkout.login.toggle') }}
             </label>
+            </div>
 
             <div id="checkout-login-panel" class="overflow-hidden transition-all duration-300" data-checkout-login-panel aria-hidden="{{ $showLoginForm ? 'false' : 'true' }}" @if (! $showLoginForm) inert @endif style="{{ $showLoginForm ? '' : 'max-height:0;opacity:0;' }}">
-                <div class="mt-4 border-t border-slate-200 pt-4">
+                <div class="checkout-section-body mt-4 border-t border-slate-200 pt-4">
                     <h2 class="text-lg font-semibold text-slate-900">{{ __('ui.checkout.login.title') }}</h2>
                     <form method="POST" action="{{ route('checkout.login') }}" class="mt-3 grid gap-3 md:grid-cols-2" novalidate>
                         @csrf
@@ -113,8 +117,11 @@
 
         <div class="checkout-stack">
             <section class="checkout-card" data-address-scope="billing">
+                <header class="checkout-section-header">
                 <h2 class="text-xl font-bold text-slate-900">{{ __('ui.checkout.sections.customer') }} / {{ __('ui.checkout.sections.billing') }}</h2>
                 <p class="mt-1 text-sm text-slate-600">{{ __('ui.checkout.sections.basic_information') }}</p>
+                </header>
+                <div class="checkout-section-body">
 
                 <input type="hidden" name="customer_first_name" value="{{ old('customer_first_name', old('billing_first_name', $prefill['billing']['first_name'])) }}" data-customer-first-hidden>
                 <input type="hidden" name="customer_last_name" value="{{ old('customer_last_name', old('billing_last_name', $prefill['billing']['last_name'])) }}" data-customer-last-hidden>
@@ -215,17 +222,19 @@
                         </div>
                     </div>
                 @endguest
+                </div>
             </section>
 
             <section class="checkout-card" data-address-scope="shipping">
-                <div class="flex items-center justify-between gap-4">
+                <header class="checkout-section-header flex flex-wrap items-center justify-between gap-4">
                     <h2 class="text-xl font-bold text-slate-900">{{ __('ui.checkout.sections.shipping') }}</h2>
                     <label for="ship-to-different-address" class="inline-flex items-center gap-2 text-sm text-slate-700">
                         <input id="ship-to-different-address" type="checkbox" name="ship_to_different_address" value="1" @checked($showShippingAddress) class="h-4 w-4 border-slate-300 text-slate-900 focus:ring-0" data-ship-to-different aria-controls="shipping-address-fields" aria-expanded="{{ $showShippingAddress ? 'true' : 'false' }}">
                         {{ __('ui.checkout.options.ship_to_different_address') }}
                     </label>
-                </div>
+                </header>
 
+                <div class="checkout-section-body checkout-section-body--shipping-address">
                 <input type="hidden" name="use_billing_for_shipping" value="{{ $showShippingAddress ? '0' : '1' }}" data-use-billing-for-shipping>
 
                 <div id="shipping-address-fields" class="overflow-hidden transition-all duration-300" data-shipping-fields aria-hidden="{{ $showShippingAddress ? 'false' : 'true' }}" @if (! $showShippingAddress) inert @endif style="{{ $showShippingAddress ? '' : 'max-height:0;opacity:0;' }}">
@@ -246,14 +255,17 @@
                         </div>
                     </div>
                 </div>
+                </div>
             </section>
 
-            <section class="checkout-card">
-                <h2 class="text-xl font-bold text-slate-900">{{ __('ui.checkout.sections.shipping_payment') }}</h2>
+            <section class="checkout-card checkout-card--shipping-method">
+                <header class="checkout-section-header">
+                    <h2 class="text-xl font-bold text-slate-900">{{ __('ui.checkout.labels.shipping_method') }}</h2>
+                </header>
 
-                <div class="mt-4 space-y-5">
+                <div class="checkout-section-body">
                     <fieldset>
-                        <legend class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{{ __('ui.checkout.labels.shipping_method') }} <x-front.required-mark /></legend>
+                        <legend class="sr-only">{{ __('ui.checkout.labels.shipping_method') }} <x-front.required-mark /></legend>
                         <div class="grid gap-2" data-checkout-shipping-options>
                             @foreach ($shippingMethods as $method)
                                 <label class="checkout-option-card flex cursor-pointer items-start justify-between gap-3 px-3 py-2.5 text-sm">
@@ -338,9 +350,16 @@
                             @enderror
                         </div>
                     </fieldset>
+                </div>
+            </section>
 
+            <section class="checkout-card checkout-card--payment-method">
+                <header class="checkout-section-header">
+                    <h2 class="text-xl font-bold text-slate-900">{{ __('ui.checkout.labels.payment_method') }}</h2>
+                </header>
+                <div class="checkout-section-body">
                     <fieldset>
-                        <legend class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{{ __('ui.checkout.labels.payment_method') }} <x-front.required-mark /></legend>
+                        <legend class="sr-only">{{ __('ui.checkout.labels.payment_method') }} <x-front.required-mark /></legend>
                         <div class="grid gap-2" data-checkout-payment-options>
                             @foreach ($paymentMethods as $method)
                                 <label class="checkout-option-card flex cursor-pointer items-start justify-between gap-3 px-3 py-2.5 text-sm">
@@ -356,7 +375,7 @@
                                                 <span class="font-semibold text-slate-900">{{ $method->name }}</span>
                                             @endif
                                             @if (trim((string) $method->description) !== '')
-                                                <span class="mt-1 block whitespace-pre-line text-xs leading-relaxed text-slate-600">{{ trim((string) $method->description) }}</span>
+                                                <span class="checkout-payment-description mt-1 block whitespace-pre-line text-xs leading-relaxed text-slate-600">{{ trim((string) $method->description) }}</span>
                                             @endif
                                         </span>
                                     </span>
@@ -364,7 +383,6 @@
                             @endforeach
                         </div>
                     </fieldset>
-                </div>
 
                 <div class="mt-4">
                     <label for="customer-note" class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">{{ __('ui.checkout.fields.order_note') }}</label>
@@ -402,14 +420,16 @@
                 @error('accept_terms')
                     <p id="accept-terms-error" class="mt-2 text-xs font-semibold text-rose-600">{{ $message }}</p>
                 @enderror
+                </div>
             </section>
         </div>
 
         <aside class="checkout-summary h-fit self-start">
-            <div class="checkout-summary-heading">
+            <div class="checkout-summary-heading checkout-section-header">
                 <h2 class="text-lg font-semibold text-slate-900">{{ __('ui.checkout.summary_title') }}</h2>
                 <span class="checkout-summary-line-count">{{ __('ui.checkout.labels.lines') }}: {{ $summary['line_count'] }}</span>
             </div>
+            <div class="checkout-section-body">
             @include('front.partials.b2b-tax-note', ['taxNoteLabel' => __('ui.b2b.pricing.items_excludes_tax')])
 
             <div class="checkout-summary-items mt-4 space-y-3" role="region" tabindex="0" aria-label="{{ __('ui.cart.preview.items_label') }}" @if ($summary['line_count'] > 3) aria-describedby="checkout-summary-scroll-hint" @endif>
@@ -468,14 +488,12 @@
                 </div>
                 <div class="mt-2 flex items-center justify-between">
                     <span class="text-slate-600">{{ (app(\App\Services\Pricing\B2BAccessService::class)->displaysNet(auth()->user())) ? __('ui.b2b.pricing.net_subtotal') : __('ui.checkout.labels.subtotal') }}</span>
-                    <span class="font-semibold text-slate-900">{{ \App\Support\Currency::format((float) $summary['subtotal']) }}</span>
+                    <span class="font-semibold text-slate-900" data-summary-subtotal>{{ \App\Support\Currency::format((float) $summary['subtotal']) }}</span>
                 </div>
-                @if ((float) ($summary['discount_total'] ?? 0) > 0)
-                    <div class="mt-2 flex items-center justify-between">
+                    <div class="mt-2 flex items-center justify-between {{ (float) ($summary['discount_total'] ?? 0) <= 0 ? 'hidden' : '' }}" data-summary-discount-row>
                         <span class="text-slate-600">{{ __('ui.checkout.labels.discount') }}</span>
-                        <span class="font-semibold text-emerald-700">-{{ \App\Support\Currency::format((float) $summary['discount_total']) }}</span>
+                        <span class="font-semibold text-emerald-700" data-summary-discount>-{{ \App\Support\Currency::format((float) ($summary['discount_total'] ?? 0)) }}</span>
                     </div>
-                @endif
                 <div class="mt-2 flex items-center justify-between">
                     <span class="text-slate-600">{{ __('ui.checkout.labels.tax') }}</span>
                     <span class="font-semibold text-slate-900" data-summary-tax>{{ \App\Support\Currency::format((float) ($checkoutTotals['tax_total'] ?? $summary['tax_total'] ?? 0)) }}</span>
@@ -488,15 +506,25 @@
                     <span class="text-slate-600">{{ __('ui.checkout.labels.payment_fee') }}</span>
                     <span class="font-semibold text-slate-900" data-summary-payment-fee>{{ \App\Support\Currency::format((float) ($checkoutTotals['payment_fee_total'] ?? 0)) }}</span>
                 </div>
+                <div class="mt-2 flex items-center justify-between {{ (float) ($checkoutTotals['gift_voucher_total'] ?? 0) <= 0 ? 'hidden' : '' }}" data-summary-gift-voucher-row>
+                    <span class="text-emerald-800">Poklon bon</span>
+                    <span class="font-semibold text-emerald-700" data-summary-gift-voucher>−{{ \App\Support\Currency::format((float) ($checkoutTotals['gift_voucher_total'] ?? 0)) }}</span>
+                </div>
                 <div class="mt-2 flex items-center justify-between border-t border-slate-200 pt-2">
                     <span class="text-slate-900">{{ __('ui.checkout.labels.total') }}</span>
                     <span class="font-bold text-slate-900" data-summary-total>{{ \App\Support\Currency::format((float) ($checkoutTotals['grand_total'] ?? $summary['grand_total'] ?? 0)) }}</span>
                 </div>
             </div>
 
-            <button type="submit" class="checkout-primary-button mt-5 w-full px-4 py-3">{{ __('ui.checkout.actions.place_order') }}</button>
+            <div class="checkout-discounts">
+                @include('front.partials.gift-voucher-redemption', ['giftVoucherContext' => 'checkout'])
+                @include('front.partials.checkout-coupon')
+            </div>
+            <button type="submit" data-checkout-place-order class="checkout-primary-button mt-5 w-full px-4 py-3">{{ __('ui.checkout.actions.place_order') }}</button>
+            </div>
         </aside>
     </form>
+    @include('front.partials.checkout-discount-forms')
 
     <div id="boxnow-widget-root"></div>
     <gls-dpm-dialog id="gls-dpm-dialog" country="hr" language="hr"></gls-dpm-dialog>
@@ -504,6 +532,8 @@
 @endsection
 
 @push('scripts')
+    <script defer src="{{ asset('front-theme/scripts/gift-vouchers.js') }}?v={{ filemtime(public_path('front-theme/scripts/gift-vouchers.js')) }}"></script>
+    <script defer src="{{ asset('front-theme/scripts/checkout-discounts.js') }}?v={{ filemtime(public_path('front-theme/scripts/checkout-discounts.js')) }}"></script>
     <script defer src="{{ asset('front-theme/scripts/address-autofill.js') }}?v={{ filemtime(public_path('front-theme/scripts/address-autofill.js')) }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -556,6 +586,11 @@
             const summaryTotal = checkoutForm?.querySelector('[data-summary-total]');
             const summaryShippingRow = checkoutForm?.querySelector('[data-summary-shipping-row]');
             const summaryPaymentFeeRow = checkoutForm?.querySelector('[data-summary-payment-fee-row]');
+            const summaryGiftVoucher = checkoutForm?.querySelector('[data-summary-gift-voucher]');
+            const summaryGiftVoucherRow = checkoutForm?.querySelector('[data-summary-gift-voucher-row]');
+            const summarySubtotal = checkoutForm?.querySelector('[data-summary-subtotal]');
+            const summaryDiscount = checkoutForm?.querySelector('[data-summary-discount]');
+            const summaryDiscountRow = checkoutForm?.querySelector('[data-summary-discount-row]');
 
             let optionsAbortController = null;
             let optionsRefreshTimer = null;
@@ -662,7 +697,7 @@
                         : '<span class="font-semibold text-slate-900">' + escapeHtml(method.name) + '</span>';
                     const description = String(method.description || '').trim();
                     const descriptionHtml = description
-                        ? '<span class="mt-1 block whitespace-pre-line text-xs leading-relaxed text-slate-600">' + escapeHtml(description) + '</span>'
+                        ? '<span class="checkout-payment-description mt-1 block whitespace-pre-line text-xs leading-relaxed text-slate-600">' + escapeHtml(description) + '</span>'
                         : '';
                     return '<label class="checkout-option-card flex cursor-pointer items-start justify-between gap-3 px-3 py-2.5 text-sm">'
                         + '<span class="inline-flex min-w-0 items-start gap-2">'
@@ -677,6 +712,9 @@
                 if (!totals || typeof totals !== 'object') {
                     return;
                 }
+                if (summarySubtotal && totals.subtotal_formatted) summarySubtotal.textContent = String(totals.subtotal_formatted);
+                if (summaryDiscount && totals.discount_total_formatted) summaryDiscount.textContent = '−' + String(totals.discount_total_formatted);
+                summaryDiscountRow?.classList.toggle('hidden', Number(totals.discount_total || 0) <= 0);
 
                 if (summaryTax && totals.tax_total_formatted) {
                     summaryTax.textContent = String(totals.tax_total_formatted);
@@ -690,6 +728,13 @@
                 if (summaryTotal && totals.grand_total_formatted) {
                     summaryTotal.textContent = String(totals.grand_total_formatted);
                 }
+                if (summaryGiftVoucher && totals.gift_voucher_total_formatted) {
+                    summaryGiftVoucher.textContent = '−' + String(totals.gift_voucher_total_formatted);
+                }
+                if (checkoutForm && totals.grand_total !== undefined) {
+                    checkoutForm.dataset.ga4Value = String(totals.grand_total);
+                }
+                summaryGiftVoucherRow?.classList.toggle('hidden', Number(totals.gift_voucher_total || 0) <= 0);
 
                 const paymentFeeTotal = Number(totals.payment_fee_total || 0);
                 summaryShippingRow?.classList.remove('hidden');
@@ -909,6 +954,8 @@
                     refreshCheckoutOptions();
                 }, 200);
             };
+            window.addEventListener('gift-voucher:updated', refreshCheckoutOptions);
+            window.addEventListener('checkout-discount:updated', refreshCheckoutOptions);
 
             const setLoginState = function () {
                 if (!loginToggle || !loginPanel) {
@@ -1123,7 +1170,7 @@
                 clearInlineErrors();
                 hideTopError();
 
-                const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+                const submitBtn = checkoutForm.querySelector('[data-checkout-place-order]');
                 if (submitBtn) {
                     submitBtn.disabled = true;
                 }

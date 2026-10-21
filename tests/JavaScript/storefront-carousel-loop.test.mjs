@@ -29,6 +29,7 @@ test('small related collections retain configured card columns at every viewport
     };
     let options;
     const document = {
+        body: { classList: { contains: () => false } },
         readyState: 'complete',
         querySelector: () => null,
         querySelectorAll: (selector) => selector === '[data-related-products-splide]' ? [element] : [],
@@ -64,6 +65,7 @@ for (const path of [
         };
         let extensions;
         const document = {
+            body: { classList: { contains: () => false } },
             readyState: 'complete',
             querySelector: () => null,
             querySelectorAll: (selector) => ['[data-related-products-splide]', '[data-herrera-home-carousel]'].includes(selector) ? [element] : [],

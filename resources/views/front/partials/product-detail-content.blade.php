@@ -4,9 +4,12 @@
         || $errors->has('body')
         || $errors->has('rating');
     $commentUser = auth()->user();
+    $ratedReviewCount = array_sum($reviewDistribution ?? []);
+    $ratedReviewAverage = $ratedReviewCount ? collect($reviewDistribution)->map(fn ($count, $rating) => $count * $rating)->sum() / $ratedReviewCount : 0;
+
     $hasAttributeSpecifications = $product->relationLoaded('attributes')
         && $product->attributes->contains(
-            fn ($attribute): bool => ! $attribute->isMsanManaged(),
+            fn ($attribute): bool => ! $attribute->isMsanManaged() && ! (bool) data_get($attribute->payload, 'filter_only'),
         );
     $technicalSpecificationRows = app(\App\Support\ProductSpecificationPresenter::class)
         ->remainingRows($product, $locale, $fallbackLocale);
@@ -124,6 +127,28 @@
         </header>
 
         <div class="product-detail-section-body">
+            <div class="product-rating-overview" aria-label="Prosječna ocjena kupaca">
+                @if ($ratedReviewCount > 0)
+                    <div class="product-rating-score">
+                        <strong>{{ number_format($ratedReviewAverage, 1, ',', '') }}<span> / 5</span></strong>
+                        @include('front.partials.product-review-summary', ['count' => $ratedReviewCount, 'average' => $ratedReviewAverage])
+                        <p>Prosječna ocjena kupaca</p>
+                    </div>
+                    <div class="product-rating-distribution" aria-label="Raspodjela ocjena">
+                        @for ($rating = 5; $rating >= 1; $rating--)
+                            @php($ratingCount = (int) ($reviewDistribution[$rating] ?? 0))
+                            <div class="product-rating-bar-row" aria-label="{{ $rating }} zvjezdica: {{ $ratingCount }} ocjena">
+                                <span>{{ $rating }} <span aria-hidden="true">★</span></span>
+                                <span class="product-rating-track"><span style="width: {{ round($ratingCount / $ratedReviewCount * 100) }}%"></span></span>
+                                <span>{{ $ratingCount }}</span>
+                            </div>
+                        @endfor
+                    </div>
+                @else
+                    <div class="product-rating-empty-stars" aria-hidden="true">☆☆☆☆☆</div>
+                    <p>Još nema ocjena. Podijelite svoje iskustvo.</p>
+                @endif
+            </div>
             <div class="{{ $commentFormHasErrors ? '' : 'hidden' }} product-detail-comment-form" data-comment-form-panel>
                 <form method="POST" action="{{ route('products.comments.store', ['slug' => $translation?->slug ?? request()->route('slug')]) }}">
                     @csrf
@@ -170,9 +195,12 @@
                             <div class="product-detail-comment-meta">
                                 <p>{{ $comment->author_name ?: ($comment->user?->name ?? __('ui.product.comments_anonymous')) }}</p>
                                 @if ((int) ($comment->rating ?? 0) > 0)
-                                    <p aria-label="{{ (int) $comment->rating }} / 5">{{ str_repeat('★', (int) $comment->rating) }}</p>
+                                    <span class="product-comment-stars" role="img" aria-label="Ocjena {{ (int) $comment->rating }} od 5">
+                                        @for ($star = 1; $star <= 5; $star++)<span class="{{ $star <= $comment->rating ? 'is-filled' : '' }}" aria-hidden="true">★</span>@endfor
+                                    </span>
                                 @endif
                             </div>
+                            @if ($comment->created_at)<time class="product-comment-date" datetime="{{ $comment->created_at->toDateString() }}">{{ $comment->created_at->format('d.m.Y.') }}</time>@endif
                             <p class="product-detail-comment-body">{{ $comment->body }}</p>
                         </article>
                     @endforeach

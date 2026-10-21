@@ -36,7 +36,8 @@
     $items[] = ['key' => 'statistics', 'label' => __('Moja statistika kupnje'), 'url' => route('account.statistics'), 'active' => $current === 'statistics'];
 
     $accountUser = auth()->user();
-    $accountUser?->loadMissing('b2bAccount');
+    if (! config('commerce.b2c_only')) $accountUser?->loadMissing('b2bAccount');
+    else $accountUser?->setRelation('b2bAccount', null);
     $b2bAccess = app(\App\Services\Pricing\B2BAccessService::class);
     $libermediaStorefront = \App\Support\StorefrontTheme::usesLibermediaBrand();
     $b2bNavigationAvailable = ! $libermediaStorefront

@@ -65,6 +65,12 @@
 .herrera-blog-card-copy :is(h2, h3) { margin: 0; color: #283236; font-size: 20px; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
 .herrera-blog-card-copy p { margin: 8px 0 0; color: #57666d; font-size: 14px; line-height: 1.6; }
 
+body.libermedia-storefront .herrera-blog-card-image { border-radius: 12px; }
+body.libermedia-storefront .herrera-blog-card-read { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; color: var(--libermedia-green, #245d45); font-size: 14px; font-weight: 700; line-height: 1.5; }
+body.libermedia-storefront .herrera-blog-card-read svg { width: 14px; height: 14px; fill: currentColor; }
+body.libermedia-storefront .herrera-blog-card > a:hover :is(h2, h3, .herrera-blog-card-read) { color: var(--libermedia-action-hover, #e04a00); }
+body.libermedia-storefront .herrera-blog-card > a:focus-visible { outline: 2px solid var(--libermedia-action-hover, #e04a00); outline-offset: 6px; border-radius: 8px; }
+
 @media (max-width: 1023px) {
     .herrera-storefront .herrera-home-blog-carousel .splide__slide { width: calc((100% - (var(--blog-tablet-columns, 2) - 1) * 20px) / var(--blog-tablet-columns, 2)); }
 }

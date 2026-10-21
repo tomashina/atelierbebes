@@ -6,10 +6,14 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('front-theme/styles/commerce-pages.css') }}?v={{ filemtime(public_path('front-theme/styles/commerce-pages.css')) }}">
+    <link rel="stylesheet" href="{{ asset('front-theme/styles/gift-vouchers.css') }}?v={{ filemtime(public_path('front-theme/styles/gift-vouchers.css')) }}">
+    @if ($isLibermediaB2cCart ?? false)
+        <link rel="stylesheet" href="{{ asset('front-theme/styles/libermedia-cart-recommendations.css') }}?v={{ filemtime(public_path('front-theme/styles/libermedia-cart-recommendations.css')) }}">
+    @endif
 @endpush
 
 @section('content')
-    <section class="commerce-hero">
+    <section class="commerce-hero lm-page-title">
         <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">{{ __('ui.cart.title') }}</h1>
         <p class="mt-2 text-slate-600">{{ __('ui.cart.subtitle') }}</p>
         @include('front.partials.b2b-tax-note', ['taxNoteLabel' => __('ui.b2b.pricing.items_excludes_tax')])
@@ -73,9 +77,13 @@
                                     @if (!empty($line['option_label']))
                                         <p class="mt-1 text-xs text-slate-500">{{ $line['option_label'] }}</p>
                                     @endif
-                                    @isset($staffStockByLine[$line['key']])
-                                        @include('front.partials.cart-staff-stock', ['staffStock' => $staffStockByLine[$line['key']]])
-                                    @endisset
+                                    @if ($isLibermediaB2cCart ?? false)
+                                        <p class="cart-b2c-availability">Dostupno</p>
+                                    @else
+                                        @isset($staffStockByLine[$line['key']])
+                                            @include('front.partials.cart-staff-stock', ['staffStock' => $staffStockByLine[$line['key']]])
+                                        @endisset
+                                    @endif
                                 </div>
                             </div>
 
@@ -208,9 +216,13 @@
                                         @if (!empty($line['option_label']))
                                             <p class="mt-1 text-xs text-slate-500">{{ $line['option_label'] }}</p>
                                         @endif
-                                        @isset($staffStockByLine[$line['key']])
-                                            @include('front.partials.cart-staff-stock', ['staffStock' => $staffStockByLine[$line['key']]])
-                                        @endisset
+                                        @if ($isLibermediaB2cCart ?? false)
+                                            <p class="cart-b2c-availability">Dostupno</p>
+                                        @else
+                                            @isset($staffStockByLine[$line['key']])
+                                                @include('front.partials.cart-staff-stock', ['staffStock' => $staffStockByLine[$line['key']]])
+                                            @endisset
+                                        @endif
                                     </div>
                                 </div>
                             </td>
@@ -308,9 +320,13 @@
                         </dt>
                         <dd class="font-semibold text-slate-900">{{ number_format((float) ($summary['tax_total'] ?? 0), 2) }} €</dd>
                     </div>
+                    <div class="mt-2 flex items-center justify-between" data-cart-gift-voucher-row @if((float) ($giftVoucherQuote['amount'] ?? 0) <= 0) hidden @endif>
+                        <dt class="text-emerald-800">Poklon bon</dt>
+                        <dd class="font-semibold text-emerald-700" data-cart-gift-voucher-total>−{{ \App\Support\Currency::format((float) ($giftVoucherQuote['amount'] ?? 0)) }}</dd>
+                    </div>
                     <div class="mt-2 flex items-center justify-between border-t border-slate-200 pt-2">
                         <dt class="text-slate-900">{{ __('ui.cart.summary.total') }}</dt>
-                        <dd class="font-bold text-slate-900">{{ number_format((float) ($summary['grand_total'] ?? 0), 2) }} €</dd>
+                        <dd class="font-bold text-slate-900" data-cart-after-gift-total>{{ \App\Support\Currency::format((float) ($giftVoucherQuote['remaining_total'] ?? $summary['grand_total'] ?? 0)) }}</dd>
                     </div>
                 </dl>
 
@@ -368,13 +384,16 @@
                     </div>
                 @endif
 
-                <a href="{{ route('checkout.create') }}" class="commerce-primary-action {{ ($storeSettings['cart']['coupon_enabled'] ?? false) ? 'mt-0' : 'mt-4' }} px-4 py-3 text-center">{{ __('ui.cart.actions.checkout') }}</a>
+                @include('front.partials.gift-voucher-redemption', ['giftVoucherContext' => 'cart'])
+                <a href="{{ route('checkout.create') }}" class="commerce-primary-action mt-4 px-4 py-3 text-center">{{ __('ui.cart.actions.checkout') }}</a>
             </aside>
         </div>
+        @include('front.partials.cart-recommendations')
     @endif
 @endsection
 
 @push('scripts')
+    <script defer src="{{ asset('front-theme/scripts/gift-vouchers.js') }}?v={{ filemtime(public_path('front-theme/scripts/gift-vouchers.js')) }}"></script>
     @if ($storeSettings['cart']['coupon_enabled'] ?? false)
         <script defer src="{{ asset('front-theme/scripts/cart-coupon-toggle.js') }}?v={{ filemtime(public_path('front-theme/scripts/cart-coupon-toggle.js')) }}"></script>
     @endif

@@ -9,7 +9,7 @@
 @endpush
 
 @section('content')
-    <section class="commerce-hero">
+    <section class="commerce-hero lm-page-title">
         <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">{{ __('ui.auth.reset.heading') }}</h1>
         <p class="mt-2 text-slate-600">{{ __('ui.auth.reset.subheading') }}</p>
     </section>

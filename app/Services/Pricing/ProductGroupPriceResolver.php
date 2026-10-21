@@ -19,7 +19,7 @@ class ProductGroupPriceResolver
         ?ProductPackage $package = null,
         ?float $fallback = null,
     ): ?ResolvedB2BPrice {
-        if (! $user) {
+        if (config('commerce.b2c_only') || ! $user) {
             return null;
         }
 

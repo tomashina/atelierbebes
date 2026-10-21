@@ -29,6 +29,16 @@ class CategoryTranslation extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function getShortDescriptionAttribute(): string
+    {
+        $payload = $this->payload ?? [];
+
+        // Keep the imported text intact; an explicit empty edit hides the introduction.
+        return array_key_exists('short_description', $payload)
+            ? (string) $payload['short_description']
+            : (string) data_get($payload, 'opencart.short_description', '');
+    }
+
     public function getCleanDescriptionAttribute(): string
     {
         $description = trim((string) ($this->description ?? ''));

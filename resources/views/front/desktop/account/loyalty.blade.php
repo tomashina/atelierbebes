@@ -9,7 +9,7 @@
 @endpush
 
 @section('content')
-    <section class="front-soft-hero mb-8 px-4 py-6 text-center sm:px-6">
+    <section class="front-soft-hero lm-page-title mb-8 px-4 py-6 text-center sm:px-6">
         <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">{{ __('ui.account.loyalty.title') }}</h1>
         <p class="mt-2 text-slate-600">{{ __('ui.account.loyalty.subtitle') }}</p>
     </section>

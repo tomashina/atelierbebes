@@ -208,6 +208,9 @@ class CatalogAction extends Model
                         ->where('user_id', $user->id);
                 });
 
+                if (config('commerce.b2c_only')) {
+                    return;
+                }
                 $access = app(B2BAccessService::class);
                 $account = $access->requiresApprovedAccount() ? $access->approvedAccount($user) : null;
                 if ($access->requiresApprovedAccount()) {

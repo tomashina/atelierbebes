@@ -15,6 +15,7 @@ use App\Models\Settings\Local\PaymentMethod;
 use App\Models\Settings\Local\ShippingMethod;
 use App\Models\Settings\Local\TaxRate;
 use App\Models\User;
+use App\Services\GiftVoucherService;
 use App\Services\Payments\CorvusPayFormService;
 use App\Services\Payments\WSPayFormService;
 use App\Services\Pricing\B2BAccessService;
@@ -52,6 +53,17 @@ class CheckoutService
         ?string $postalCode = null,
         ?ShippingMethod $shippingMethod = null,
     ): Collection {
+        $giftVouchers = app(GiftVoucherService::class);
+        if ($shippingMethod && $giftVouchers->currentCode() !== '') {
+            $summary = $this->cart->summary();
+            $shipping = $this->resolveShippingTotal($shippingMethod, $subtotal);
+            $gross = round($subtotal + (float) ($summary['raw_tax_total'] ?? $summary['tax_total'] ?? 0)
+                + $shipping + $this->resolveShippingTaxTotal($shippingMethod, $shipping), 2);
+            $quote = $giftVouchers->quote($gross);
+            if ($quote['amount'] > 0 && $quote['remaining_total'] <= 0) {
+                return collect([$giftVouchers->internalPaymentMethod()]);
+            }
+        }
         $zoneIds = $this->resolveGeoZoneIdsForAddress($countryCode, $regionCode, $postalCode);
         $corvusPay = app(CorvusPayFormService::class);
         $wspay = app(WSPayFormService::class);
@@ -101,6 +113,16 @@ class CheckoutService
                 $destination->scope,
                 $countryCode,
             ))
+            ->filter(function (ShippingMethod $method) use ($postalCode): bool {
+                $legacy = data_get($method->settings, 'opencart_xshippingpro');
+                if (! is_array($legacy) || ($legacy['postal_all'] ?? '0') === '1' || trim($legacy['postal'] ?? '') === '') {
+                    return true;
+                }
+                $codes = preg_split('/[\s,]+/', trim(str_replace(['\\r', '\\n'], [' ', ' '], $legacy['postal'])), -1, PREG_SPLIT_NO_EMPTY);
+                $matches = in_array(trim((string) $postalCode), $codes, true);
+
+                return ($legacy['postal_rule'] ?? 'inclusive') === 'exclusive' ? ! $matches : $matches;
+            })
             ->filter(fn (ShippingMethod $method) => $this->subtotalFits($this->shippingSubtotal($method, $subtotal, $beforeDiscountSubtotal), $method->min_subtotal, $method->max_subtotal))
             ->filter(function (ShippingMethod $method) use ($lines, $subtotal, $beforeDiscountSubtotal): bool {
                 $quote = $this->shippingCalculator->quote($method, $lines, $this->shippingSubtotal($method, $subtotal, $beforeDiscountSubtotal));
@@ -178,14 +200,17 @@ class CheckoutService
         $billingPostalCode = (string) ($payload['billing_postal_code'] ?? '');
 
         /** @var PaymentMethod|null $paymentMethod */
-        $paymentMethod = $this->availablePaymentMethods(
+        $paymentMethods = $this->availablePaymentMethods(
             $subtotalAfterDiscount,
             $billingCountryCode,
             $billingRegionCode,
             $billingPostalCode,
             $shippingMethod,
-        )
-            ->firstWhere('code', (string) ($payload['payment_method_code'] ?? ''));
+        );
+        $paymentMethod = $paymentMethods->firstWhere('code', (string) ($payload['payment_method_code'] ?? ''));
+        if (! $paymentMethod && $paymentMethods->count() === 1 && $paymentMethods->first()?->code === GiftVoucherService::PAYMENT_CODE) {
+            $paymentMethod = $paymentMethods->first();
+        }
 
         if (! $shippingMethod) {
             throw ValidationException::withMessages([
@@ -221,7 +246,18 @@ class CheckoutService
         $shippingTaxTotal = $this->resolveShippingTaxTotal($shippingMethod, $shippingTotal, $user);
         $taxTotal = round($taxTotal + $shippingTaxTotal, $precision);
         $paymentFeeTotal = $this->resolvePaymentFeeTotal($paymentMethod, $subtotalAfterDiscount);
-        $grandTotal = round($subtotalAfterDiscount + $shippingTotal + $paymentFeeTotal + $taxTotal, 2);
+        $originalTotal = round($subtotalAfterDiscount + $shippingTotal + $paymentFeeTotal + $taxTotal, 2);
+        $giftVouchers = app(GiftVoucherService::class);
+        $giftVoucherCode = $giftVouchers->normalizeCode($payload['gift_voucher_code'] ?? $giftVouchers->currentCode());
+        $giftVoucherQuote = $giftVouchers->quote($originalTotal, $giftVoucherCode);
+        if ($giftVoucherCode !== '' && ! $giftVoucherQuote['voucher']) {
+            throw ValidationException::withMessages(['gift_voucher_code' => 'Poklon bon više nije dostupan. Provjerite kod i raspoloživi iznos.']);
+        }
+        $giftVoucherTotal = $giftVoucherQuote['amount'];
+        $grandTotal = $giftVoucherQuote['remaining_total'];
+        if ($paymentMethod->code === GiftVoucherService::PAYMENT_CODE && ($giftVoucherTotal <= 0 || $grandTotal > 0)) {
+            throw ValidationException::withMessages(['payment_method_code' => 'Poklon bon ne pokriva cijeli iznos narudžbe.']);
+        }
 
         /** @var Currency|null $currency */
         $currency = Currency::query()
@@ -251,6 +287,10 @@ class CheckoutService
             $paymentMethod,
             $paymentFeeTotal,
             $grandTotal,
+            $originalTotal,
+            $giftVoucherCode,
+            $giftVoucherTotal,
+            $giftVouchers,
             $currency,
             $status,
             $locale,
@@ -333,6 +373,8 @@ class CheckoutService
                     'placed_from' => 'frontend_checkout',
                     'coupon_code' => (string) ($summary['coupon_code'] ?? ''),
                     'monetary_precision' => $precision,
+                    'gift_voucher_total' => $giftVoucherTotal,
+                    'original_total' => $originalTotal,
                     'shipping' => [
                         'tax_total' => $shippingTaxTotal,
                         'tax_rate_percent' => (float) data_get($shippingMethod->settings, 'tax_rate_percent', 0),
@@ -369,6 +411,10 @@ class CheckoutService
             ]);
             if ($delegation) {
                 app(\App\Services\User\CustomerCrmService::class)->recordSessionOrder(request(), $order, $delegation['actor']);
+            }
+
+            if ($giftVoucherTotal > 0) {
+                $giftVouchers->reserveForOrder($order, $giftVoucherCode, $giftVoucherTotal);
             }
 
             $index = 0;
@@ -472,6 +518,10 @@ class CheckoutService
                 ]);
             }
 
+            if ($giftVoucherTotal > 0) {
+                OrderTotal::query()->create(['order_id' => $order->id, 'code' => 'gift_voucher', 'title' => 'Plaćeno poklon bonom', 'value' => -$giftVoucherTotal, 'sort_order' => 800]);
+            }
+
             OrderTotal::query()->create([
                 'order_id' => $order->id,
                 'code' => 'grand_total',
@@ -487,6 +537,11 @@ class CheckoutService
                 'changed_by' => $user?->id,
                 'comment' => 'Order placed from storefront checkout.',
             ]);
+
+            if ($paymentMethod->code === GiftVoucherService::PAYMENT_CODE) {
+                $order->forceFill(['paid_at' => now()])->save();
+                $giftVouchers->syncOrder($order);
+            }
 
             return $order;
         });
@@ -650,9 +705,14 @@ class CheckoutService
         $shippingTaxTotal = $shippingMethod ? $this->resolveShippingTaxTotal($shippingMethod, $shippingTotal) : 0.0;
         $taxTotal += $shippingTaxTotal;
         $paymentFeeTotal = $paymentMethod ? $this->resolvePaymentFeeTotal($paymentMethod, $subtotalAfterDiscount) : 0.0;
-        $grandTotal = round($subtotalAfterDiscount + $shippingTotal + $paymentFeeTotal + $taxTotal, 2);
+        $originalTotal = round($subtotalAfterDiscount + $shippingTotal + $paymentFeeTotal + $taxTotal, 2);
+        $giftVoucherQuote = app(GiftVoucherService::class)->quote($originalTotal);
+        $grandTotal = $giftVoucherQuote['remaining_total'];
 
         return [
+            'original_total' => $originalTotal,
+            'gift_voucher_total' => $giftVoucherQuote['amount'],
+            'gift_voucher_remaining' => $giftVoucherQuote['remaining_total'],
             'subtotal' => round($subtotal, 2),
             'discount_total' => round($discountTotal, 2),
             'subtotal_after_discount' => round($subtotalAfterDiscount, 2),

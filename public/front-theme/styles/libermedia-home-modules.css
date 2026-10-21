@@ -7,11 +7,14 @@
     padding: 30px 12px;
     border-bottom: 1px solid var(--libermedia-line);
 }
-.libermedia-storefront .lm-benefits > :is(div, a) { display: flex; align-items: center; justify-content: center; gap: 15px; color: var(--libermedia-ink); text-decoration: none; }
-.libermedia-storefront .lm-benefits svg { width: 29px; height: 29px; flex: 0 0 29px; color: var(--libermedia-green); }
-.libermedia-storefront .lm-benefits strong { display: block; margin-bottom: 3px; font-size: 14px; font-weight: 700; }
-.libermedia-storefront .lm-benefits small { display: block; color: var(--libermedia-muted); font-size: 12px; }
+.libermedia-storefront .lm-benefits > :is(div, a) { display: flex; min-width: 0; align-items: center; justify-content: center; gap: 15px; color: var(--libermedia-ink); text-decoration: none; }
+.libermedia-storefront .lm-benefits > :is(div, a) > span { min-width: 0; }
+.libermedia-storefront .lm-benefits svg { width: 32px; height: 32px; flex: 0 0 32px; color: var(--libermedia-green); transition: color .18s ease; }
+.libermedia-storefront .lm-benefits strong { display: block; margin-bottom: 3px; font-size: 14px; font-weight: 700; line-height: 1.4; }
+.libermedia-storefront .lm-benefits small { display: block; color: var(--libermedia-muted); font-size: 12px; line-height: 1.5; }
 .libermedia-storefront .lm-benefits > a:hover strong { color: var(--libermedia-action); }
+.libermedia-storefront .lm-benefits > :is(div, a):hover svg { color: var(--libermedia-action); }
+.libermedia-storefront .lm-benefits > a:focus-visible { outline: 2px solid var(--libermedia-action); outline-offset: 6px; }
 .libermedia-storefront .lm-eyebrow { margin: 0 0 11px; color: var(--libermedia-green); font-size: 11px; font-weight: 750; letter-spacing: .11em; line-height: 1.5; }
 .libermedia-storefront .lm-section-heading { display: flex; justify-content: space-between; align-items: end; gap: 20px; margin-bottom: 22px; }
 .libermedia-storefront .lm-section-heading h2 { margin: 0; color: var(--libermedia-ink); font-size: clamp(24px, 2vw, 32px); font-weight: 750; line-height: 1.2; letter-spacing: -.035em; }
@@ -108,5 +111,6 @@
     .libermedia-storefront .lm-assurance-points { grid-template-columns: 1fr; gap: 25px; }
 }
 @media (prefers-reduced-motion: reduce) {
+    .libermedia-storefront .lm-benefits svg { transition: none; }
     .libermedia-storefront .lm-button { transition: none; }
 }

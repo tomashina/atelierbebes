@@ -120,6 +120,9 @@
                     fragment.appendChild(child.cloneNode(true));
                 });
                 grid.appendChild(fragment);
+                if (nextGrid.dataset.catalogPromoPage) {
+                    grid.dataset.catalogPromoPage = nextGrid.dataset.catalogPromoPage;
+                }
 
                 // Keep browser URL in sync with the latest loaded page (?page=N).
                 if (window.history && typeof window.history.replaceState === 'function') {

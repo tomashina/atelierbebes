@@ -2,7 +2,7 @@
     @if (!empty($translation?->title))
         <h2 class="text-xl font-semibold text-slate-900">{{ $translation->title }}</h2>
     @endif
-    <div class="prose prose-slate mt-3 max-w-none">
+    <div class="prose prose-slate mt-3 max-w-none" data-richtext-content>
         {!! $translation->body_html ?? '' !!}
     </div>
 </section>

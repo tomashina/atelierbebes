@@ -6,6 +6,7 @@ use App\Models\Catalog\Category\Category;
 use App\Models\Catalog\Category\CategoryTranslation;
 use App\Models\Catalog\Product\Product;
 use App\Models\Settings\Local\Language;
+use App\Support\ImportedDescriptionHtmlCleaner;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -33,6 +34,7 @@ class Form extends Component
         'locale' => 'en',
         'name' => '',
         'slug' => '',
+        'short_description' => '',
         'description' => '',
         'meta_title' => '',
         'meta_description' => '',
@@ -110,6 +112,8 @@ class Form extends Component
         if ($translationPayload === false) {
             return null;
         }
+        $translationPayload = is_array($translationPayload) ? $translationPayload : [];
+        $translationPayload['short_description'] = (string) ($validated['form']['short_description'] ?? '');
 
         $userId = auth()->id();
 
@@ -344,6 +348,7 @@ class Form extends Component
                         ->where('locale', $this->form['locale']))
                     ->ignore($this->categoryId, 'category_id'),
             ],
+            'form.short_description' => ['nullable', 'string'],
             'form.description' => ['nullable', 'string'],
             'form.meta_title' => ['nullable', 'string', 'max:255'],
             'form.meta_description' => ['nullable', 'string'],
@@ -393,6 +398,7 @@ class Form extends Component
             $this->form['locale'] = $translation->locale;
             $this->form['name'] = $translation->name;
             $this->form['slug'] = $translation->slug;
+            $this->form['short_description'] = app(ImportedDescriptionHtmlCleaner::class)->clean($translation->short_description);
             $this->form['description'] = $translation->description ?? '';
             $this->form['meta_title'] = $translation->meta_title ?? '';
             $this->form['meta_description'] = $translation->meta_description ?? '';
@@ -424,6 +430,7 @@ class Form extends Component
 
         $this->form['name'] = $translation->name;
         $this->form['slug'] = $translation->slug;
+        $this->form['short_description'] = app(ImportedDescriptionHtmlCleaner::class)->clean($translation->short_description);
         $this->form['description'] = $translation->description ?? '';
         $this->form['meta_title'] = $translation->meta_title ?? '';
         $this->form['meta_description'] = $translation->meta_description ?? '';
@@ -436,6 +443,7 @@ class Form extends Component
     {
         $this->form['name'] = '';
         $this->form['slug'] = '';
+        $this->form['short_description'] = '';
         $this->form['description'] = '';
         $this->form['meta_title'] = '';
         $this->form['meta_description'] = '';

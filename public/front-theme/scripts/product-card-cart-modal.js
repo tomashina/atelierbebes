@@ -221,17 +221,22 @@
                 return;
             }
 
-            event.preventDefault();
             const optionInputs = form.querySelectorAll('input[name="product_option_value_id"]');
             const selectedOption = form.querySelector('input[name="product_option_value_id"]:checked');
             const optionError = form.querySelector('[data-option-error]');
 
             if (optionInputs.length > 0 && !selectedOption) {
+                event.preventDefault();
                 optionError?.classList.remove('hidden');
                 return;
             }
 
             optionError?.classList.add('hidden');
+            if (form.closest('[data-cart-native-submits]')) {
+                window.ShopAnalytics?.trackAddToCartFromForm?.(form, currentQty(form), selectedOptionLabel(form));
+                return;
+            }
+            event.preventDefault();
             submit(form);
         });
     };

@@ -13,6 +13,12 @@ class ProtectB2BStorefront
 
     public function handle(Request $request, Closure $next): Response
     {
+        if (config('commerce.b2c_only') && $request->routeIs('front.auth.b2b-register*')) {
+            return redirect()->route('front.auth.register');
+        }
+        if (config('commerce.b2c_only') && $request->routeIs('account.b2b.*')) {
+            abort(404);
+        }
         if (! $this->access->requiresApprovedAccount()) {
             return $next($request);
         }

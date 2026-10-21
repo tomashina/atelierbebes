@@ -8,6 +8,7 @@ use App\Models\Sales\Order\OrderTransaction;
 use App\Models\Settings\Local\OrderStatus;
 use App\Models\Settings\Local\PaymentMethod;
 use App\Services\Front\OrderStockAllocationService;
+use App\Support\StorefrontTheme;
 use Illuminate\Support\Facades\DB;
 
 class WSPayFormService
@@ -47,7 +48,9 @@ class WSPayFormService
             return true;
         }
 
-        return $this->hasRequiredSettings(is_array($method->settings) ? $method->settings : []);
+        $settings = is_array($method->settings) ? $method->settings : [];
+
+        return $this->hasRequiredSettings($settings) && $this->permitsConfiguredMode($settings);
     }
 
     /**
@@ -69,7 +72,7 @@ class WSPayFormService
         $shopId = trim((string) ($settings['wspay_shop_id'] ?? ''));
         $secret = trim((string) ($settings['wspay_secret_key'] ?? ''));
 
-        if (! $this->hasRequiredSettings($settings)) {
+        if (! $this->hasRequiredSettings($settings) || ! $this->permitsConfiguredMode($settings)) {
             return null;
         }
 
@@ -391,6 +394,19 @@ class WSPayFormService
     /**
      * @param  array<string, mixed>  $settings
      */
+    private function permitsConfiguredMode(array $settings): bool
+    {
+        if (! app()->environment('local') || ! StorefrontTheme::usesLibermediaBrand()) {
+            return true;
+        }
+
+        $mode = strtolower(trim((string) ($settings['wspay_mode'] ?? self::MODE_TEST)));
+
+        // Production credentials copied from a snapshot need a separate local opt-in.
+        return $mode === self::MODE_TEST || ($mode === self::MODE_LIVE
+            && filter_var($settings['allow_local_live'] ?? false, FILTER_VALIDATE_BOOLEAN));
+    }
+
     private function resolveFormUrl(string $mode, array $settings): string
     {
         if ($mode === self::MODE_LIVE) {

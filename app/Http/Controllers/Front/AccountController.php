@@ -25,7 +25,10 @@ class AccountController extends Controller
     public function dashboard(Request $request): View
     {
         $user = $request->user();
-        $user->loadMissing(['profile', 'addresses', 'b2bAccount.customerGroup']);
+        $user->loadMissing(config('commerce.b2c_only') ? ['profile', 'addresses'] : ['profile', 'addresses', 'b2bAccount.customerGroup']);
+        if (config('commerce.b2c_only')) {
+            $user->setRelation('b2bAccount', null);
+        }
 
         $userOrders = Order::query()->where('user_id', $user->id);
         $orderCount = (clone $userOrders)->count();
@@ -104,7 +107,11 @@ class AccountController extends Controller
 
     public function orders(Request $request): View
     {
-        $request->user()->loadMissing('b2bAccount');
+        if (config('commerce.b2c_only')) {
+            $request->user()->setRelation('b2bAccount', null);
+        } else {
+            $request->user()->loadMissing('b2bAccount');
+        }
 
         $orders = Order::query()
             ->where('user_id', $request->user()->id)
@@ -148,7 +155,7 @@ class AccountController extends Controller
         return view($this->frontendView($request, 'account.order-show'), [
             'order' => $order,
             'statusSteps' => $statusSteps,
-            'b2bAccount' => $request->user()->loadMissing('b2bAccount')->b2bAccount,
+            'b2bAccount' => config('commerce.b2c_only') ? null : $request->user()->loadMissing('b2bAccount')->b2bAccount,
         ]);
     }
 

@@ -631,6 +631,7 @@ return [
             'form_title' => 'Imam korisnički račun',
             'remember' => 'Zapamti me',
             'forgot_password' => 'Zaboravljena lozinka?',
+            'admin_hint' => 'Prijava za upravljanje trgovinom.',
             'submit' => 'Prijavi se',
             'submitting' => 'Prijava...',
             'new_customer_eyebrow' => 'Novi korisnik',

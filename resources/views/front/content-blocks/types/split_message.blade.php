@@ -12,7 +12,7 @@
     </div>
     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-6">
         <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{{ $payload['right_label'] ?? 'Right' }}</p>
-        <div class="mt-2 text-sm text-slate-700">{!! $translation->body_html ?? '' !!}</div>
+        <div class="mt-2 text-sm text-slate-700" data-richtext-content>{!! $translation->body_html ?? '' !!}</div>
     </div>
 </section>
 

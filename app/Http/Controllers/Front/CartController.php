@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Front\Concerns\ResolvesFrontendView;
 use App\Models\Catalog\Product\Product;
 use App\Models\Catalog\Product\ProductOptionValue;
+use App\Services\Front\CartRecommendationService;
 use App\Services\Front\CartService;
 use App\Services\Front\CartStaffAccess;
+use App\Services\GiftVoucherService;
 use App\Services\Pricing\B2BAccessService;
+use App\Support\Currency;
 use App\Support\StorefrontTheme;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -27,11 +30,20 @@ class CartController extends Controller
     public function index(Request $request): View
     {
         $lines = $this->cart->lines();
+        $summary = $this->cart->summary();
+        $giftVouchers = app(GiftVoucherService::class);
+        $isLibermediaB2cCart = StorefrontTheme::usesLibermediaBrand() && app(B2BAccessService::class)->b2cEnabled();
 
         return view($this->frontendView($request, 'cart.index'), [
             'lines' => $lines,
-            'summary' => $this->cart->summary(),
-            'staffStockByLine' => app(CartStaffAccess::class)->stockForLines($request, $lines),
+            'summary' => $summary,
+            'giftVoucherCode' => $giftVouchers->currentCode(),
+            'giftVoucherQuote' => $giftVouchers->quote((float) ($summary['grand_total'] ?? 0)),
+            'isLibermediaB2cCart' => $isLibermediaB2cCart,
+            'cartRecommendations' => $isLibermediaB2cCart
+                ? app(CartRecommendationService::class)->forLines($lines)
+                : ['products' => collect(), 'source' => 'related'],
+            'staffStockByLine' => $isLibermediaB2cCart ? [] : app(CartStaffAccess::class)->stockForLines($request, $lines),
         ]);
     }
 
@@ -197,11 +209,12 @@ class CartController extends Controller
     public function clear(): RedirectResponse
     {
         $this->cart->clear();
+        app(GiftVoucherService::class)->clearCode();
 
         return redirect()->route('cart.index')->with('status', __('ui.cart.status.cleared'));
     }
 
-    public function applyCoupon(Request $request): RedirectResponse
+    public function applyCoupon(Request $request): JsonResponse|RedirectResponse
     {
         $validated = $request->validate(
             [
@@ -215,18 +228,85 @@ class CartController extends Controller
         );
 
         $applied = $this->cart->applyCoupon((string) $validated['coupon_code']);
+        $message = $applied ? __('ui.cart.status.coupon_applied') : __('ui.cart.status.coupon_invalid');
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'ok' => $applied,
+                'message' => $message,
+                'coupon_code' => $this->cart->couponCode() ?: null,
+                'summary' => $this->cart->summary(),
+                ...($applied ? [] : ['errors' => ['coupon_code' => [$message]]]),
+            ], $applied ? 200 : 422);
+        }
 
         return redirect()
             ->route('cart.index')
-            ->with('status', $applied ? __('ui.cart.status.coupon_applied') : __('ui.cart.status.coupon_invalid'));
+            ->with('status', $message);
     }
 
-    public function removeCoupon(): RedirectResponse
+    public function removeCoupon(Request $request): JsonResponse|RedirectResponse
     {
         $this->cart->clearCoupon();
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'ok' => true,
+                'message' => __('ui.cart.status.coupon_removed'),
+                'coupon_code' => null,
+                'summary' => $this->cart->summary(),
+            ]);
+        }
 
         return redirect()
             ->route('cart.index')
             ->with('status', __('ui.cart.status.coupon_removed'));
+    }
+
+    public function applyGiftVoucher(Request $request, GiftVoucherService $giftVouchers): JsonResponse|RedirectResponse
+    {
+        $validated = $request->validate([
+            'gift_voucher_code' => ['required', 'string', 'max:80'],
+            'return_to' => ['nullable', Rule::in(['cart', 'checkout'])],
+        ], [
+            'gift_voucher_code.required' => 'Unesite kod poklon bona.',
+            'gift_voucher_code.string' => 'Unesite ispravan kod poklon bona.',
+            'gift_voucher_code.max' => 'Kod poklon bona je predugačak.',
+        ]);
+        if (! $giftVouchers->applyCode((string) $validated['gift_voucher_code'])) {
+            $message = 'Ovaj poklon bon nije dostupan. Provjerite kod, saldo i rok valjanosti.';
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $message, 'errors' => ['gift_voucher_code' => [$message]]], 422);
+            }
+
+            return redirect()->route(($validated['return_to'] ?? '') === 'checkout' ? 'checkout.create' : 'cart.index')
+                ->withErrors(['gift_voucher_code' => $message])->withInput();
+        }
+
+        return $this->giftVoucherResponse($request, $giftVouchers, 'Poklon bon je primijenjen.');
+    }
+
+    public function removeGiftVoucher(Request $request, GiftVoucherService $giftVouchers): JsonResponse|RedirectResponse
+    {
+        $giftVouchers->clearCode();
+
+        return $this->giftVoucherResponse($request, $giftVouchers, 'Poklon bon je uklonjen.');
+    }
+
+    private function giftVoucherResponse(Request $request, GiftVoucherService $giftVouchers, string $message): JsonResponse|RedirectResponse
+    {
+        if ($request->expectsJson()) {
+            $quote = $giftVouchers->quote((float) ($this->cart->summary()['grand_total'] ?? 0));
+
+            return response()->json([
+                'message' => $message,
+                'code' => $giftVouchers->currentCode(),
+                'amount' => (float) $quote['amount'],
+                'amount_formatted' => Currency::format((float) $quote['amount']),
+                'remaining_total' => (float) $quote['remaining_total'],
+                'remaining_total_formatted' => Currency::format((float) $quote['remaining_total']),
+            ]);
+        }
+
+        return redirect()->route($request->input('return_to') === 'checkout' ? 'checkout.create' : 'cart.index')
+            ->with('status', $message);
     }
 }

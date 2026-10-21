@@ -14,7 +14,7 @@
         $captchaEnabled = (bool) ($storeSettings['captcha']['recaptcha_v3_enabled'] ?? false) && $captchaSiteKey !== '';
     @endphp
 
-    <section class="commerce-hero">
+    <section class="commerce-hero lm-page-title">
         <p class="text-xs font-bold uppercase tracking-[0.18em] text-cyan-700">{{ __('Poslovni korisnici') }}</p>
         <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">{{ __('B2B registracija') }}</h1>
         <p class="mt-2 max-w-3xl text-slate-600">{{ __('Pošaljite podatke tvrtke. Nakon provjere i odobrenja dobit ćete pristup ugovorenim cijenama, brzoj kupnji i ponovnom naručivanju.') }}</p>

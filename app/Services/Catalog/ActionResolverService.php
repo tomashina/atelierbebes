@@ -15,6 +15,20 @@ class ActionResolverService
         ?string $couponCode = null
     ): ?CatalogAction {
         $couponCode = trim((string) $couponCode);
+        if (config('commerce.b2c_only')) {
+            $actions = app(B2CPromotionService::class)->forProduct($product, $user, $couponCode);
+            $best = null;
+            $price = (float) $product->base_price;
+            foreach ($actions as $action) {
+                $candidate = $this->applyToPrice((float) $product->base_price, $action);
+                if ($candidate < $price) {
+                    $best = $action;
+                    $price = $candidate;
+                }
+            }
+
+            return $best;
+        }
         $categoryIds = $product->categories()->pluck('categories.id')->map(fn ($id) => (int) $id)->all();
         $manufacturerId = $product->manufacturer_id ? (int) $product->manufacturer_id : null;
 
@@ -43,7 +57,7 @@ class ActionResolverService
                             });
                     })
                     ->orWhere(function (Builder $qq) use ($manufacturerId): void {
-                        if (!$manufacturerId) {
+                        if (! $manufacturerId) {
                             return;
                         }
 

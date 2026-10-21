@@ -14,7 +14,7 @@ body.libermedia-storefront .herrera-category-tile[data-category-icon-tone] .herr
 body.libermedia-storefront .herrera-category-tile[data-category-icon-tone="orange"] .herrera-category-tile-icon {
     border-color: #f6d9c8;
     background: #fff3eb;
-    color: #d64200;
+    color: var(--libermedia-orange, #ff4d00);
 }
 
 body.libermedia-storefront .herrera-category-tile[data-category-icon-tone] .herrera-category-tile-icon svg {
@@ -28,7 +28,7 @@ body.libermedia-storefront .herrera-category-tile-arrow {
 }
 
 body.libermedia-storefront .herrera-category-tile[data-category-icon-tone="orange"] .herrera-category-tile-fallback {
-    color: #d64200;
+    color: var(--libermedia-orange, #ff4d00);
 }
 
 body.libermedia-storefront .herrera-category-tile.libermedia-category-bundle {

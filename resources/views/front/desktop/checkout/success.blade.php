@@ -8,16 +8,22 @@
         $boxNow = is_array($order->payload['shipping']['boxnow'] ?? null) ? $order->payload['shipping']['boxnow'] : null;
         $glsPoint = is_array($order->payload['shipping']['gls_dpm'] ?? null) ? $order->payload['shipping']['gls_dpm'] : null;
         $bankInstructions = trim((string) ($bankTransfer['instructions'] ?? ''));
+        $giftVoucherSettlementAttention = data_get($order->payload, 'gift_voucher_settlement.status') === 'attention';
     @endphp
 
     @push('styles')
         <link rel="stylesheet" href="{{ asset('front-theme/styles/checkout.css') }}?v={{ filemtime(public_path('front-theme/styles/checkout.css')) }}">
     @endpush
 
-    <section class="checkout-status-card checkout-status-card--success">
+    <header class="lm-page-title">
         <p class="text-xs font-semibold uppercase tracking-wide text-emerald-700">{{ __('ui.checkout.success.eyebrow') }}</p>
-        <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">{{ __('ui.checkout.success.title') }}</h1>
+        <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">{{ $giftVoucherSettlementAttention ? 'Uplata je zaprimljena.' : __('ui.checkout.success.title') }}</h1>
         <p class="mt-3 text-slate-600">{{ __('ui.checkout.success.order_number') }}: <span class="font-semibold text-slate-900">{{ $order->order_number }}</span></p>
+    </header>
+    <section class="checkout-status-card checkout-status-card--success">
+        @if($giftVoucherSettlementAttention)
+            <p class="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-slate-700" role="status">Provjeravamo pokriće poklon bonom i javit ćemo vam se.</p>
+        @endif
 
         <dl class="mt-6 grid gap-3 text-sm md:grid-cols-2">
             <div class="border border-slate-200 bg-slate-100 p-4">

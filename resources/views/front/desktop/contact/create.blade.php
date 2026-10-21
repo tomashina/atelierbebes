@@ -14,7 +14,7 @@
         $captchaEnabled = (bool) ($storeSettings['captcha']['recaptcha_v3_enabled'] ?? false) && $captchaSiteKey !== '';
     @endphp
 
-    <section class="commerce-hero">
+    <section class="commerce-hero lm-page-title">
         <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">{{ __('contact.heading') }}</h1>
         <p class="mt-2 text-slate-600">{{ __('contact.subheading') }}</p>
     </section>

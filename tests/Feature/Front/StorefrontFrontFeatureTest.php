@@ -633,7 +633,7 @@ class StorefrontFrontFeatureTest extends TestCase
         ]);
     }
 
-    public function test_front_registration_collects_and_saves_the_complete_default_address(): void
+    public function test_front_registration_accepts_and_saves_a_complete_default_address_with_the_current_identity_form(): void
     {
         Bouncer::role()->firstOrCreate(['name' => 'customer'], ['title' => 'Customer']);
         $termsUrl = $this->seedTermsPage();
@@ -664,14 +664,14 @@ class StorefrontFrontFeatureTest extends TestCase
             ->assertOk()
             ->assertSee('data-address-autofill', false)
             ->assertSee('data-address-scope="billing"', false)
-            ->assertSee('name="phone"', false)
-            ->assertSee('name="address_line_1"', false)
-            ->assertSee('name="postal_code"', false)
-            ->assertSee('data-address-postal', false)
-            ->assertSee('name="city"', false)
-            ->assertSee('data-address-city', false)
-            ->assertSee('name="country_code"', false)
-            ->assertSee('data-address-country', false)
+            ->assertSee('name="first_name"', false)
+            ->assertSee('name="last_name"', false)
+            ->assertSee('name="email"', false)
+            ->assertDontSee('name="phone"', false)
+            ->assertDontSee('name="address_line_1"', false)
+            ->assertDontSee('name="postal_code"', false)
+            ->assertDontSee('name="city"', false)
+            ->assertDontSee('name="country_code"', false)
             ->assertSee('name="terms_accepted"', false)
             ->assertSee('href="'.$termsUrl.'"', false)
             ->assertSee('front-theme/scripts/address-autofill.js', false)

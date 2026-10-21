@@ -57,6 +57,9 @@ class PriceCatalogResolver
 
     public function activeCatalog(): ?PriceCatalog
     {
+        if (config('commerce.b2c_only')) {
+            return null;
+        }
         if ($this->catalogLoaded) {
             return $this->cachedCatalog;
         }

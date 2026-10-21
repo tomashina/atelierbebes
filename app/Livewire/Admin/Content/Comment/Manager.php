@@ -32,6 +32,8 @@ class Manager extends Component
 
     public bool $editPage = false;
 
+    public bool $editingProductComment = false;
+
     /**
      * @var array<string, mixed>
      */
@@ -102,6 +104,7 @@ class Manager extends Component
 
         $this->editingId = $comment->id;
         $this->recordId = $comment->id;
+        $this->editingProductComment = $comment->commentable_type === Product::class;
         $this->editForm = [
             'author_name' => (string) ($comment->author_name ?? ''),
             'author_email' => (string) ($comment->author_email ?? ''),
@@ -418,6 +421,7 @@ class Manager extends Component
     {
         $this->editingId = null;
         $this->recordId = null;
+        $this->editingProductComment = false;
         $this->editForm = [
             'author_name' => '',
             'author_email' => '',

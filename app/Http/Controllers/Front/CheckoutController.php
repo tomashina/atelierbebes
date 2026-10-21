@@ -12,6 +12,7 @@ use App\Services\Front\AddressDirectoryService;
 use App\Services\Front\CartService;
 use App\Services\Front\CheckoutService;
 use App\Services\Front\StoreNotificationService;
+use App\Services\GiftVoucherService;
 use App\Services\Payments\BankTransferUpiService;
 use App\Services\Payments\CorvusPayFormService;
 use App\Services\Payments\KeksPayService;
@@ -27,6 +28,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -105,6 +107,7 @@ class CheckoutController extends Controller
             'shippingMethods' => $shippingMethods,
             'paymentMethods' => $paymentMethods,
             'checkoutTotals' => $checkoutTotals,
+            'giftVoucherCode' => app(GiftVoucherService::class)->currentCode(),
             'countryOptions' => $addressDirectory->countries((string) app()->getLocale()),
             'placesAssetUrl' => $addressDirectory->placesAssetUrl(),
             'prefill' => [
@@ -273,6 +276,7 @@ class CheckoutController extends Controller
             $request->setUserResolver(static fn () => $checkoutUser);
         }
 
+        $validated['gift_voucher_code'] = app(GiftVoucherService::class)->currentCode();
         $order = $this->checkout->placeOrder($validated, $checkoutUser);
         $wspay = app(WSPayFormService::class);
         $corvus = app(CorvusPayFormService::class);
@@ -285,6 +289,7 @@ class CheckoutController extends Controller
         }
 
         $this->cart->clear();
+        app(GiftVoucherService::class)->clearCode();
         $request->session()->put('front.checkout.last_order_id', (int) $order->id);
         $request->session()->put('front.checkout.last_order_number', (string) $order->order_number);
 
@@ -392,6 +397,9 @@ class CheckoutController extends Controller
                 'tax_total' => round((float) $totals['tax_total'], 2),
                 'shipping_total' => round((float) $totals['shipping_total'], 2),
                 'payment_fee_total' => round((float) $totals['payment_fee_total'], 2),
+                'gift_voucher_total' => round((float) ($totals['gift_voucher_total'] ?? 0), 2),
+                'gift_voucher_remaining' => round((float) ($totals['gift_voucher_remaining'] ?? 0), 2),
+                'original_total' => round((float) ($totals['original_total'] ?? $totals['grand_total']), 2),
                 'grand_total' => round((float) $totals['grand_total'], 2),
                 'shipping_method_code' => (string) ($totals['shipping_method_code'] ?? ''),
                 'payment_method_code' => (string) ($totals['payment_method_code'] ?? ''),
@@ -400,6 +408,7 @@ class CheckoutController extends Controller
                 'tax_total_formatted' => Currency::format((float) $totals['tax_total']),
                 'shipping_total_formatted' => Currency::format((float) $totals['shipping_total']),
                 'payment_fee_total_formatted' => Currency::format((float) $totals['payment_fee_total']),
+                'gift_voucher_total_formatted' => Currency::format((float) ($totals['gift_voucher_total'] ?? 0)),
                 'grand_total_formatted' => Currency::format((float) $totals['grand_total']),
             ],
         ]);
@@ -427,7 +436,7 @@ class CheckoutController extends Controller
         return redirect()->route('checkout.create');
     }
 
-    public function success(Request $request, string $orderNumber): View
+    public function success(Request $request, string $orderNumber): View|RedirectResponse
     {
         $order = Order::query()
             ->where('order_number', $orderNumber)
@@ -438,6 +447,10 @@ class CheckoutController extends Controller
         $allowedByUser = $request->user() && ((int) $request->user()->id === (int) $order->user_id);
 
         abort_unless($allowedBySession || $allowedByUser, 404);
+
+        if ((bool) data_get($order->payload, 'gift_voucher_purchase')) {
+            return redirect()->to(URL::temporarySignedRoute('gift-vouchers.purchase', now()->addDays(30), ['orderNumber' => $order->order_number]));
+        }
 
         $bankTransfer = app(BankTransferUpiService::class)->ensureForOrder($order);
 
@@ -750,6 +763,9 @@ class CheckoutController extends Controller
 
     private function restoreCartFromOrder(Order $order): void
     {
+        if ((bool) data_get($order->payload, 'gift_voucher_purchase')) {
+            return;
+        }
         // A payment callback remains valid after a contract expires, but may not restore a purchasable cart.
         if (! app(B2BAccessService::class)->canViewPrices(auth()->user())) {
             return;

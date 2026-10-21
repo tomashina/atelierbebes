@@ -21,11 +21,11 @@
     @endpush
 
     <section class="storefront-container px-3 sm:px-4 lg:px-6">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">{{ __('ui.wishlist.title') }}</h1>
-                <p class="mt-2 text-slate-600">{{ __('ui.wishlist.subtitle') }}</p>
-            </div>
+        <header class="lm-page-title">
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">{{ __('ui.wishlist.title') }}</h1>
+            <p class="mt-2 text-slate-600">{{ __('ui.wishlist.subtitle') }}</p>
+        </header>
+        <div class="wishlist-grid-toolbar flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div class="md:hidden">
                 <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">{{ __('ui.shop.filters.grid') }}</label>
                 <div class="flex h-[42px]">

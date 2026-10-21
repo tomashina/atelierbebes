@@ -61,6 +61,11 @@
     height: 11px;
 }
 
+.herrera-storefront .herrera-subcategories-viewport {
+    overflow: hidden;
+    border-inline: 1px solid #dce4e9;
+}
+
 .herrera-storefront .herrera-subcategories-track {
     display: grid;
     grid-auto-flow: column;
@@ -68,8 +73,11 @@
     align-items: stretch;
     gap: 0;
     margin: 0;
+    /* Paint the final card's divider beneath the viewport border. This one
+       pixel overlap also contains fractional grid rounding at every zoom. */
+    margin-inline-end: -1px;
     padding: 0;
-    border-left: 1px solid #dce4e9;
+    border: 0;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
@@ -158,6 +166,10 @@
     outline-offset: -2px;
 }
 
+.herrera-storefront .herrera-subcategories-track:focus-visible {
+    outline-offset: -2px;
+}
+
 @media (max-width: 1279px) {
     .herrera-storefront .herrera-subcategories-track {
         grid-auto-columns: calc(100% / 6);
@@ -184,7 +196,7 @@
     }
 
     .herrera-storefront .herrera-subcategories-track {
-        grid-auto-columns: calc(100% / 2.4);
+        grid-auto-columns: calc(100% / 2);
     }
 
     .herrera-storefront .herrera-subcategory-caption {

@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Catalog\Product\CatalogProductSpecification;
 use App\Models\Catalog\Product\Product;
 use App\Models\Catalog\Product\ProductGroupPrice;
 use App\Models\Catalog\Product\ProductOptionValue;
+use App\Models\Catalog\Product\ProductTranslation;
 use App\Models\Content\ContentBlock;
 use App\Models\Content\ContentBlockSlot;
 use App\Models\Content\ContentBlockTranslation;
@@ -17,10 +19,12 @@ use App\Models\Settings\Local\OrderStatus;
 use App\Models\Settings\Local\PaymentMethod;
 use App\Models\Settings\Local\ShippingMethod;
 use App\Models\Settings\Local\TaxRate;
+use App\Observers\Catalog\LibermediaSpecificationFilterObserver;
 use App\Observers\Catalog\ProductGroupPriceObserver;
 use App\Observers\Catalog\ProductOptionValuePriceObserver;
 use App\Observers\Catalog\ProductPriceObserver;
 use App\Observers\Content\ContentCacheObserver;
+use App\Observers\Sales\GiftVoucherOrderObserver;
 use App\Observers\Sales\OrderLoyaltyObserver;
 use App\Observers\Settings\LocalSettingObserver;
 use App\Services\Catalog\CatalogFeatureService;
@@ -336,12 +340,16 @@ class AppServiceProvider extends ServiceProvider
         OrderStatus::observe(LocalSettingObserver::class);
         Language::observe(LocalSettingObserver::class);
         Order::observe(OrderLoyaltyObserver::class);
+        Order::observe(GiftVoucherOrderObserver::class);
 
         ContentBlock::observe(ContentCacheObserver::class);
         ContentBlockTranslation::observe(ContentCacheObserver::class);
         ContentBlockSlot::observe(ContentCacheObserver::class);
 
         Product::observe(ProductPriceObserver::class);
+        Product::observe(LibermediaSpecificationFilterObserver::class);
+        ProductTranslation::observe(LibermediaSpecificationFilterObserver::class);
+        CatalogProductSpecification::observe(LibermediaSpecificationFilterObserver::class);
         ProductGroupPrice::observe(ProductGroupPriceObserver::class);
         ProductOptionValue::observe(ProductOptionValuePriceObserver::class);
     }

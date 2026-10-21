@@ -5,8 +5,10 @@ namespace App\Console\Commands;
 use App\Models\Catalog\Category\Category;
 use App\Models\Catalog\Product\Product;
 use App\Models\Content\Page\InfoPage;
+use App\Models\Settings\Local\PaymentMethod;
 use App\Services\Front\NavigationMenuService;
 use App\Services\Settings\SystemSettingsService;
+use App\Support\LibermediaPaymentDescription;
 use Illuminate\Console\Command;
 
 class LibermediaConfigurePreview extends Command
@@ -28,15 +30,15 @@ class LibermediaConfigurePreview extends Command
             ['type' => 'catalog', 'label' => 'Sve kategorije', 'url' => '/shop', 'is_active' => true, 'show_dropdown' => true, 'sort_order' => 0],
             ['type' => 'custom', 'label' => 'Brandovi', 'url' => '/brendovi', 'is_active' => true, 'sort_order' => 1],
             ['type' => 'custom', 'label' => 'Akcije', 'url' => '/akcije', 'is_active' => true, 'sort_order' => 2],
-            // These OpenCart extensions keep their existing live destinations.
-            ['type' => 'custom', 'label' => 'Posebna ponuda', 'url' => 'https://www.liber-media.hr/bundle-artikli', 'is_active' => true, 'sort_order' => 3],
+            // Bundle offers are managed locally.
+            ['type' => 'custom', 'label' => 'Posebna ponuda', 'url' => '/bundle-artikli', 'is_active' => true, 'sort_order' => 3],
             ['type' => 'blog', 'label' => 'Blog', 'is_active' => true, 'sort_order' => 4],
         ];
         if ($aboutId) {
             $navigation[] = ['type' => 'page', 'label' => 'O nama', 'page_id' => $aboutId, 'is_active' => true, 'sort_order' => 5];
         }
         $navigation[] = ['type' => 'contact', 'label' => 'Kontakt', 'is_active' => true, 'sort_order' => 6];
-        $navigation[] = ['type' => 'custom', 'label' => 'Poklon bon', 'url' => 'https://www.liber-media.hr/index.php?route=account/voucher', 'icon' => 'gift', 'align_right' => true, 'is_active' => true, 'sort_order' => 7];
+        $navigation[] = ['type' => 'custom', 'label' => 'Poklon bon', 'url' => '/poklon-bon', 'icon' => 'gift', 'align_right' => true, 'is_active' => true, 'sort_order' => 7];
 
         $navigationSettings = [
             NavigationMenuService::SETTINGS_KEY => $navigation,
@@ -92,6 +94,17 @@ class LibermediaConfigurePreview extends Command
                 'background_color' => '#245B42', 'text_color' => '#ffffff', 'highlight_color' => '#FF4D00',
             ],
         ] + $navigationSettings);
+        foreach (PaymentMethod::query()->whereIn('code', ['bank', 'bank_transfer'])->get() as $paymentMethod) {
+            $paymentMethod->description = LibermediaPaymentDescription::forConsumers((string) $paymentMethod->description);
+            $paymentSettings = (array) $paymentMethod->settings;
+            if (isset($paymentSettings['bank_instructions'])) {
+                $paymentSettings['bank_instructions'] = LibermediaPaymentDescription::forConsumers((string) $paymentSettings['bank_instructions']);
+                $paymentMethod->settings = $paymentSettings;
+            }
+            if ($paymentMethod->isDirty()) {
+                $paymentMethod->save();
+            }
+        }
         // The legacy shop has no category pictures. Use an existing product
         // photo from each category, without changing the original source data.
         $profile = config('media_profiles.models.'.Category::class);

@@ -78,7 +78,7 @@
             </button>
         </form>
         @if (! empty($discountPercent))
-            <span class="absolute left-2 top-2 inline-flex h-7 items-center border border-rose-600 bg-rose-600 px-2 text-xs font-bold text-white">
+            <span class="product-promotion-badge absolute left-2 top-2 inline-flex h-7 items-center border border-rose-600 bg-rose-600 px-2 text-xs font-bold text-white">
                 -{{ $discountPercent }}%
             </span>
         @endif
@@ -281,15 +281,15 @@
                     </div>
                 </form>
             @elseif ($canViewPrices)
-                <span class="mt-3 inline-flex min-h-12 items-center justify-center border border-slate-200 bg-slate-100 px-3 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                    {{ __('ui.product.unavailable') }}
-                </span>
+                <div class="stock-notify-card-footer">
+                    @include('front.partials.stock-notification-button', ['notifyProductId' => $productId, 'notifyName' => $productName, 'notifyClass' => 'stock-notify-button-card'])
+                </div>
             @endif
         </div>
     @elseif ($flat)
         <div class="relative mt-3 px-2 pb-3">
             @if ((int) ($reviewSummary['count'] ?? 0) > 0)
-                <div class="mb-1.5 pr-12">
+                <div class="mb-1.5 {{ $isPurchasable ? 'pr-12' : '' }}">
                     @include('front.partials.product-review-summary', [
                         'count' => (int) ($reviewSummary['count'] ?? 0),
                         'average' => (float) ($reviewSummary['avg'] ?? 0),
@@ -298,7 +298,7 @@
                     ])
                 </div>
             @endif
-            <a href="{{ $productUrl }}" class="block pr-12">
+            <a href="{{ $productUrl }}" class="block {{ $isPurchasable ? 'pr-12' : '' }}">
                 @if ($headingLevel === 2)
                     <h2 class="text-[14px] font-medium leading-tight text-slate-900 sm:text-[15px]">{{ $productName }}</h2>
                 @else
@@ -306,7 +306,7 @@
                 @endif
             </a>
             @if ($materialLabel !== '')
-                <p class="mt-1 pr-12 text-[11px] leading-tight text-slate-500 sm:text-[12px]">{{ $materialLabel }}</p>
+                <p class="mt-1 {{ $isPurchasable ? 'pr-12' : '' }} text-[11px] leading-tight text-slate-500 sm:text-[12px]">{{ $materialLabel }}</p>
             @endif
             @include('front.partials.product-identifiers')
             @if ($isPurchasable)
@@ -319,10 +319,6 @@
                 >
                     <x-fa-icon name="bag-shopping" class="h-4 w-4 sm:h-5 sm:w-5" />
                 </button>
-            @elseif ($canViewPrices)
-                <span class="absolute right-2 top-0 inline-flex min-h-8 items-center justify-center border border-slate-200 bg-slate-100 px-2 text-[10px] font-semibold uppercase tracking-wide text-slate-500 sm:min-h-9">
-                    {{ __('ui.product.unavailable') }}
-                </span>
             @endif
             <div class="mt-1.5 flex flex-col gap-1">
                 @if (! $canViewPrices)
@@ -352,6 +348,9 @@
                 @endif
             </div>
             @include('front.partials.product-availability')
+            @if ($canViewPrices && !$isPurchasable)
+                @include('front.partials.stock-notification-button', ['notifyProductId' => $productId, 'notifyName' => $productName, 'notifyClass' => 'stock-notify-button-card'])
+            @endif
         </div>
     @else
         @if ((int) ($reviewSummary['count'] ?? 0) > 0)
@@ -414,9 +413,7 @@
                     <x-fa-icon name="bag-shopping" class="h-4 w-4 sm:h-5 sm:w-5" />
                 </button>
             @elseif ($canViewPrices)
-                <span class="inline-flex min-h-8 shrink-0 items-center justify-center self-end border border-slate-200 bg-slate-100 px-2 text-[10px] font-semibold uppercase tracking-wide text-slate-500 sm:min-h-9">
-                    {{ __('ui.product.unavailable') }}
-                </span>
+                @include('front.partials.stock-notification-button', ['notifyProductId' => $productId, 'notifyName' => $productName, 'notifyClass' => 'stock-notify-button-card'])
             @endif
         </div>
         @include('front.partials.product-availability')

@@ -1,6 +1,7 @@
 @php
     $productCount = $products->count();
     $headingId = $carouselId.'-heading';
+    $showRelatedPromo = $kind === 'related' && $productCount === 5 && \App\Support\StorefrontTheme::usesLibermediaBrand();
     $previousLabel = trim(str_replace(['&laquo;', '&raquo;'], '', __('pagination.previous')));
     $nextLabel = trim(str_replace(['&laquo;', '&raquo;'], '', __('pagination.next')));
     $carouselOptions = [
@@ -35,6 +36,18 @@
         <link rel="stylesheet" href="{{ asset('front-theme/styles/herrera-product-related.css') }}?v={{ filemtime(public_path('front-theme/styles/herrera-product-related.css')) }}">
     @endpush
 @endonce
+
+@if ($showRelatedPromo)
+    @once('libermedia-product-promo-assets')
+        @push('styles')
+            <link rel="stylesheet" href="{{ asset('front-theme/styles/libermedia-catalog-promos.css') }}?v={{ filemtime(public_path('front-theme/styles/libermedia-catalog-promos.css')) }}">
+            <link rel="stylesheet" href="{{ asset('front-theme/styles/libermedia-product-promos.css') }}?v={{ filemtime(public_path('front-theme/styles/libermedia-product-promos.css')) }}">
+        @endpush
+        @push('scripts')
+            <script defer src="{{ asset('front-theme/scripts/libermedia-product-promos.js') }}?v={{ filemtime(public_path('front-theme/scripts/libermedia-product-promos.js')) }}"></script>
+        @endpush
+    @endonce
+@endif
 
 <section class="product-products-widget herrera-product-carousel-widget">
     <div
@@ -72,9 +85,17 @@
                         ])
                     </li>
                 @endforeach
+                @if ($showRelatedPromo)
+                    <li class="lm-product-promo-slot" data-product-promo-slot>
+                        @include('front.partials.libermedia-promo-card', ['promoType' => 'bundles'])
+                    </li>
+                @endif
             </ul>
         </div>
     </div>
+    @if ($showRelatedPromo)
+        @include('front.partials.libermedia-catalog-promos')
+    @endif
 </section>
 @if ($useSharedCarouselInit ?? false)
     @include('front.partials.herrera-home-carousel-script')

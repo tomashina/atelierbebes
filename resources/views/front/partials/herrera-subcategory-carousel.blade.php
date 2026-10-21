@@ -24,6 +24,7 @@
             </button>
         </div>
     </div>
+    <div class="herrera-subcategories-viewport">
     <ul id="{{ $subcategoryCarouselId }}" class="herrera-subcategories-track" data-subcategory-track tabindex="0" aria-label="{{ __('herrera.subcategories.browse') }}">
         @foreach ($carouselCategories as $carouselCategory)
             @php
@@ -62,4 +63,5 @@
             </li>
         @endforeach
     </ul>
+    </div>
 </nav>

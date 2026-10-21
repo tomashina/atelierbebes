@@ -50,7 +50,8 @@ class CustomerDirectoryCompanyFeatureTest extends TestCase
             ->assertSee('44000000004')
             ->assertSee('Billing Fallback Company')
             ->assertSee('66000000006')
-            ->assertSee('Bez naziva tvrtke')
+            // A customer without a business account/company is an explicit B2C identity.
+            ->assertViewHas('rows', fn ($rows): bool => $rows->firstWhere('id', $personalBuyer->id)?->commerceCustomerType() === 'B2C')
             ->assertSee('Personal Customer')
             ->assertSee($personalBuyer->email)
             ->assertDontSee('Ignored Billing Company')

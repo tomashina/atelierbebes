@@ -287,12 +287,24 @@
                 @if ($this->isWspayForm())
                     <div class="rounded-xl border border-indigo-200 bg-indigo-50 p-3">
                         <p class="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-indigo-800">{{ __('WSPay settings (required)') }}</p>
+                        @php
+                            $localLibermedia = app()->environment('local') && \App\Support\StorefrontTheme::usesLibermediaBrand();
+                            $localLiveEnabled = $localLibermedia && filter_var(data_get(json_decode($form['settings_text'] ?? '{}', true) ?: [], 'allow_local_live', false), FILTER_VALIDATE_BOOLEAN);
+                            $localLibermediaTestOnly = $localLibermedia && ! $localLiveEnabled;
+                        @endphp
+                        @if ($localLiveEnabled)
+                            <p class="mb-3 text-sm text-indigo-900">Lokalno je izričito omogućeno korištenje produkcijskog WSPay računa. Trenutni način: <strong>{{ ($form['wspay_mode'] ?? 'test') === 'live' ? 'LIVE – produkcija' : 'TEST' }}</strong>.</p>
+                        @elseif ($localLibermediaTestOnly)
+                            <p class="mb-3 text-sm text-indigo-900">Lokalno je dopušten samo TEST način. WSPay se kupcima nudi tek nakon unosa TEST Shop ID-a i TEST Secret Keya. Podaci iz produkcije nisu namijenjeni lokalnom testiranju.</p>
+                        @endif
                         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
                             <div>
                                 <label class="mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{{ __('Mode') }}</label>
                                 <select wire:model="form.wspay_mode" data-tom-select data-tom-no-search="1" class="admin-select w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none ring-cyan-200 focus:ring">
                                     <option value="test">Test</option>
-                                    <option value="live">Live</option>
+                                    @unless ($localLibermediaTestOnly)
+                                        <option value="live">Live</option>
+                                    @endunless
                                 </select>
                                 @error('form.wspay_mode') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                             </div>

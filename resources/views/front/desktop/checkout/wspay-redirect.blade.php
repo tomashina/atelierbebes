@@ -8,10 +8,12 @@
         <link rel="stylesheet" href="{{ asset('front-theme/styles/checkout.css') }}?v={{ filemtime(public_path('front-theme/styles/checkout.css')) }}">
     @endpush
 
-    <section class="checkout-status-card">
+    <header class="lm-page-title">
         <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">{{ __('ui.checkout.wspay.redirect_title') }}</h1>
         <p class="mt-2 text-sm text-slate-600">{{ __('ui.checkout.wspay.redirect_subtitle') }}</p>
+    </header>
 
+    <section class="checkout-status-card">
         <form id="wspay-redirect-form" method="POST" action="{{ $formData['action_url'] }}" class="mt-6">
             <input type="hidden" name="ShopID" value="{{ $formData['shop_id'] }}">
             <input type="hidden" name="ShoppingCartID" value="{{ $formData['shopping_cart_id'] }}">

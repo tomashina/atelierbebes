@@ -57,6 +57,7 @@
     @if ($storeSettings['legal_warranty']['enabled'] ?? false)
         <link rel="stylesheet" href="{{ asset('front-theme/styles/legal-warranty.css') }}?v={{ filemtime(public_path('front-theme/styles/legal-warranty.css')) }}">
     @endif
+    <link rel="stylesheet" href="{{ asset('front-theme/styles/stock-notifications.css') }}?v={{ filemtime(public_path('front-theme/styles/stock-notifications.css')) }}">
     @stack('styles')
     <link rel="stylesheet" href="{{ asset('front-theme/styles/manufacturer-logos.css') }}?v={{ filemtime(public_path('front-theme/styles/manufacturer-logos.css')) }}">
     @if (\App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))))
@@ -66,6 +67,10 @@
     <link rel="stylesheet" href="{{ asset('front-theme/styles/storefront-theme.css') }}?v={{ filemtime(public_path('front-theme/styles/storefront-theme.css')) }}-{{ $storefrontAssetVersion }}">
     @if (\App\Support\StorefrontTheme::usesLibermediaBrand((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))))
         <link rel="stylesheet" href="{{ asset('front-theme/styles/libermedia.css') }}?v={{ filemtime(public_path('front-theme/styles/libermedia.css')) }}">
+        <link rel="stylesheet" href="{{ asset('front-theme/styles/libermedia-page-titles.css') }}?v={{ filemtime(public_path('front-theme/styles/libermedia-page-titles.css')) }}">
+        <link rel="stylesheet" href="{{ asset('front-theme/styles/libermedia-richtext-tables.css') }}?v={{ filemtime(public_path('front-theme/styles/libermedia-richtext-tables.css')) }}">
+        <link rel="stylesheet" href="{{ asset('front-theme/styles/libermedia-richtext-lists.css') }}?v={{ filemtime(public_path('front-theme/styles/libermedia-richtext-lists.css')) }}">
+        <script defer src="{{ asset('front-theme/scripts/libermedia-richtext-tables.js') }}?v={{ filemtime(public_path('front-theme/scripts/libermedia-richtext-tables.js')) }}"></script>
         <link rel="stylesheet" href="{{ asset('front-theme/styles/libermedia-categories.css') }}?v={{ filemtime(public_path('front-theme/styles/libermedia-categories.css')) }}">
         @if (request()->routeIs('home'))
             <link rel="stylesheet" href="{{ asset('front-theme/styles/libermedia-home-modules.css') }}?v={{ filemtime(public_path('front-theme/styles/libermedia-home-modules.css')) }}">
@@ -1180,6 +1185,8 @@
 @if (empty($isMobileDevice))
     <script defer src="{{ asset('front-theme/scripts/scroll-to-top.js') }}?v={{ filemtime(public_path('front-theme/scripts/scroll-to-top.js')) }}"></script>
 @endif
+@stack('stock-notification-modals')
+<script defer src="{{ asset('front-theme/scripts/stock-notifications.js') }}?v={{ filemtime(public_path('front-theme/scripts/stock-notifications.js')) }}"></script>
 @stack('scripts')
 </body>
 </html>

@@ -8,6 +8,7 @@ use App\Models\Catalog\Category\Category;
 use App\Models\Catalog\Product\Product;
 use App\Models\Content\Blog\BlogPost;
 use App\Services\Catalog\CatalogFeatureService;
+use App\Services\Content\BlogDiscoveryService;
 use App\Services\Content\ContentBlockResolver;
 use App\Services\Pricing\PriceCatalogResolver;
 use App\Services\Pricing\ProductPricePresentationService;
@@ -22,7 +23,8 @@ class BlogController extends Controller
     use ResolvesFrontendView;
 
     public function __construct(
-        private readonly CatalogFeatureService $catalogFeatures
+        private readonly CatalogFeatureService $catalogFeatures,
+        private readonly BlogDiscoveryService $discovery
     ) {}
 
     public function index(Request $request): View
@@ -79,38 +81,22 @@ class BlogController extends Controller
         $fallbackLocale = (string) config('app.locale');
 
         $post = BlogPost::query()
-            ->where('is_active', true)
-            ->where(function ($q): void {
-                $q->whereNull('published_at')
-                    ->orWhere('published_at', '<=', now());
-            })
+            ->visibleOnBlog([$locale, $fallbackLocale])
             ->whereHas('translations', function ($q) use ($locale, $fallbackLocale, $slug): void {
                 $q->whereIn('locale', [$locale, $fallbackLocale])
-                    ->where('slug', $slug);
+                    ->where('slug', $slug)->whereRaw("TRIM(COALESCE(title, '')) <> ''");
             })
             ->with([
-                'translations' => fn ($q) => $q->whereIn('locale', [$locale, $fallbackLocale]),
+                'translations' => fn ($q) => $q->whereIn('locale', [$locale, $fallbackLocale])
+                    ->whereRaw("TRIM(COALESCE(title, '')) <> ''")->whereRaw("TRIM(COALESCE(slug, '')) <> ''"),
                 'categories.translations' => fn ($q) => $q->whereIn('locale', [$locale, $fallbackLocale]),
                 'creator:id,name',
                 'media',
             ])
             ->firstOrFail();
 
-        $related = BlogPost::query()
-            ->where('is_active', true)
-            ->where('id', '!=', $post->id)
-            ->where(function ($q): void {
-                $q->whereNull('published_at')
-                    ->orWhere('published_at', '<=', now());
-            })
-            ->with([
-                'translations' => fn ($q) => $q->whereIn('locale', [$locale, $fallbackLocale]),
-                'media',
-            ])
-            ->orderByDesc('published_at')
-            ->orderByDesc('id')
-            ->limit(3)
-            ->get();
+        $related = $this->discovery->related($post, [$locale, $fallbackLocale]);
+        $popular = $this->discovery->popular($post, [$locale, $fallbackLocale]);
 
         $relatedProductIds = collect($post->payload['related_product_ids'] ?? [])
             ->map(fn ($id) => (int) $id)
@@ -211,6 +197,7 @@ class BlogController extends Controller
         return view($this->frontendView($request, 'blog.show'), [
             'post' => $post,
             'related' => $related,
+            'popular' => $popular,
             'relatedProducts' => $relatedProducts,
             'hotspotProducts' => $hotspotProducts,
             'locale' => $locale,

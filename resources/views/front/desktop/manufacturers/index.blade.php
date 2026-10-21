@@ -10,7 +10,7 @@
     @endphp
 
     <section class="storefront-container px-3 sm:px-4 lg:px-6">
-        <div class="front-soft-hero px-4 py-4 text-center sm:px-6 sm:py-5">
+        <div class="front-soft-hero lm-page-title px-4 py-4 text-center sm:px-6 sm:py-5">
             <nav aria-label="Breadcrumb" class="mb-2">
                 <ol class="flex flex-wrap items-center justify-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-500 sm:gap-2">
                     <li>

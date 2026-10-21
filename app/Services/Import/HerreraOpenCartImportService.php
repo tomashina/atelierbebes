@@ -735,7 +735,7 @@ class HerreraOpenCartImportService
             $custom = json_decode($row['custom_field'] ?: '{}', true) ?: [];
             $company = trim((string) ($custom['1'] ?? '')) ?: (trim((string) ($default['company'] ?? '')) ?: trim($row['firstname'].' '.$row['lastname']));
             $oib = $this->oib($custom, json_decode($default['custom_field'] ?? '{}', true) ?: []);
-            if (! $oib) {
+            if (! $oib && ! config('commerce.b2c_only')) {
                 $this->issue('customer', $row['customer_id'], 'missing_or_invalid_oib');
             }
             $this->mapped('profile', $row['customer_id'], 'user_profiles', ['user_id' => $id, 'first_name' => $row['firstname'], 'last_name' => $row['lastname'], 'phone' => $row['telephone'], 'company' => $company, 'oib' => $oib, 'newsletter_opt_in' => (bool) $row['newsletter'], 'payload' => $this->json(['opencart' => $safe])], $safe + ['default_address' => $default]);
@@ -748,6 +748,11 @@ class HerreraOpenCartImportService
                         && ! DB::table('b2b_accounts')->where('user_id', $id)->whereNotNull('customer_group_id')->where('customer_group_id', '!=', $group)->exists();
                 }
                 $this->sourceEdge('customer_group_user', ['user_id' => $id, 'customer_group_id' => $group], ['created_at' => now(), 'updated_at' => now()], $newCustomer);
+            }
+            if (config('commerce.b2c_only')) {
+                $this->ownership?->completeCreatedParent('customer', (string) $row['customer_id']);
+
+                return;
             }
             // The live OpenCart login checks status, not its obsolete approved
             // column. Preserve the actual buying entitlement of existing users.

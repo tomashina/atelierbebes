@@ -4,12 +4,12 @@
     $floatingCartImage = trim((string) (($gallery->first()['full'] ?? '') ?: ''));
 @endphp
 
-@if (($canViewPrices ?? app(\App\Services\Pricing\B2BAccessService::class)->canViewPrices(auth()->user())) && $isPurchasable)
+@if (($canViewPrices ?? app(\App\Services\Pricing\B2BAccessService::class)->canViewPrices(auth()->user())))
     <aside
         class="product-floating-cart"
         data-product-floating-cart
         data-cart-form-id="{{ $floatingCartFormId }}"
-        aria-label="{{ __('ui.product.add_to_cart') }}"
+        aria-label="{{ $isPurchasable ? __('ui.product.add_to_cart') : 'Obavijesti me o dostupnosti' }}"
         aria-hidden="true"
     >
         <div class="product-floating-cart-shell">
@@ -35,7 +35,7 @@
                 @include('front.partials.b2b-tax-note', ['includesTax' => $displayIncludesTax ?? true])
             </p>
 
-            <div class="product-detail-quantity-control product-floating-cart-quantity">
+            <div class="product-detail-quantity-control product-floating-cart-quantity" data-stock-notify-quantity @if(!$isPurchasable) hidden @endif>
                 <button type="button" data-product-floating-qty-dec aria-label="{{ __('ui.cart.modal.quantity') }} -">-</button>
                 <input
                     type="text"
@@ -55,10 +55,16 @@
                 class="product-detail-action product-detail-cart-button product-floating-cart-action"
                 aria-label="{{ __('ui.product.add_to_cart') }}"
                 data-product-floating-submit
+                @if(!$isPurchasable) hidden @endif
             >
                 <x-fa-icon name="bag-shopping" class="product-floating-cart-icon" />
                 <span>{{ __('ui.product.add_to_cart') }}</span>
             </button>
+            @if (\App\Support\StorefrontTheme::usesLibermediaBrand())
+                @include('front.partials.stock-notification-button', ['notifyProductId' => $product->id, 'notifyName' => $floatingCartName, 'notifyClass' => 'stock-notify-button-floating', 'notifyHidden' => $isPurchasable])
+            @elseif (! $isPurchasable)
+                <button type="button" disabled class="product-detail-cart-button product-detail-cart-button-disabled product-floating-cart-action" aria-label="{{ __('ui.product.unavailable') }}"><span>{{ __('ui.product.unavailable') }}</span></button>
+            @endif
         </div>
     </aside>
 @endif

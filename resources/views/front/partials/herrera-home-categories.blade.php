@@ -129,7 +129,7 @@
                 </a>
             @endforeach
             @if ($showLibermediaBundleTile)
-                <a href="https://www.liber-media.hr/bundle-artikli" class="herrera-category-tile libermedia-category-bundle" data-libermedia-category-bundle>
+                <a href="{{ route('bundles.index') }}" class="herrera-category-tile libermedia-category-bundle" data-libermedia-category-bundle>
                     <span class="libermedia-category-bundle-icon"><x-fa-icon name="gift" style="light" /></span>
                     <span class="libermedia-category-bundle-copy">
                         <span class="libermedia-category-bundle-eyebrow">{{ __('Više igre, više uštede') }}</span>

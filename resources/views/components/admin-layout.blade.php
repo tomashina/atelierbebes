@@ -1196,16 +1196,18 @@
                     $catalogUseActions = app(\App\Services\Catalog\CatalogFeatureService::class)->useActions();
                     $catalogCategoriesActive = request()->routeIs('admin.categories*');
                     $catalogProductsActive = request()->routeIs('admin.products*');
+                    $catalogStockNotificationsActive = request()->routeIs('admin.stock-notifications');
                     $catalogAttributesActive = request()->routeIs('admin.attributes*');
                     $catalogOptionsActive = request()->routeIs('admin.options*');
                     $catalogManufacturersActive = request()->routeIs('admin.manufacturers*');
-                    $catalogActionsActive = request()->routeIs('admin.actions*');
+                    $catalogActionsActive = request()->routeIs('admin.actions*', 'admin.bundles');
                     $catalogB2bPricesActive = request()->routeIs('admin.b2b-prices*');
-                    $catalogOpen = $catalogCategoriesActive || $catalogProductsActive || $catalogAttributesActive || $catalogOptionsActive || $catalogManufacturersActive || $catalogActionsActive || $catalogB2bPricesActive;
+                    $catalogOpen = $catalogCategoriesActive || $catalogProductsActive || $catalogStockNotificationsActive || $catalogAttributesActive || $catalogOptionsActive || $catalogManufacturersActive || $catalogActionsActive || $catalogB2bPricesActive;
                     $salesOrdersActive = request()->routeIs('admin.orders*');
+                    $salesGiftVouchersActive = request()->routeIs('admin.gift-vouchers');
                     $salesOffersActive = request()->routeIs('admin.customer-offers.*');
                     $salesWithdrawalsActive = request()->routeIs('admin.withdrawals.*');
-                    $salesOpen = $salesOrdersActive || $salesOffersActive || $salesWithdrawalsActive;
+                    $salesOpen = $salesOrdersActive || $salesGiftVouchersActive || $salesOffersActive || $salesWithdrawalsActive;
                     $contentBlogActive = request()->routeIs('admin.content.blog.*');
                     $contentPagesActive = request()->routeIs('admin.content.pages.*');
                     $contentFaqsActive = request()->routeIs('admin.content.faqs.*');
@@ -1296,7 +1298,7 @@
                         'options' => $catalogUseOptions && $canAdminAbility('catalog.options.view'),
                         'manufacturers' => $catalogUseManufacturers && $canAdminAbility('catalog.manufacturers.view'),
                         'actions' => $catalogUseActions && $canAdminAbility('catalog.actions.view'),
-                        'b2b-prices' => $canAdminAbility('catalog.b2b_prices.view'),
+                        'b2b-prices' => ! config('commerce.b2c_only') && $canAdminAbility('catalog.b2b_prices.view'),
                     ];
                     $contentLinks = [
                         'blog' => $catalogUseBlog && $canAdminAbility('content.blog.view'),
@@ -1538,6 +1540,7 @@
                                     <span>{{ __('admin.layout.menu.products') }}</span>
                                 </span>
                             </a>
+                            <a href="{{ route('admin.stock-notifications') }}" class="sidebar-dropdown-link block rounded-lg font-medium {{ request()->routeIs('admin.stock-notifications') ? 'is-active-leaf' : 'text-slate-700 hover:bg-slate-100' }}"><span class="flex items-center gap-2"><span class="sidebar-dot"></span><span>Obavijesti o dostupnosti</span></span></a>
                             @endif
                             @if ($catalogLinks['attributes'])
                                 <a
@@ -1573,6 +1576,7 @@
                                 </a>
                             @endif
                             @if ($catalogLinks['actions'])
+                                <a href="{{ route('admin.bundles') }}" class="sidebar-dropdown-link block rounded-lg font-medium {{ request()->routeIs('admin.bundles') ? 'is-active-leaf' : 'text-slate-700 hover:bg-slate-100' }}"><span class="flex items-center gap-2"><span class="sidebar-dot"></span><span>Bundle ponude</span></span></a>
                                 <a
                                     href="{{ route('admin.actions') }}"
                                     class="sidebar-dropdown-link block rounded-lg font-medium {{ $catalogActionsActive ? 'is-active-leaf' : 'text-slate-700 hover:bg-slate-100' }}"
@@ -1620,6 +1624,7 @@
                                     <span>{{ __('admin.layout.menu.orders') }}</span>
                                 </span>
                             </a>
+                            <a href="{{ route('admin.gift-vouchers') }}" class="sidebar-dropdown-link block rounded-lg font-medium {{ $salesGiftVouchersActive ? 'is-active-leaf' : 'text-slate-700 hover:bg-slate-100' }}"><span class="flex items-center gap-2"><span class="sidebar-dot"></span><span>Poklon bonovi</span></span></a>
                             @endif
                             @if ($canViewWithdrawals)
                                 <a
@@ -1947,6 +1952,7 @@
                                             <span>{{ $isAssignedCustomerView ? __('Moji kupci') : __('admin.layout.menu.users_list') }}</span>
                                         </span>
                                     </a>
+                                    @if (! config('commerce.b2c_only'))
                                     <a
                                         href="{{ route('admin.users.b2b') }}"
                                         class="sidebar-dropdown-link block rounded-lg font-medium {{ $usersB2BActive ? 'is-active-leaf' : 'text-slate-700 hover:bg-slate-100' }}"
@@ -1956,6 +1962,7 @@
                                             <span>{{ __('B2B zahtjevi') }}</span>
                                         </span>
                                     </a>
+                                    @endif
                                 @endif
                                 @if ($canViewUsersList && (auth()->user()->isA('superadmin') || auth()->user()->can('sales.orders.view')))
                                     <a href="{{ route('admin.users.statistics') }}" class="sidebar-dropdown-link block rounded-lg font-medium {{ $usersStatisticsActive ? 'is-active-leaf' : 'text-slate-700 hover:bg-slate-100' }}">

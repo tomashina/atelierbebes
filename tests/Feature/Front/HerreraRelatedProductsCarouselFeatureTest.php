@@ -82,6 +82,26 @@ class HerreraRelatedProductsCarouselFeatureTest extends TestCase
         $this->assertSame(0, $xpath->query('.//button[contains(@class, "splide__arrow")]', $carousel)->count());
     }
 
+    public function test_libermedia_fills_only_one_missing_desktop_related_slot_without_adding_a_carousel_product(): void
+    {
+        config(['storefront.theme' => 'herrera', 'commerce.b2b_only' => false]);
+        app(SystemSettingsService::class)->put('store_brand_name', 'Liber Media');
+        foreach ([4, 5] as $count) {
+            $product = $this->product('main-'.$count);
+            $related = collect(range(1, $count))->map(fn ($index) => $this->product('related-'.$count.'-'.$index));
+            $product->update(['payload' => ['related_product_ids' => $related->pluck('id')->all()]]);
+            $response = $this->get(route('products.show', ['slug' => 'related-carousel-main-'.$count, 'cols' => $count]))->assertOk();
+            $xpath = $this->xpath($response->getContent());
+            $carousel = $xpath->query('//*[@data-herrera-related-products-splide]')->item(0);
+            $this->assertSame($count, $xpath->query('.//*[@data-product-card]', $carousel)->count());
+            $this->assertSame($count, $xpath->query('.//li[contains(@class, "splide__slide")]', $carousel)->count());
+            $this->assertSame($count === 5 ? 1 : 0, $xpath->query('.//*[@data-product-promo-slot]', $carousel)->count());
+            if ($count === 5) {
+                $this->assertSame(route('bundles.index'), $xpath->query('.//*[@data-product-promo-slot]/a', $carousel)->item(0)->getAttribute('href'));
+            }
+        }
+    }
+
     public function test_other_storefront_keeps_its_existing_related_limit_and_initializer(): void
     {
         app(SystemSettingsService::class)->putMany([

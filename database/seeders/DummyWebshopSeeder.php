@@ -194,6 +194,10 @@ class DummyWebshopSeeder extends Seeder
         );
         Bouncer::assign('editor')->to($editorUser);
 
+        foreach ([$filip, $tomislav, $adminUser, $editorUser] as $staffUser) {
+            $staffUser->forceFill(['account_type' => 'staff'])->save();
+        }
+
         $customerUser = User::query()->firstOrCreate(
             ['email' => 'customer@agshop.local'],
             ['name' => 'customer', 'password' => 'customer', 'email_verified_at' => now()]

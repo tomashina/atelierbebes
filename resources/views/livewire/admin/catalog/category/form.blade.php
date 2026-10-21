@@ -195,9 +195,21 @@
                     </div>
                 </div>
 
+                @if ($form['scope'] === \App\Models\Catalog\Category\Category::SCOPE_CATALOG)
                 <div class="mt-3">
-                    <label for="category-description-html" class="mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{{ __('Description') }}</label>
+                    <label for="category-short-description-html" class="mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{{ __('Kratki opis') }}</label>
+                    <p class="mb-2 text-xs text-slate-500">{{ __('Kratki uvod koji se prikazuje iznad proizvoda kategorije.') }}</p>
+                    <x-admin.quill-field id="category-short-description-html" rows="3" wire:model.live.debounce.300ms="form.short_description" />
+                    @error('form.short_description') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
+                </div>
+                @endif
+                <div class="mt-5">
+                    <label for="category-description-html" class="mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{{ $form['scope'] === \App\Models\Catalog\Category\Category::SCOPE_CATALOG ? __('Dugi opis') : __('Description') }}</label>
+                    @if ($form['scope'] === \App\Models\Catalog\Category\Category::SCOPE_CATALOG)
+                        <p class="mb-2 text-xs text-slate-500">{{ __('Detaljan opis koji se prikazuje ispod popisa proizvoda kategorije.') }}</p>
+                    @endif
                     <x-admin.quill-field id="category-description-html" rows="6" wire:model.live.debounce.300ms="form.description" />
+                    @error('form.description') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                 </div>
             </div>
 

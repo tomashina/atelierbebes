@@ -8,16 +8,14 @@
         <link rel="stylesheet" href="{{ asset('front-theme/styles/checkout.css') }}?v={{ filemtime(public_path('front-theme/styles/checkout.css')) }}">
     @endpush
 
+    <header class="lm-page-title">
+        <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">{{ __('ui.checkout.keks.redirect_title') }}</h1>
+        <p class="mt-2 text-sm text-slate-600">{{ __('ui.checkout.keks.redirect_subtitle') }}</p>
+        <img src="{{ asset('assets/payments/keks-logo.svg') }}" alt="KEKS Pay" class="mx-auto mt-4 h-10 w-auto max-w-[180px]">
+    </header>
+
     <section class="checkout-status-card">
         <div class="mx-auto max-w-4xl">
-            <div class="flex flex-col items-start justify-between gap-4 border-b border-slate-200 pb-4 sm:flex-row sm:items-center">
-                <div>
-                    <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">{{ __('ui.checkout.keks.redirect_title') }}</h1>
-                    <p class="mt-2 text-sm text-slate-600">{{ __('ui.checkout.keks.redirect_subtitle') }}</p>
-                </div>
-                <img src="{{ asset('assets/payments/keks-logo.svg') }}" alt="KEKS Pay" class="h-10 w-auto max-w-[180px]">
-            </div>
-
             <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
                 <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
                     <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-700">{{ __('ui.checkout.keks.instructions_title') }}</h2>

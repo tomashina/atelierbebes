@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'b2c_only' => env('STORE_B2C_ONLY', false),
     // Herrera is a public catalog with purchasing reserved for approved businesses.
     'b2b_only' => env('STORE_B2B_ONLY', true),
     'b2b_display_net' => env('STORE_B2B_DISPLAY_NET', true),

@@ -106,10 +106,15 @@
                             class="admin-switch"
                             data-state="{{ $editForm['is_featured'] ? 'on' : 'off' }}"
                             role="switch"
+                            aria-checked="{{ $editForm['is_featured'] ? 'true' : 'false' }}"
+                            @if ($editingProductComment) aria-describedby="comment-homepage-help" @endif
                         >
                             <span class="admin-switch-track"><span class="admin-switch-thumb"></span></span>
-                            <span class="admin-switch-label">{{ $editForm['is_featured'] ? __('Featured') : __('Not Featured') }}</span>
+                            <span class="admin-switch-label">{{ $editingProductComment ? __('Prikaži na naslovnici') : ($editForm['is_featured'] ? __('Featured') : __('Not Featured')) }}</span>
                         </button>
+                        @if ($editingProductComment)
+                            <p id="comment-homepage-help" class="mt-2 text-xs text-slate-500">{{ __('Na naslovnici se prikazuju do tri najnovije odabrane recenzije. Komentar mora biti odobren, imati ocjenu i pripadati aktivnom proizvodu.') }}</p>
+                        @endif
                         @error('editForm.is_featured') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                     </div>
                     <div style="grid-column: span 12;">
@@ -177,6 +182,9 @@
                                         ({{ $row->author_email ?: $row->user?->email }})
                                     @endif
                                 </div>
+                                @if ($row->is_featured && $commentable instanceof \App\Models\Catalog\Product\Product)
+                                    <span class="mt-2 inline-flex rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-800">{{ __('Odabrano za naslovnicu') }}</span>
+                                @endif
                             </td>
                             <td class="px-3 py-2 text-slate-700">{{ $targetLabel }}</td>
                             <td class="px-3 py-2 text-center text-slate-700">{{ $row->rating ?: '-' }}</td>

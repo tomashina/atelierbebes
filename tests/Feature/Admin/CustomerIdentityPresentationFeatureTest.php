@@ -17,7 +17,7 @@ class CustomerIdentityPresentationFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_customer_display_uses_company_sources_without_changing_contact_or_staff_names(): void
+    public function test_customer_display_uses_company_sources_without_changing_contact_names(): void
     {
         $buyer = User::factory()->create(['name' => 'Contact Person']);
         $buyer->b2bAccount()->create(['company_name' => '  B2B Company  ', 'oib' => '11000000001']);
@@ -30,11 +30,22 @@ class CustomerIdentityPresentationFeatureTest extends TestCase
         $buyer->profile()->update(['company' => ' ']);
         $this->assertSame('Billing Company', $buyer->fresh()->customerDisplayName());
         $buyer->addresses()->where('type', 'billing')->update(['company' => ' ']);
-        $this->assertSame('Contact Person', $buyer->fresh()->customerDisplayName());
+        $this->assertSame('Tvrtka bez naziva', $buyer->fresh()->customerDisplayName());
+        $this->assertSame('B2B', $buyer->fresh()->commerceCustomerType());
         $this->assertSame('Contact Person', $buyer->fresh()->name);
+    }
+
+    public function test_staff_promoted_from_a_business_customer_keeps_the_personal_name_and_historical_account(): void
+    {
+        $buyer = User::factory()->create(['name' => 'Contact Person']);
+        $account = $buyer->b2bAccount()->create(['company_name' => 'Historical Business', 'oib' => '11000000001']);
+        $buyer->profile()->create(['company' => 'Employer Company']);
+        $buyer->addresses()->create(['type' => 'billing', 'company' => 'Historical Billing Company']);
         $buyer->forceFill(['account_type' => 'staff'])->save();
-        $buyer->profile()->update(['company' => 'Employer Company']);
         $this->assertSame('Contact Person', $buyer->fresh()->customerDisplayName());
+        $this->assertSame($account->id, $buyer->fresh()->b2bAccount->id);
+        $this->assertSame('Historical Business', $account->fresh()->company_name);
+        $this->assertNull($buyer->fresh()->companyName());
     }
 
     public function test_current_company_is_primary_and_searchable_in_statistics_with_contact_preserved(): void
@@ -78,7 +89,11 @@ class CustomerIdentityPresentationFeatureTest extends TestCase
     {
         $admin = $this->admin();
         $buyer = User::factory()->create(['name' => 'Missing Company Contact']);
+        // Identity follows an actual business account and the recorded order type,
+        // independently of the storefront's global registration mode.
+        $buyer->b2bAccount()->create(['company_name' => ' ', 'oib' => '11000000001']);
         $order = $this->order($buyer, 'MISSING-COMPANY', ' ', 25);
+        $order->update(['payload' => ['customer_type' => 'B2B']]);
         config(['commerce.b2b_only' => true]);
         $this->assertSame('Tvrtka bez naziva', $buyer->fresh()->customerDisplayName());
         $this->assertSame('Tvrtka bez naziva', $order->customerDisplayName());
@@ -87,8 +102,18 @@ class CustomerIdentityPresentationFeatureTest extends TestCase
         $this->assertSame('Missing Company Contact', $buyer->fresh()->name);
         $this->assertSame('Missing Company Contact', $order->fresh()->customer_name);
         config(['commerce.b2b_only' => false]);
-        $this->assertSame('Missing Company Contact', $buyer->fresh()->customerDisplayName());
-        $this->assertSame('Missing Company Contact', $order->customerDisplayName());
+        $this->assertSame('Tvrtka bez naziva', $buyer->fresh()->customerDisplayName());
+        $this->assertSame('Tvrtka bez naziva', $order->fresh()->customerDisplayName());
+        $privateBuyer = User::factory()->create(['name' => 'Private Contact']);
+        $privateOrder = $this->order($privateBuyer, 'PRIVATE-CUSTOMER', '', 25);
+        $privateOrder->update(['payload' => ['customer_type' => 'B2C']]);
+        foreach ([false, true] as $businessOnly) {
+            config(['commerce.b2b_only' => $businessOnly]);
+            $this->assertSame('B2C', $privateBuyer->fresh()->commerceCustomerType());
+            $this->assertSame('Private Contact', $privateBuyer->fresh()->customerDisplayName());
+            $this->assertSame('B2C', $privateOrder->fresh()->commerceCustomerType());
+            $this->assertSame('Private Contact', $privateOrder->fresh()->customerDisplayName());
+        }
     }
 
     public function test_order_list_search_and_sort_use_historical_company_and_keep_contact_visible(): void

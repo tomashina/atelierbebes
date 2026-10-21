@@ -16,7 +16,7 @@
         $labelClass = 'mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-600';
     @endphp
 
-    <section class="commerce-hero">
+    <section class="commerce-hero lm-page-title">
         <p class="text-xs font-bold uppercase tracking-[0.16em] text-cyan-700">{{ __('return_request.eyebrow') }}</p>
         <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">{{ __('return_request.heading') }}</h1>
         <p class="mt-2 max-w-3xl text-slate-600">{{ __('return_request.subheading') }}</p>

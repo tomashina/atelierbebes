@@ -17,6 +17,12 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schedule;
 
+Schedule::command('stock-notifications:send')->everyFiveMinutes()->withoutOverlapping(15)
+    ->when(fn () => (bool) config('stock_notifications.enabled', true) && (bool) config('stock_notifications.emails_enabled', false));
+
+Schedule::command('gift-vouchers:process')->everyFiveMinutes()->withoutOverlapping(15)
+    ->when(fn () => (bool) config('gift_vouchers.enabled', true));
+
 Schedule::command('herrera:sync-vayox-documents')
     ->dailyAt('03:30')->timezone(config('supplier-documents.vayox.timezone', 'Europe/Zagreb'))
     ->withoutOverlapping(60)->when(fn () => (bool) config('supplier-documents.vayox.scheduled', false));

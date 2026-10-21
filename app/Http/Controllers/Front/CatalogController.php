@@ -15,6 +15,7 @@ use App\Models\Catalog\Product\Product;
 use App\Models\Content\Blog\BlogPost;
 use App\Models\User;
 use App\Services\Catalog\CatalogFeatureService;
+use App\Services\Catalog\LibermediaSpecificationFilterIndex;
 use App\Services\Content\ContentBlockResolver;
 use App\Services\Front\GuestStorefrontCache;
 use App\Services\Front\StorefrontProductSearch;
@@ -1514,7 +1515,9 @@ class CatalogController extends Controller
     {
         $raw = app(SystemSettingsService::class)->get('store_product_filter_attribute_group_codes', []);
 
-        return collect(is_array($raw) ? $raw : [])
+        $autoGroups = \App\Support\StorefrontTheme::usesLibermediaBrand() ? LibermediaSpecificationFilterIndex::groupCodes() : [];
+
+        return collect([...(is_array($raw) ? $raw : []), ...$autoGroups])
             ->map(fn ($code): string => trim((string) $code))
             ->filter(fn (string $code): bool => $code !== '')
             ->unique()
@@ -1678,7 +1681,7 @@ class CatalogController extends Controller
         $manufacturerKey = $manufacturerId === null ? 'all' : (string) $manufacturerId;
         $hideOutOfStock = $this->hideOutOfStockProducts() || $availableOnly;
         $cacheKey = sprintf(
-            'front:catalog:attribute-filters:v4:%s:%s:%s:%s:%s:%s',
+            'front:catalog:attribute-filters:v5:%s:%s:%s:%s:%s:%s',
             $locale,
             $fallbackLocale,
             sha1(implode(',', $groupCodes)),
@@ -1695,23 +1698,25 @@ class CatalogController extends Controller
             $manufacturerId,
             $hideOutOfStock
         ): array {
+            $productScope = function ($productQuery) use ($scopeIds, $manufacturerId, $hideOutOfStock): void {
+                $productQuery->visibleOnStorefront($hideOutOfStock)->availableWithin48Hours($this->localAvailabilityOnly);
+                if ($manufacturerId !== null) {
+                    $productQuery->where('products.manufacturer_id', $manufacturerId);
+                }
+                if ($scopeIds !== []) {
+                    $productQuery->whereHas('categories', function ($categoryQuery) use ($scopeIds): void {
+                        $categoryQuery
+                            ->where('scope', Category::SCOPE_CATALOG)
+                            ->currentlyVisible()
+                            ->whereIn('categories.id', $scopeIds);
+                    });
+                }
+            };
             $attributes = Attribute::query()
                 ->whereIn('group_code', $groupCodes)
                 ->where('is_active', true)
-                ->whereHas('products', function ($productQuery) use ($scopeIds, $manufacturerId, $hideOutOfStock): void {
-                    $productQuery->visibleOnStorefront($hideOutOfStock)->availableWithin48Hours($this->localAvailabilityOnly);
-                    if ($manufacturerId !== null) {
-                        $productQuery->where('products.manufacturer_id', $manufacturerId);
-                    }
-                    if ($scopeIds !== []) {
-                        $productQuery->whereHas('categories', function ($categoryQuery) use ($scopeIds): void {
-                            $categoryQuery
-                                ->where('scope', Category::SCOPE_CATALOG)
-                                ->currentlyVisible()
-                                ->whereIn('categories.id', $scopeIds);
-                        });
-                    }
-                })
+                ->whereHas('products', $productScope)
+                ->withCount(['products as products_count' => $productScope])
                 ->with(['translations' => fn ($q) => $q->whereIn('locale', [$locale, $fallbackLocale])])
                 ->orderBy('group_code')
                 ->orderBy('sort_order')
@@ -1752,8 +1757,10 @@ class CatalogController extends Controller
                         return [
                             'id' => (int) $attribute->id,
                             'label' => $valueLabel !== '' ? $valueLabel : (string) $attribute->code,
+                            'count' => (int) $attribute->products_count,
                         ];
                     })
+                    ->when(str_starts_with($groupCode, 'libermedia-spec-'), fn ($values) => $values->sort(fn ($a, $b) => strnatcasecmp($a['label'], $b['label'])))
                     ->values()
                     ->all();
 
@@ -1943,7 +1950,7 @@ class CatalogController extends Controller
             'selected_options' => $selectedOptions,
             'selected_attributes' => $selectedAttributes,
         ];
-        $cacheKey = 'front:catalog:refined-filter-availability:v1:'.sha1(
+        $cacheKey = 'front:catalog:refined-filter-availability:v2:'.sha1(
             json_encode($cachePayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: ''
         );
 
@@ -2028,7 +2035,7 @@ class CatalogController extends Controller
                     ->all();
             }
 
-            $attributeIds = [];
+            $attributeCounts = [];
             if ($candidateAttributeIds !== []) {
                 $attributeQuery = DB::table('catalog_attributes as facet_attributes')
                     ->join('catalog_attribute_product as facet_attribute_links', 'facet_attribute_links.attribute_id', '=', 'facet_attributes.id')
@@ -2066,23 +2073,23 @@ class CatalogController extends Controller
                     });
                 }
 
-                $attributeIds = $attributeQuery
-                    ->select('facet_attributes.id')
-                    ->distinct()
-                    ->pluck('facet_attributes.id')
-                    ->map(fn ($id): int => (int) $id)
+                $attributeCounts = $attributeQuery
+                    ->selectRaw('facet_attributes.id as value_id, COUNT(DISTINCT products.id) as product_count')
+                    ->groupBy('facet_attributes.id')
+                    ->pluck('product_count', 'value_id')
+                    ->map(fn ($count): int => (int) $count)
                     ->all();
             }
 
             return [
                 'option_counts' => $optionCounts,
-                'attribute_ids' => $attributeIds,
+                'attribute_counts' => $attributeCounts,
             ];
         });
 
         $optionCounts = (array) ($availability['option_counts'] ?? []);
         $availableAttributeIds = array_fill_keys(
-            array_map('intval', (array) ($availability['attribute_ids'] ?? [])),
+            array_map('intval', array_keys((array) ($availability['attribute_counts'] ?? []))),
             true
         );
         $optionFilters = collect($optionFilters)
@@ -2102,10 +2109,16 @@ class CatalogController extends Controller
             ->filter(fn (array $filter): bool => $filter['values'] !== [])
             ->values()
             ->all();
+        $attributeCounts = (array) ($availability['attribute_counts'] ?? []);
         $attributeFilters = collect($attributeFilters)
-            ->map(function (array $filter) use ($availableAttributeIds): array {
+            ->map(function (array $filter) use ($availableAttributeIds, $attributeCounts): array {
                 $filter['values'] = collect((array) ($filter['values'] ?? []))
                     ->filter(fn (array $value): bool => isset($availableAttributeIds[(int) ($value['id'] ?? 0)]))
+                    ->map(function (array $value) use ($attributeCounts): array {
+                        $value['count'] = (int) ($attributeCounts[(int) $value['id']] ?? 0);
+
+                        return $value;
+                    })
                     ->values()
                     ->all();
 
@@ -2578,6 +2591,11 @@ class CatalogController extends Controller
 
     private function applyPromotionFilter(Builder $query, ?User $user): void
     {
+        if (config('commerce.b2c_only')) {
+            app(\App\Services\Catalog\B2CPromotionService::class)->filter($query, $user);
+
+            return;
+        }
         if (app(PriceCatalogQuery::class)->applyPromotionFilter($query, $user)) {
             return;
         }
@@ -2839,6 +2857,9 @@ class CatalogController extends Controller
 
     private function publicSourceCacheKey(string $key): string
     {
+        if (\App\Support\StorefrontTheme::usesLibermediaBrand()) {
+            $key .= ':spec-revision:'.Cache::get(LibermediaSpecificationFilterIndex::REVISION_KEY, 'initial');
+        }
         if (! (bool) config('storefront_cache.enabled', false)) {
             return $key;
         }
@@ -2858,6 +2879,7 @@ class CatalogController extends Controller
 
         return '"'.sha1(implode('|', [
             'desktop-catalog',
+            (string) Cache::get(LibermediaSpecificationFilterIndex::REVISION_KEY, 'initial'),
             $scope,
             app()->getLocale(),
             $request->getRequestUri(),

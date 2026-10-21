@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 
 class LibermediaConfigureHome extends Command
 {
-    protected $signature = 'libermedia:configure-home {--force : Replace already configured Liber Media modules}';
+    protected $signature = 'libermedia:configure-home {--force : Replace already configured Liber Media modules} {--benefits-only : Configure only the hero benefits module}';
 
     protected $description = 'Create admin-managed Liber Media homepage modules in the local preview';
 
@@ -37,6 +37,9 @@ class LibermediaConfigureHome extends Command
             ['code' => 'libermedia-home-promotions', 'title' => 'Akcije i popusti', 'is_products' => true, 'is_promotions' => true, 'placement' => 'home.bottom', 'sort_order' => 5],
             ['code' => 'libermedia-home-assurance', 'title' => 'Pomno birano za igru i učenje', 'is_products' => false, 'placement' => 'home.bottom', 'sort_order' => 10],
         ];
+        if ($this->option('benefits-only')) {
+            $definitions = array_filter($definitions, fn (array $definition): bool => $definition['code'] === 'libermedia-home-benefits');
+        }
         $updated = 0;
 
         DB::transaction(function () use ($definitions, &$updated): void {

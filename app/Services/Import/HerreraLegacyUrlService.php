@@ -87,6 +87,9 @@ class HerreraLegacyUrlService
 
     public function destinationForQuery(string $query, string $locale = 'hr'): ?string
     {
+        if ($query === 'bundle_category_id=1') {
+            return '/bundle-artikli';
+        }
         if ($query === 'product/special') {
             return '/akcije';
         }

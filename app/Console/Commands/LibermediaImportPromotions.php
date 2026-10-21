@@ -27,7 +27,7 @@ class LibermediaImportPromotions extends Command
         }
 
         $catalog = PriceCatalog::query()->where('source_system', 'herrera-opencart')
-            ->where('source_snapshot', 'libermedia')->where('status', PriceCatalog::DRAFT)
+            ->where('source_snapshot', config('database.connections.libermedia_source.database'))->where('status', PriceCatalog::DRAFT)
             ->where('currency_code', 'EUR')->latest('id')->first();
         $group = CustomerGroup::query()->where('is_active', true)->get()
             ->first(fn (CustomerGroup $group): bool => (int) data_get($group->payload, 'opencart.customer_group_id') === 1);

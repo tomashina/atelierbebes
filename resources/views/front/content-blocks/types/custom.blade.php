@@ -6,7 +6,7 @@
         <p class="mt-2 text-sm text-slate-600">{{ $translation->subtitle }}</p>
     @endif
     @if (!empty($translation?->body_html))
-        <div class="prose prose-slate mt-3 max-w-none">
+        <div class="prose prose-slate mt-3 max-w-none" data-richtext-content>
             {!! $translation->body_html !!}
         </div>
     @endif

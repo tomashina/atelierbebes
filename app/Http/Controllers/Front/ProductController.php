@@ -419,6 +419,11 @@ class ProductController extends Controller
             frontendVariant: $variant
         );
 
+        $reviewDistribution = $product->comments()
+            ->whereNull('parent_id')->status(Comment::STATUS_APPROVED)
+            ->whereIn('locale', [$locale, $fallbackLocale])->whereBetween('rating', [1, 5])
+            ->selectRaw('rating, COUNT(*) as total')->groupBy('rating')->pluck('total', 'rating')->all();
+
         $comments = $product->comments()
             ->whereNull('parent_id')
             ->status(Comment::STATUS_APPROVED)
@@ -466,6 +471,7 @@ class ProductController extends Controller
             'related' => $related,
             'recentlyViewed' => $recentlyViewed,
             'comments' => $comments,
+            'reviewDistribution' => $reviewDistribution,
             'sizeGuide' => $sizeGuide,
             'fitFinderSelection' => $fitFinderSelection,
             'colorVariants' => $colorVariants,

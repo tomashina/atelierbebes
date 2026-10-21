@@ -14,6 +14,7 @@
         'cyan' => 'bg-cyan-100 text-cyan-800',
     ];
 
+    $giftVoucherSettlement = (array) data_get($order->payload, 'gift_voucher_settlement', []);
     $statusColor = strtolower((string) ($order->status?->color ?? 'slate'));
     $statusClass = $statusClasses[$statusColor] ?? $statusClasses['slate'];
     $loyaltySettlement = $loyaltyEnabled
@@ -401,6 +402,14 @@
 
         <div class="admin-panel admin-panel-soft p-5">
             <h2 class="admin-section-title">{{ __('Totals') }}</h2>
+            @if (($giftVoucherSettlement['status'] ?? '') === 'attention')
+                <div class="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950" role="alert" data-gift-voucher-settlement-attention>
+                    <p class="font-bold">Poklon bon: potreban je pregled</p>
+                    <p class="mt-2">Nepokriveni iznos bona: <strong>{{ number_format((float) ($giftVoucherSettlement['amount'] ?? 0), 2, ',', '.') }} {{ \App\Support\Currency::symbol($order->currency_code) }}</strong></p>
+                    <p class="mt-1">{{ ($giftVoucherSettlement['reason'] ?? '') === 'insufficient_balance' ? 'Saldo bona potrošen je nakon isteka rezervacije.' : 'Bon nakon isteka rezervacije više nije dostupan za korištenje.' }}</p>
+                    <p class="mt-2">Uplata je zaprimljena. Prije isporuke provjerite pokriće preostalog iznosa.</p>
+                </div>
+            @endif
             <div class="mt-4 space-y-2">
                 @forelse ($visibleTotals as $total)
                     @php
@@ -410,6 +419,7 @@
                             'payment_fee' => __('ui.account.order_show.totals.labels.payment_fee'),
                             'tax' => __('ui.account.order_show.totals.labels.tax'),
                             'loyalty_redemption' => __('Loyalty Redemption'),
+                            'gift_voucher' => ($giftVoucherSettlement['status'] ?? '') === 'attention' ? 'Planirano pokriće poklon bonom' : 'Plaćeno poklon bonom',
                             'grand_total' => __('ui.account.order_show.totals.labels.grand_total'),
                         ];
                         $totalLabelRaw = trim((string) ($total->title ?? ''));

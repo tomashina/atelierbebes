@@ -186,60 +186,65 @@ class ProductPricePresentationService
         $periodStart = now()->subDays(30);
         $periodEnd = now();
 
-        $categoryIds = $product->relationLoaded('categories')
-            ? $product->categories->pluck('id')->map(static fn ($id): int => (int) $id)->all()
-            : $product->categories()->pluck('categories.id')->map(static fn ($id): int => (int) $id)->all();
-        $manufacturerId = $product->manufacturer_id ? (int) $product->manufacturer_id : null;
+        if (config('commerce.b2c_only')) {
+            $actions = app(\App\Services\Catalog\B2CPromotionService::class)->forProduct($product, $user, history: true);
+        } else {
+            $categoryIds = $product->relationLoaded('categories')
+                ? $product->categories->pluck('id')->map(static fn ($id): int => (int) $id)->all()
+                : $product->categories()->pluck('categories.id')->map(static fn ($id): int => (int) $id)->all();
+            $manufacturerId = $product->manufacturer_id ? (int) $product->manufacturer_id : null;
 
-        $actions = CatalogAction::query()
-            ->where('scope', CatalogAction::SCOPE_PRODUCT)
-            ->whereIn('type', [CatalogAction::TYPE_PERCENTAGE, CatalogAction::TYPE_FIXED])
-            ->availableForAudience($user)
-            ->where(function (Builder $q): void {
-                $q->whereNull('coupon_code')
-                    ->orWhere('coupon_code', '');
-            })
-            ->where(function (Builder $q) use ($periodEnd): void {
-                $q->whereNull('starts_at')
-                    ->orWhere('starts_at', '<=', $periodEnd);
-            })
-            ->where(function (Builder $q) use ($periodStart): void {
-                $q->whereNull('ends_at')
-                    ->orWhere('ends_at', '>=', $periodStart);
-            })
-            ->where(function (Builder $q) use ($product, $categoryIds, $manufacturerId): void {
-                $q->where('target_type', CatalogAction::TARGET_ALL)
-                    ->orWhere(function (Builder $qq) use ($product): void {
-                        $qq->where('target_type', CatalogAction::TARGET_PRODUCT)
-                            ->whereHas('targets', function (Builder $tq) use ($product): void {
-                                $tq->where('target_type', CatalogAction::TARGET_PRODUCT)
-                                    ->where('target_id', $product->id);
-                            });
-                    })
-                    ->orWhere(function (Builder $qq) use ($categoryIds): void {
-                        if ($categoryIds === []) {
-                            return;
-                        }
+            $actions = CatalogAction::query()
+                ->where('scope', CatalogAction::SCOPE_PRODUCT)
+                ->whereIn('type', [CatalogAction::TYPE_PERCENTAGE, CatalogAction::TYPE_FIXED])
+                ->availableForAudience($user)
+                ->where(function (Builder $q): void {
+                    $q->whereNull('coupon_code')
+                        ->orWhere('coupon_code', '');
+                })
+                ->where(function (Builder $q) use ($periodEnd): void {
+                    $q->whereNull('starts_at')
+                        ->orWhere('starts_at', '<=', $periodEnd);
+                })
+                ->where(function (Builder $q) use ($periodStart): void {
+                    $q->whereNull('ends_at')
+                        ->orWhere('ends_at', '>=', $periodStart);
+                })
+                ->where(function (Builder $q) use ($product, $categoryIds, $manufacturerId): void {
+                    $q->where('target_type', CatalogAction::TARGET_ALL)
+                        ->orWhere(function (Builder $qq) use ($product): void {
+                            $qq->where('target_type', CatalogAction::TARGET_PRODUCT)
+                                ->whereHas('targets', function (Builder $tq) use ($product): void {
+                                    $tq->where('target_type', CatalogAction::TARGET_PRODUCT)
+                                        ->where('target_id', $product->id);
+                                });
+                        })
+                        ->orWhere(function (Builder $qq) use ($categoryIds): void {
+                            if ($categoryIds === []) {
+                                return;
+                            }
 
-                        $qq->where('target_type', CatalogAction::TARGET_CATEGORY)
-                            ->whereHas('targets', function (Builder $tq) use ($categoryIds): void {
-                                $tq->where('target_type', CatalogAction::TARGET_CATEGORY)
-                                    ->whereIn('target_id', $categoryIds);
-                            });
-                    })
-                    ->orWhere(function (Builder $qq) use ($manufacturerId): void {
-                        if (! $manufacturerId) {
-                            return;
-                        }
+                            $qq->where('target_type', CatalogAction::TARGET_CATEGORY)
+                                ->whereHas('targets', function (Builder $tq) use ($categoryIds): void {
+                                    $tq->where('target_type', CatalogAction::TARGET_CATEGORY)
+                                        ->whereIn('target_id', $categoryIds);
+                                });
+                        })
+                        ->orWhere(function (Builder $qq) use ($manufacturerId): void {
+                            if (! $manufacturerId) {
+                                return;
+                            }
 
-                        $qq->where('target_type', CatalogAction::TARGET_MANUFACTURER)
-                            ->whereHas('targets', function (Builder $tq) use ($manufacturerId): void {
-                                $tq->where('target_type', CatalogAction::TARGET_MANUFACTURER)
-                                    ->where('target_id', $manufacturerId);
-                            });
-                    });
-            })
-            ->get();
+                            $qq->where('target_type', CatalogAction::TARGET_MANUFACTURER)
+                                ->whereHas('targets', function (Builder $tq) use ($manufacturerId): void {
+                                    $tq->where('target_type', CatalogAction::TARGET_MANUFACTURER)
+                                        ->where('target_id', $manufacturerId);
+                                });
+                        });
+                })
+                ->get();
+
+        }
 
         $historyQuery = ProductPriceHistory::query()
             ->where('product_id', $product->getKey())

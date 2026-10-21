@@ -51,6 +51,11 @@
 @section('title', $translation?->title ?? __('ui.blog.page_title'))
 @section('main_class', 'mx-auto w-full max-w-7xl px-6 pt-0 pb-8')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('front-theme/styles/herrera-home-blog.css') }}?v={{ filemtime(public_path('front-theme/styles/herrera-home-blog.css')) }}">
+    <link rel="stylesheet" href="{{ asset('front-theme/styles/blog-detail.css') }}?v={{ filemtime(public_path('front-theme/styles/blog-detail.css')) }}">
+@endpush
+
 @section('content')
     <style>
         [data-blog-gallery-hotspot-root] .ag-hotspot-toggle {
@@ -135,7 +140,7 @@
     </style>
 
     <section class="mb-8 px-1">
-        <div class="front-soft-hero px-6 py-4 text-center sm:px-8 sm:py-5">
+        <div class="front-soft-hero lm-page-title px-6 py-4 text-center sm:px-8 sm:py-5">
             <nav aria-label="Breadcrumb" class="mb-2">
                 <ol class="flex max-w-full flex-wrap items-center justify-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-500 sm:gap-2">
                     <li><a href="{{ route('home') }}" class="hover:text-slate-700">{{ __('ui.front.desktop.footer.home') }}</a></li>
@@ -149,7 +154,7 @@
         </div>
     </section>
 
-    <article class="bg-white px-2 py-2">
+    <article class="blog-article bg-white px-2 py-2">
         <div class="mx-auto w-full max-w-4xl">
             @if ($post->published_at)
                 <p class="mb-4 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-slate-500">
@@ -181,8 +186,9 @@
             @endif
 
             <div class="content-richtext">
-                {!! $translation?->body_html ?: '<p>No body content available.</p>' !!}
+                {!! $translation?->body_html ?: '<p>Sadržaj članka trenutačno nije dostupan.</p>' !!}
             </div>
+            @include('front.partials.blog-share')
         </div>
     </article>
 
@@ -400,9 +406,11 @@
         @endif
     @endif
 
+    @include('front.partials.blog-discovery')
 @endsection
 
 @push('scripts')
+    <script defer src="{{ asset('front-theme/scripts/blog-detail.js') }}?v={{ filemtime(public_path('front-theme/scripts/blog-detail.js')) }}"></script>
     @include('front.partials.splide-assets')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.7.2/css/lightgallery-bundle.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.2/lightgallery.min.js"></script>

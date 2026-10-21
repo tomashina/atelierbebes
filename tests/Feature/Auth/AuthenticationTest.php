@@ -119,6 +119,7 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
+        app()->setLocale('hr');
         $user = User::factory()->create(['account_type' => 'staff']);
 
         $component = Volt::test('pages.auth.login')
@@ -129,6 +130,31 @@ class AuthenticationTest extends TestCase
 
         $component
             ->assertHasErrors()
+            ->assertSee('E-mail, korisničko ime ili lozinka nisu ispravni.')
+            ->assertDontSee('auth.failed')
+            ->assertNoRedirect();
+
+        $this->assertGuest();
+    }
+
+    public function test_admin_login_explains_the_rate_limit_in_croatian(): void
+    {
+        app()->setLocale('hr');
+        $user = User::factory()->create(['account_type' => 'staff']);
+
+        $component = Volt::test('pages.auth.login')
+            ->set('form.email', $user->email)
+            ->set('form.password', 'wrong-password');
+
+        for ($attempt = 0; $attempt < 6; $attempt++) {
+            $component->call('login');
+        }
+
+        $component
+            ->assertHasErrors(['form.email'])
+            ->assertSee('Previše neuspjelih pokušaja prijave. Pokušajte ponovno za')
+            ->assertDontSee('auth.throttle')
+            ->assertDontSee(':seconds')
             ->assertNoRedirect();
 
         $this->assertGuest();

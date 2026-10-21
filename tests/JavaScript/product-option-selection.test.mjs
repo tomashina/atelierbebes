@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { URLSearchParams } from 'node:url';
 import vm from 'node:vm';
 
 const source = readFileSync(new URL('../../public/front-theme/scripts/product-detail.js', import.meta.url), 'utf8');
@@ -37,7 +38,9 @@ for (const selectorType of ['radio', 'select']) {
                 if (selector === 'select[name="product_option_value_id"]') return selectorType === 'select' ? select : null;
                 return null;
             },
-            querySelectorAll() { return [field]; },
+            querySelectorAll(selector) {
+                return selector === 'input[name="product_option_value_id"], select[name="product_option_value_id"], [data-linked-option-primary]' ? [field] : [];
+            },
             addEventListener() {},
         };
         const document = {
@@ -54,7 +57,7 @@ for (const selectorType of ['radio', 'select']) {
                 }[selector] || [];
             },
         };
-        vm.runInNewContext(source, { document, window: {}, Event: class {} });
+        vm.runInNewContext(source, { document, window: { location: { search: '' } }, URLSearchParams, Event: class {} });
         ready.get('DOMContentLoaded')();
         assert.equal(sku.textContent, 'LAMP');
         assert.equal(price.textContent, '10.00 €');

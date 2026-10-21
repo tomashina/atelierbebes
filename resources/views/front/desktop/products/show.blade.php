@@ -2,6 +2,7 @@
 
 @php
     $isHerreraProductDetail = \App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name')));
+    $isLibermediaProductDetail = \App\Support\StorefrontTheme::usesLibermediaBrand((string) ($storeSettings['branding']['store_name'] ?? config('app.name')));
     $canViewPrices = $canViewPrices ?? app(\App\Services\Pricing\B2BAccessService::class)->canViewPrices(auth()->user());
     $translation = $product->translations->firstWhere('locale', $locale)
         ?? $product->translations->firstWhere('locale', $fallbackLocale);
@@ -207,7 +208,7 @@
             </section>
         @endif
 
-        <nav aria-label="Breadcrumb" class="product-detail-breadcrumb">
+        <nav aria-label="Breadcrumb" class="product-detail-breadcrumb lm-page-title lm-page-title--breadcrumb">
             <ol>
                 <li><a href="{{ route('home') }}">{{ __('ui.front.desktop.footer.home') }}</a></li>
                 <li aria-hidden="true">/</li>
@@ -440,6 +441,7 @@
                 data-ga4-currency="EUR"
                 data-product-base-sku="{{ $productDisplayCode }}"
                 data-product-default-local-stock="{{ $localStockQuantity }}"
+                data-product-default-purchasable="{{ $isPurchasable ? '1' : '0' }}"
                 data-product-default-supplier-stock="{{ $supplierStockQuantity }}"
                 data-product-fallback-id="{{ (int) $product->id }}"
                 data-product-name="{{ $translation?->name ?? $product->code }}"
@@ -571,19 +573,19 @@
                 @endif
 
                 <div class="product-detail-purchase-controls">
-                    @if ($isPurchasable)
-                        <div class="product-detail-quantity-control" data-qty-control>
-                            <button type="button" data-qty-dec aria-label="Decrease quantity">-</button>
-                            <input type="text" name="quantity" value="1" inputmode="numeric" readonly aria-label="{{ __('ui.cart.modal.quantity') }}" data-qty-input>
-                            <button type="button" data-qty-inc aria-label="Increase quantity">+</button>
-                        </div>
+                    <div class="product-detail-quantity-control" data-qty-control data-stock-notify-quantity @if(!$isPurchasable) hidden @endif>
+                        <button type="button" data-qty-dec aria-label="Smanji količinu">-</button>
+                        <input type="text" name="quantity" value="1" inputmode="numeric" readonly aria-label="{{ __('ui.cart.modal.quantity') }}" data-qty-input>
+                        <button type="button" data-qty-inc aria-label="Povećaj količinu">+</button>
+                    </div>
 
-                        <button type="submit" class="product-detail-action product-detail-cart-button" aria-label="{{ __('ui.product.add_to_cart') }}">
-                            <x-fa-icon name="bag-shopping" class="h-5 w-5 shrink-0" />
-                            <span class="text-center leading-tight sm:truncate">{{ __('ui.product.add_to_cart') }}</span>
-                        </button>
-                    @else
-                        <div></div>
+                    <button type="submit" class="product-detail-action product-detail-cart-button" data-product-purchase-submit aria-label="{{ __('ui.product.add_to_cart') }}" @if(!$isPurchasable) hidden @endif>
+                        <x-fa-icon name="bag-shopping" class="h-5 w-5 shrink-0" />
+                        <span class="text-center leading-tight sm:truncate">{{ __('ui.product.add_to_cart') }}</span>
+                    </button>
+                    @if ($isLibermediaProductDetail)
+                        @include('front.partials.stock-notification-button', ['notifyProductId' => $product->id, 'notifyName' => $translation?->name ?? $product->code, 'notifyClass' => 'stock-notify-button-detail', 'notifyHidden' => $isPurchasable])
+                    @elseif (! $isPurchasable)
                         <button type="button" disabled class="product-detail-cart-button product-detail-cart-button-disabled" aria-label="{{ __('ui.product.unavailable') }}">
                             <span class="text-center leading-tight sm:truncate">{{ __('ui.product.unavailable') }}</span>
                         </button>

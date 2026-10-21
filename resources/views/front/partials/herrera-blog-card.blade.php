@@ -20,6 +20,9 @@
                 <h3>{{ $blogCardTitle }}</h3>
             @endif
             <p>{{ $blogCardTranslation?->excerpt ?: __('ui.blog.excerpt_fallback') }}</p>
+            @if ($blogCardShowReadMore ?? false)
+                <span class="herrera-blog-card-read">Pročitaj članak <x-fa-icon name="arrow-right" /></span>
+            @endif
         </div>
     </a>
 </article>

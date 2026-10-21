@@ -44,6 +44,7 @@
         "boxes-stacked",
         "candle-holder",
         "car-bolt",
+        "credit-card",
         "faucet",
         "heart-pulse",
         "helmet-safety",
@@ -56,9 +57,11 @@
         "ruler",
         "screwdriver-wrench",
         "sensor",
+        "shield-check",
         "tag",
         "temperature-half",
         "toolbox",
+        "truck-fast",
         "tv"
     ],
     "brands": [

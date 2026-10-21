@@ -130,6 +130,15 @@ return [
             'mutate' => ['catalog.actions.update'],
             'delete' => ['catalog.actions.delete'],
         ],
+        'admin.bundles' => [
+            'view' => ['catalog.actions.view'],
+            'mutate' => ['catalog.actions.create', 'catalog.actions.update'],
+            'delete' => ['catalog.actions.delete'],
+        ],
+        'admin.stock-notifications' => [
+            'view' => ['catalog.products.view'],
+            'mutate' => ['catalog.products.update'],
+        ],
         'admin.actions' => [
             'view' => ['catalog.actions.view'],
         ],
@@ -180,6 +189,10 @@ return [
         ],
         'admin.orders' => [
             'view' => ['sales.orders.view'],
+        ],
+        'admin.gift-vouchers' => [
+            'view' => ['sales.orders.view'],
+            'mutate' => ['sales.orders.update'],
         ],
         'admin.withdrawals.index' => [
             'view' => ['sales.withdrawals.view'],

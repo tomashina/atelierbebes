@@ -44,6 +44,19 @@ class ShippingCalculator
             $base = max(0, (float) $method->price);
         }
 
+        $legacy = data_get($method->settings, 'opencart_xshippingpro');
+        if (is_array($legacy)) {
+            $basis = ($legacy['rate_type'] ?? '') === 'grand'
+                ? round((float) $lines->sum('line_total') + (float) $lines->sum('line_tax_total'), 2)
+                : round((float) $lines->sum('line_total'), 2);
+            $range = collect($legacy['ranges'] ?? [])->first(fn ($r) => $basis >= (float) $r['start'] && $basis <= (float) $r['end']);
+            if (! $range || ! is_numeric($range['cost'] ?? null)) {
+                return null;
+            }
+            $base = max(0, (float) $range['cost']);
+            $pricingType = $base > 0 ? 'flat' : 'free';
+        }
+
         $surcharges = [
             'fragile' => 0.0,
             'oversized' => 0.0,

@@ -20,7 +20,7 @@
 </style>
 @endpush
 @section('content')
-<section class="front-soft-hero mb-8 px-4 py-6 text-center"><h1 class="text-3xl font-extrabold">{{ __('Moja statistika kupnje') }}</h1><p class="mt-2">{{ __('Pregled vaših narudžbi i kupljenih artikala u shopu.') }}</p></section>
+<section class="front-soft-hero lm-page-title mb-8 px-4 py-6 text-center"><h1 class="text-3xl font-extrabold">{{ __('Moja statistika kupnje') }}</h1><p class="mt-2">{{ __('Pregled vaših narudžbi i kupljenih artikala u shopu.') }}</p></section>
 <div class="account-layout">
 @include('front.desktop.account.partials.nav', ['current' => 'statistics'])
 <div class="min-w-0 space-y-6">

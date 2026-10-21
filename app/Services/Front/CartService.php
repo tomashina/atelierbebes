@@ -288,7 +288,7 @@ class CartService
             ]);
         }
 
-        $lines = $lines->values();
+        $lines = app(\App\Services\Catalog\BundlePricingService::class)->apply($lines->values(), $user);
         $snapshots[$snapshotKey] = $lines;
         $request->attributes->set(self::RESOLVED_LINES_ATTRIBUTE, $snapshots);
 

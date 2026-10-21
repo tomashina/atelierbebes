@@ -15,7 +15,7 @@
         $libermediaStorefront = \App\Support\StorefrontTheme::usesLibermediaBrand();
     @endphp
 
-    <section class="commerce-hero">
+    <section class="commerce-hero lm-page-title">
         <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">{{ __('ui.auth.login.heading') }}</h1>
         <p class="mt-2 text-slate-600">{{ __('ui.auth.login.subheading') }}</p>
     </section>

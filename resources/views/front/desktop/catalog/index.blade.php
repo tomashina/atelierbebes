@@ -48,6 +48,9 @@
         $isShopPage => __('ui.shop.title'),
         default => ($translation?->name ?? $category->code),
     };
+    $catalogDescriptions = ! $isShopPage && ! $isManufacturerPage
+        ? app(\App\Support\CategoryDescriptionPresenter::class)->forTranslation($translation)
+        : ['short' => '', 'long' => ''];
     $catalogCurrentCategoryLabel = ($isShopPage || $isManufacturerPage)
         ? __('ui.shop.filters.all_categories')
         : ($translation?->name ?? $category->code);
@@ -210,6 +213,12 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('front-theme/styles/category-catalog.css') }}?v={{ filemtime(public_path('front-theme/styles/category-catalog.css')) }}">
+    @if(\App\Support\StorefrontTheme::usesLibermediaBrand())
+        <link rel="stylesheet" href="{{ asset('front-theme/styles/libermedia-catalog-promos.css') }}?v={{ filemtime(public_path('front-theme/styles/libermedia-catalog-promos.css')) }}">
+    @endif
+    @if (! $isShopPage && ! $isManufacturerPage)
+        <link rel="stylesheet" href="{{ asset('front-theme/styles/category-descriptions.css') }}?v={{ filemtime(public_path('front-theme/styles/category-descriptions.css')) }}">
+    @endif
     @if ($isHerreraCatalog)
         <link rel="stylesheet" href="{{ asset('front-theme/styles/herrera-catalog-header.css') }}?v={{ filemtime(public_path('front-theme/styles/herrera-catalog-header.css')) }}">
     @endif
@@ -267,6 +276,12 @@
     @if ($topBlocks->isNotEmpty())
         <section class="storefront-container mb-8 px-3 sm:px-4 lg:px-6">
             @include('components.content-placement', ['items' => $topBlocks])
+        </section>
+    @endif
+
+    @if ($catalogDescriptions['short'] !== '')
+        <section class="catalog-description-section catalog-description-section--short storefront-container px-3 sm:px-4 lg:px-6" aria-label="{{ __('Uvod u kategoriju :category', ['category' => $catalogHeading]) }}" data-category-short-description>
+            <div class="catalog-description catalog-description--short">{!! $catalogDescriptions['short'] !!}</div>
         </section>
     @endif
 
@@ -633,7 +648,7 @@
                             @endif
 
                             @if ($categoryFilterPanel['visible'])
-                                <details class="catalog-sidebar-section" @if ($categoryFilterPanel['default_open']) open @endif>
+                                <details class="catalog-sidebar-section" @if (\App\Support\StorefrontTheme::usesLibermediaBrand() || $categoryFilterPanel['default_open']) open @endif>
                                     <summary class="catalog-sidebar-heading">
                                         <span>{{ __('ui.shop.filters.category') }}</span>
                                         <x-fa-icon name="chevron-down" class="catalog-sidebar-chevron" />
@@ -794,7 +809,7 @@
                     @if ($products->isEmpty())
                         <div class="border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">{{ __('ui.category.empty') }}</div>
                     @else
-                        <div class="catalog-lined-grid {{ $gridClass }}" data-catalog-grid data-catalog-mobile-cols="{{ $mobileCols }}" data-continuous-card-grid>
+                        <div class="catalog-lined-grid {{ $gridClass }}" data-catalog-grid data-catalog-mobile-cols="{{ $mobileCols }}" data-continuous-card-grid @if(\App\Support\StorefrontTheme::usesLibermediaBrand()) data-libermedia-catalog-promos data-catalog-promo-context="{{ $catalogBaseUrl }}" data-catalog-promo-page="{{ $products->currentPage() }}" data-catalog-promo-per-page="{{ $products->perPage() }}" @endif>
                             @foreach ($products as $product)
                                 @include('front.desktop.partials.product-card', [
                                     'product' => $product,
@@ -807,6 +822,10 @@
                                 ])
                             @endforeach
                         </div>
+
+                        @if(\App\Support\StorefrontTheme::usesLibermediaBrand())
+                            @include('front.partials.libermedia-catalog-promos')
+                        @endif
 
                         @if ($useAsyncPagination)
                             <div class="mt-8 flex items-center justify-center" data-catalog-load-more-root data-catalog-load-mode="{{ $isInfinitePagination ? 'infinite' : 'load_more' }}">
@@ -842,6 +861,12 @@
         </section>
     @endif
 
+    @if ($catalogDescriptions['long'] !== '')
+        <section class="catalog-description-section catalog-description-section--long storefront-container px-3 sm:px-4 lg:px-6" aria-label="{{ __('Više o kategoriji :category', ['category' => $catalogHeading]) }}" data-category-long-description>
+            <div class="catalog-description catalog-description--long">{!! $catalogDescriptions['long'] !!}</div>
+        </section>
+    @endif
+
     @if ($bottomBlocks->isNotEmpty())
         <section class="storefront-container mt-10 px-3 sm:px-4 lg:px-6">
             @include('components.content-placement', ['items' => $bottomBlocks])
@@ -850,6 +875,9 @@
 @endsection
 
 @push('scripts')
+    @if($showCategoryProducts && \App\Support\StorefrontTheme::usesLibermediaBrand())
+        <script defer src="{{ asset('front-theme/scripts/libermedia-catalog-promos.js') }}?v={{ filemtime(public_path('front-theme/scripts/libermedia-catalog-promos.js')) }}"></script>
+    @endif
     @if ($showCategoryFilters)
         <script defer src="{{ asset('front-theme/scripts/category-select-redirect.js') }}?v={{ filemtime(public_path('front-theme/scripts/category-select-redirect.js')) }}"></script>
         <script defer src="{{ asset('front-theme/scripts/catalog-custom-select.js') }}?v={{ filemtime(public_path('front-theme/scripts/catalog-custom-select.js')) }}"></script>

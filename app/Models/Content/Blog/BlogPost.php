@@ -4,6 +4,7 @@ namespace App\Models\Content\Blog;
 
 use App\Models\Concerns\HasConfiguredMedia;
 use App\Models\Content\Support\Comment;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -36,6 +37,23 @@ class BlogPost extends Model implements HasMedia
         'sort_order' => 'int',
         'payload' => 'array',
     ];
+
+    public function scopeVisibleOnBlog(Builder $query, array $locales): Builder
+    {
+        return $query->where('is_active', true)
+            ->where(fn (Builder $published) => $published->whereNull('published_at')->orWhere('published_at', '<=', now()))
+            ->whereHas('translations', fn (Builder $translation) => $translation->whereIn('locale', $locales)
+                ->whereRaw("TRIM(COALESCE(title, '')) <> ''")->whereRaw("TRIM(COALESCE(slug, '')) <> ''"));
+    }
+
+    /** Rank the real read totals preserved by the OpenCart import numerically. */
+    public function scopeMostRead(Builder $query): Builder
+    {
+        $reads = $query->getQuery()->getGrammar()->wrap($this->qualifyColumn('payload').'->opencart->count_read');
+        $numericReads = 'CAST(COALESCE('.$reads.', 0) AS DECIMAL(20, 0))';
+
+        return $query->whereRaw($numericReads.' > 0')->orderByRaw($numericReads.' DESC');
+    }
 
     public function translations(): HasMany
     {

@@ -16,7 +16,7 @@ class ProductSpecificationPresenter
     {
         $rows = collect();
         if ($product->relationLoaded('attributes')) {
-            foreach ($product->attributes->reject(fn ($attribute): bool => $attribute->isMsanManaged())->groupBy('group_code') as $code => $attributes) {
+            foreach ($product->attributes->reject(fn ($attribute): bool => $attribute->isMsanManaged() || (bool) data_get($attribute->payload, 'filter_only'))->groupBy('group_code') as $code => $attributes) {
                 $values = $attributes->map(function ($attribute) use ($locale, $fallbackLocale): array {
                     $translation = $attribute->translations->firstWhere('locale', $locale)
                         ?? $attribute->translations->firstWhere('locale', $fallbackLocale)
@@ -161,6 +161,7 @@ class ProductSpecificationPresenter
             $remainingHtml = implode('<br>', $remaining);
             if (trim(strip_tags($remainingHtml)) === '' && ! preg_match('~<(?:img|picture|svg|video|audio|iframe|object|canvas|hr)\b~i', $remainingHtml)) {
                 $block->parentNode?->removeChild($block);
+
                 continue;
             }
             [, $fragmentRoot] = $this->descriptionDom($remainingHtml);
@@ -267,7 +268,7 @@ class ProductSpecificationPresenter
 
         $displayedPairs = [];
         $attributes = $product->relationLoaded('attributes')
-            ? $product->attributes->reject(fn ($attribute): bool => $attribute->isMsanManaged())
+            ? $product->attributes->reject(fn ($attribute): bool => $attribute->isMsanManaged() || (bool) data_get($attribute->payload, 'filter_only'))
             : collect();
 
         foreach ($attributes->groupBy('group_code') as $groupCode => $groupAttributes) {

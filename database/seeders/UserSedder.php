@@ -23,6 +23,7 @@ class UserSedder extends Seeder
             ['email' => 'filip@agmedia.hr'],
             [
                 'name' => 'Filip Jankoski',
+                'account_type' => 'staff',
                 'password' => 'majamaja001',
                 'email_verified_at' => now(),
             ]
@@ -32,6 +33,7 @@ class UserSedder extends Seeder
             ['email' => 'tomislav@agmedia.hr'],
             [
                 'name' => 'Tomislav Juresa',
+                'account_type' => 'staff',
                 'password' => 'bakanal',
                 'email_verified_at' => now(),
             ]
@@ -46,6 +48,7 @@ class UserSedder extends Seeder
             ['email' => 'admin@agshop.local'],
             [
                 'name' => 'admin',
+                'account_type' => 'staff',
                 'password' => 'admin',
                 'email_verified_at' => now(),
             ]
@@ -60,6 +63,7 @@ class UserSedder extends Seeder
             ['email' => 'editor@agshop.local'],
             [
                 'name' => 'editor',
+                'account_type' => 'staff',
                 'password' => 'editor',
                 'email_verified_at' => now(),
             ]

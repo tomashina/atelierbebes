@@ -79,6 +79,12 @@ class LibermediaHomeModulesFeatureTest extends TestCase
             $this->assertStringContainsString('class="'.$sectionClass.'"', $html);
             $this->assertStringContainsString($editedCopy, $html);
             $this->assertStringContainsString('href="'.$destination.'"', $html);
+            if ($suffix === 'benefits') {
+                $this->assertStringContainsString('Zaštita kupca', $html);
+                $this->assertStringContainsString('Zdravstvena provjerenost', $html);
+                $this->assertStringContainsString('Držimo do sigurnosti vaše djece', $html);
+                $this->assertSame(4, substr_count($html, '<strong>'));
+            }
         } finally {
             // Admin saves write repository templates; always restore their exact bytes.
             File::put($path, $original);
@@ -89,7 +95,7 @@ class LibermediaHomeModulesFeatureTest extends TestCase
     public static function homeModules(): array
     {
         return [
-            'benefits' => ['benefits', 'home.hero_benefits', 'Sigurno plaćanje', 'lm-benefits', '/contact'],
+            'benefits' => ['benefits', 'home.hero_benefits', 'Sigurno plaćanje', 'lm-benefits', '/page/nacin-placanja-i-dostava'],
             'campaigns' => ['campaigns', 'home.before_products', 'Pronađite svoju novu avanturu', 'lm-campaign-section', '/category/skolske-torbe-i-ruksaci'],
             'kindergarten' => ['kindergarten', 'home.after_products', 'Saznajte više', 'lm-kindergarten', 'https://namjestajzavrtice.com/'],
             'assurance' => ['assurance', 'home.bottom', 'Više igre. Manje brige.', 'lm-assurance', '/page/opci-uvjeti-koristenja'],

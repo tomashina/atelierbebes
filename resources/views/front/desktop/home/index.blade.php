@@ -138,6 +138,7 @@
     @endif
 
     @if ($isLibermediaHome)
+        @include('front.partials.libermedia-home-reviews')
         @include('front.partials.libermedia-home-blog')
     @endif
 
