@@ -14,6 +14,13 @@
     $siteIcons = is_array($branding['favicons'] ?? null) ? $branding['favicons'] : [];
     $legacySiteIcon = trim((string) ($branding['favicon_url'] ?? ''));
     $siteManifestUrl = null;
+    $libermediaIcon = null;
+    if (\App\Support\StorefrontTheme::usesLibermediaBrand($siteIconStoreName)) {
+        $iconPath = 'assets/brand/libermedia-favicon.svg';
+        $libermediaIcon = asset($iconPath).'?v='.filemtime(public_path($iconPath));
+        $siteIcons = [];
+        $legacySiteIcon = '';
+    }
 
     if ($usesHerreraIcons) {
         // Bundled theme icons replace legacy Herrera favicons without changing stored branding or logos.
@@ -34,6 +41,9 @@
     }
 @endphp
 
+@if ($libermediaIcon)
+    <link rel="icon" type="image/svg+xml" href="{{ $libermediaIcon }}">
+@endif
 @if (! empty($siteIcons['ico_url']))
     <link rel="icon" type="image/x-icon" href="{{ $siteIcons['ico_url'] }}" sizes="{{ $usesHerreraIcons ? '16x16 32x32 48x48' : 'any' }}">
 @elseif ($legacySiteIcon !== '')

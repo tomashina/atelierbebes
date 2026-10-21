@@ -141,6 +141,12 @@
     if ($title === '') {
         $title = (string) config('app.name', 'AG Shop');
     }
+    $paginationNumber = isset($products) && $products instanceof \Illuminate\Contracts\Pagination\Paginator
+        ? $products->currentPage()
+        : (isset($posts) && $posts instanceof \Illuminate\Contracts\Pagination\Paginator ? $posts->currentPage() : 1);
+    if ($paginationNumber > 1) {
+        $title .= ' – Stranica '.$paginationNumber;
+    }
 @endphp
 
 <title>{{ $title }}</title>

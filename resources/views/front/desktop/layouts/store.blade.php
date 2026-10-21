@@ -13,6 +13,7 @@
         $storefrontAssetVersion = app(\App\Support\AssetVersion::class)->current();
     @endphp
     @if (\App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))))
+        @unless (\App\Support\StorefrontTheme::usesLibermediaBrand())
         <script data-storefront-page-reveal-boot>
             (() => {
                 const root = document.documentElement;
@@ -29,10 +30,15 @@
             })();
         </script>
         <script defer src="{{ asset('front-theme/scripts/storefront-page-reveal.js') }}?v={{ filemtime(public_path('front-theme/scripts/storefront-page-reveal.js')) }}"></script>
+        @endunless
         <link rel="preload" href="{{ asset('assets/fonts/sora/Sora-Variable.woff2') }}" as="font" type="font/woff2" crossorigin>
     @endif
     <script defer src="{{ asset('front-theme/scripts/desktop-header-menu.js') }}?v={{ filemtime(public_path('front-theme/scripts/desktop-header-menu.js')) }}"></script>
     <script defer src="{{ asset('front-theme/scripts/header-search-panel.js') }}?v={{ filemtime(public_path('front-theme/scripts/header-search-panel.js')) }}"></script>
+    @if (config('legacy_media.enabled') && \App\Support\StorefrontTheme::usesLibermediaBrand())
+        <link rel="preconnect" href="{{ config('legacy_media.origin') }}">
+        <link rel="dns-prefetch" href="{{ config('legacy_media.origin') }}">
+    @endif
     @include('front.partials.cookie-consent-head')
     @stack('head')
     @unless (\App\Support\StorefrontTheme::usesHerreraLayout((string) ($storeSettings['branding']['store_name'] ?? config('app.name'))))

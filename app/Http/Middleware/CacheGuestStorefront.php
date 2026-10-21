@@ -125,6 +125,12 @@ class CacheGuestStorefront
                 if (! ctype_digit($value) || (int) $value < 1 || (int) $value > $maximum) {
                     return null;
                 }
+            } elseif ($request->routeIs('gift-guide.index') && in_array($key, ['gender', 'age', 'budget', 'interest', 'brand'], true)) {
+                // The gift controller validates supported values before a response can be stored.
+            } elseif (in_array($key, ['available_only', 'promo_only'], true)) {
+                if (! in_array($value, ['0', '1'], true)) {
+                    return null;
+                }
             } elseif ($key === 'sort') {
                 if (! in_array($value, ['default', 'relevance', 'newest', 'name_asc', 'name_desc', 'price_low', 'price_high', 'stock_high'], true)) {
                     return null;

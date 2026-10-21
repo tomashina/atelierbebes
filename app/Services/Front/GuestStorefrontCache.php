@@ -26,13 +26,18 @@ class GuestStorefrontCache
         'content_info_page_translations', 'content_info_page_category', 'content_faqs',
         'content_faq_translations', 'content_comments', 'system_settings', 'languages', 'currencies',
         'features', 'media', 'tax_rates', 'product_energy_declarations',
+        'catalog_product_price_history', 'catalog_price_catalogs', 'catalog_price_entries',
+        'catalog_price_catalog_state', 'catalog_group_discount_rules', 'customer_discount_rules',
+        'catalog_b2b_price_rules', 'catalog_b2b_price_rule_targets', 'orders', 'order_items',
     ];
 
     public function enabled(): bool
     {
         return (bool) config('storefront_cache.enabled', false)
-            && (bool) config('commerce.b2b_only', true)
-            && ! app(\App\Services\Pricing\B2BAccessService::class)->b2cEnabled()
+            && (((bool) config('commerce.b2b_only', true)
+                    && ! app(\App\Services\Pricing\B2BAccessService::class)->b2cEnabled())
+                || ((bool) config('storefront_cache.public_b2c_enabled', false)
+                    && app(\App\Services\Pricing\B2BAccessService::class)->b2cEnabled()))
             && (int) config('storefront_cache.ttl_seconds', 120) > 0;
     }
 
@@ -85,7 +90,7 @@ class GuestStorefrontCache
     {
         ksort($query);
         $context = [
-            'schema' => 1,
+            'schema' => 2,
             'host' => $request->getSchemeAndHttpHost(),
             'app_url' => (string) config('app.url'),
             'route' => $request->route()?->getName(),
@@ -96,7 +101,8 @@ class GuestStorefrontCache
             'variant' => (string) $request->attributes->get('frontend_variant', 'desktop'),
             'mobile' => app(DeviceViewResolver::class)->variant($request->userAgent()) === 'mobile',
             'grid_cookie' => $gridCookie,
-            'b2b_only' => true,
+            'b2b_only' => (bool) config('commerce.b2b_only', true),
+            'b2c_enabled' => app(\App\Services\Pricing\B2BAccessService::class)->b2cEnabled(),
             'content_version' => Cache::get(config('content_blocks.cache.version_key', 'content_blocks:version'), 1),
             'asset_version' => app(AssetVersion::class)->current(),
             'revision' => $this->revision(),

@@ -87,6 +87,32 @@ class GuestStorefrontCacheTest extends TestCase
         $this->assertStringNotContainsString($first->session()->token(), $response->getContent());
     }
 
+    public function test_opted_in_public_store_caches_guest_prices_but_bypasses_carts_and_accounts(): void
+    {
+        config(['commerce.b2b_only' => false, 'commerce.b2c_only' => true, 'storefront_cache.public_b2c_enabled' => true]);
+        $first = $this->middleware->handle($this->request(), fn () => $this->html('Public price 19.99'));
+        $second = $this->middleware->handle($this->request(), fn () => $this->html('Unexpected render'));
+        $this->assertSame('MISS', $first->headers->get('X-Storefront-Cache'));
+        $this->assertSame('HIT', $second->headers->get('X-Storefront-Cache'));
+        $this->assertStringContainsString('Public price 19.99', $second->getContent());
+        $cart = $this->middleware->handle($this->request(state: ['front.cart.items' => ['private']]), fn () => $this->html('Private cart'));
+        $this->assertSame('BYPASS', $cart->headers->get('X-Storefront-Cache'));
+        $customer = $this->middleware->handle($this->request(user: new User(['name' => 'Customer'])), fn () => $this->html('Private price'));
+        $this->assertSame('BYPASS', $customer->headers->get('X-Storefront-Cache'));
+    }
+
+    public function test_gift_selection_cache_keys_do_not_mix_different_ages(): void
+    {
+        config(['commerce.b2b_only' => false, 'commerce.b2c_only' => true, 'storefront_cache.public_b2c_enabled' => true]);
+        $this->middleware->handle($this->request(route: 'gift-guide.index', query: ['age' => '24']), fn () => $this->html('Age two'));
+        $older = $this->middleware->handle($this->request(route: 'gift-guide.index', query: ['age' => '144']), fn () => $this->html('Age twelve'));
+        $this->assertSame('MISS', $older->headers->get('X-Storefront-Cache'));
+        $this->assertStringNotContainsString('Age two', $older->getContent());
+        $again = $this->middleware->handle($this->request(route: 'gift-guide.index', query: ['age' => '24']), fn () => $this->html('Unexpected'));
+        $this->assertSame('HIT', $again->headers->get('X-Storefront-Cache'));
+        $this->assertStringContainsString('Age two', $again->getContent());
+    }
+
     public function test_signed_in_customers_cannot_read_or_populate_the_guest_entry(): void
     {
         $guest = $this->request();

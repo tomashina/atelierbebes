@@ -37,7 +37,10 @@ class GiftGuideController extends Controller
         $query = Product::query()->where('is_active', true)
             ->whereHas('translations')->whereHas('categories.translations', fn ($q) => $q
             ->where(fn ($q) => $q->where('name', 'like', '%igra%')->orWhere('name', 'like', '%kreativ%')->orWhere('name', 'like', '%slagalic%')->orWhere('name', 'like', '%puzzle%')))
-            ->with(['translations', 'media', 'taxRate', 'manufacturer.translations', 'categories.translations', 'attributes.translations', 'optionValues.optionValue.translations', 'optionValues.optionValue.option'])
+            ->with([
+                'translations' => fn ($q) => $q->select(['id', 'product_id', 'locale', 'slug', 'name']),
+                'taxRate', 'manufacturer.translations', 'categories.translations', 'attributes.translations',
+            ])
             ->addSelect(['gift_sales' => $sales])->orderByDesc('gift_sales')->orderBy('id');
         $products = $query->get()->filter(function (Product $product) use ($filters, $interests, $request) {
             $gender = data_get($product->payload, 'gift_guide.gender', 'all');
@@ -94,7 +97,9 @@ class GiftGuideController extends Controller
         }
         $products = $products->values();
         $page = max(1, (int) $request->query('page', 1));
-        $products = new LengthAwarePaginator($products->forPage($page, 60), $products->count(), 60, $page, ['path' => $request->url(), 'query' => $request->query()]);
+        $pageProducts = $products->forPage($page, 60);
+        $pageProducts->load(['media', 'optionValues.optionValue.translations', 'optionValues.optionValue.option']);
+        $products = new LengthAwarePaginator($pageProducts, $products->count(), 60, $page, ['path' => $request->url(), 'query' => $request->query()]);
 
         return view('front.desktop.gift-guide.index', compact('products', 'filters', 'giftCategories', 'giftBrands'));
     }

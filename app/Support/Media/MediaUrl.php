@@ -12,6 +12,10 @@ class MediaUrl
             return false;
         }
 
+        if (config('legacy_media.remote_only') && $media->getCustomProperty('opencart_path')) {
+            return false;
+        }
+
         $path = $media->getPath();
 
         return is_string($path) && $path !== '' && is_file($path) && filesize($path) > 0;
@@ -88,6 +92,9 @@ class MediaUrl
 
     private static function hasUsableConversion(Media $media, string $conversionName): bool
     {
+        if (config('legacy_media.remote_only') && $media->getCustomProperty('opencart_path')) {
+            return false;
+        }
         if (! $media->hasGeneratedConversion($conversionName)) {
             return false;
         }
