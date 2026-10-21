@@ -35,8 +35,7 @@
                         $translation = $product->translations->firstWhere('locale', app()->getLocale()) ?? $product->translations->firstWhere('locale', 'hr');
                         $productName = $translation?->name ?? $product->sku;
                         $productUrl = $translation ? route('products.show', $translation->slug) : null;
-                        $image = $product->getFirstMedia('product_main');
-                        $imageUrl = $image ? ($image->hasGeneratedConversion('card_480w') ? $image->getUrl('card_480w') : $image->getUrl()) : null;
+                        $imageUrl = \App\Support\Media\LegacyCatalogImage::first($product, ['card_480w']);
                     @endphp
                     <li class="lm-bundle-product">
                         @if($productUrl)<a href="{{ $productUrl }}" class="lm-bundle-product-link">@else<div class="lm-bundle-product-link">@endif

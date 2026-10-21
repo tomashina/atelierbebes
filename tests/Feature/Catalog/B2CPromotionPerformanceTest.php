@@ -42,6 +42,21 @@ class B2CPromotionPerformanceTest extends TestCase
         $this->assertSame(0, $query->count());
     }
 
+    public function test_target_index_preserves_order_and_keeps_product_matches_separate(): void
+    {
+        config(['commerce.b2c_only' => true]);
+        $first = Product::create(['code' => 'first', 'sku' => 'first', 'base_price' => 100, 'is_active' => true]);
+        $second = Product::create(['code' => 'second', 'sku' => 'second', 'base_price' => 100, 'is_active' => true]);
+        $base = ['scope' => 'product', 'type' => 'percentage', 'discount_value' => 20, 'audience_type' => 'all', 'is_active' => true];
+        $global = CatalogAction::create($base + ['code' => 'global', 'target_type' => 'all', 'priority' => 1]);
+        $specific = CatalogAction::create($base + ['code' => 'specific', 'target_type' => 'product', 'priority' => 10]);
+        $specific->targets()->create(['target_type' => 'product', 'target_id' => $first->id]);
+        $service = app(B2CPromotionService::class);
+        $this->assertSame([$specific->id, $global->id], $service->forProduct($first)->pluck('id')->values()->all());
+        $this->assertSame([$global->id], $service->forProduct($second)->pluck('id')->values()->all());
+        $this->assertSame([$specific->id, $global->id], $service->forProduct($first)->pluck('id')->values()->all());
+    }
+
     public function test_b2c_customer_skips_all_business_account_and_contract_price_queries(): void
     {
         config(['commerce.b2c_only' => true, 'commerce.b2b_only' => true]);

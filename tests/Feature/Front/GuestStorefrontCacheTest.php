@@ -101,6 +101,17 @@ class GuestStorefrontCacheTest extends TestCase
         $this->assertSame('BYPASS', $customer->headers->get('X-Storefront-Cache'));
     }
 
+    public function test_public_gift_listing_stays_cached_after_visiting_a_product(): void
+    {
+        config(['commerce.b2b_only' => false, 'commerce.b2c_only' => true, 'storefront_cache.public_b2c_enabled' => true]);
+        $this->middleware->handle($this->request(route: 'gift-guide.index'), fn () => $this->html('Public recommendations'));
+        $request = $this->request(route: 'gift-guide.index', state: ['front_recently_viewed_products' => [42, 17]]);
+        $response = $this->middleware->handle($request, fn () => $this->html('Unexpected'));
+        $this->assertSame('HIT', $response->headers->get('X-Storefront-Cache'));
+        $this->assertSame([42, 17], $request->session()->get('front_recently_viewed_products'));
+        $this->assertStringContainsString('Public recommendations', $response->getContent());
+    }
+
     public function test_gift_selection_cache_keys_do_not_mix_different_ages(): void
     {
         config(['commerce.b2b_only' => false, 'commerce.b2c_only' => true, 'storefront_cache.public_b2c_enabled' => true]);

@@ -38,22 +38,40 @@ class B2CPromotionService
     public function forProduct(Product $product, ?User $user = null, string $coupon = '', bool $history = false): Collection
     {
         $actions = $this->actions($user, $coupon, $history);
-        $categoryIds = $actions->contains('target_type', CatalogAction::TARGET_CATEGORY)
-            ? ($product->relationLoaded('categories') ? $product->categories->modelKeys() : $product->categories()->pluck('categories.id')->all()) : [];
+        $key = 'b2c.promotion-target-index.'.($user?->id ?? 0).'.'.hash('sha256', $coupon).'.'.(int) $history.'.'.spl_object_id($actions);
+        $request = request();
+        if (! $request->attributes->has($key)) {
+            $index = ['all' => []];
+            foreach ($actions as $action) {
+                if ($action->target_type === CatalogAction::TARGET_ALL) {
+                    $index['all'][(int) $action->id] = true;
 
-        return $actions->filter(function ($action) use ($product, $categoryIds): bool {
-            if ($action->target_type === CatalogAction::TARGET_ALL) {
-                return true;
+                    continue;
+                }
+                foreach ($action->targets as $target) {
+                    if ($target->target_type === $action->target_type) {
+                        $index[$action->target_type][(int) $target->target_id][(int) $action->id] = true;
+                    }
+                }
             }
-            $ids = $action->targets->where('target_type', $action->target_type)->pluck('target_id')->map(fn ($id) => (int) $id)->all();
+            $request->attributes->set($key, $index);
+        }
+        $index = $request->attributes->get($key);
+        $matches = $index['all']
+            + ($index[CatalogAction::TARGET_PRODUCT][(int) $product->id] ?? [])
+            + ($index[CatalogAction::TARGET_MANUFACTURER][(int) $product->manufacturer_id] ?? []);
+        if (! empty($index[CatalogAction::TARGET_CATEGORY])) {
+            $categoryIds = $product->relationLoaded('categories')
+                ? $product->categories->modelKeys()
+                : $product->categories()->pluck('categories.id')->all();
+            foreach ($categoryIds as $categoryId) {
+                $matches += $index[CatalogAction::TARGET_CATEGORY][(int) $categoryId] ?? [];
+            }
+        }
 
-            return match ($action->target_type) {
-                CatalogAction::TARGET_PRODUCT => in_array($product->id, $ids, true),
-                CatalogAction::TARGET_MANUFACTURER => in_array((int) $product->manufacturer_id, $ids, true),
-                CatalogAction::TARGET_CATEGORY => array_intersect($categoryIds, $ids) !== [],
-                default => false,
-            };
-        });
+        // Preserve priority/exclusivity order while avoiding rescanning every
+        // promotion's complete target list for every card and historical price.
+        return $actions->filter(fn ($action): bool => isset($matches[(int) $action->id]));
     }
 
     public function filter(Builder $query, ?User $user = null): void

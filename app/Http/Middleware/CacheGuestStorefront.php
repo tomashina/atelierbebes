@@ -87,6 +87,15 @@ class CacheGuestStorefront
     private function safeSession(Request $request): bool
     {
         foreach ($request->session()->all() as $key => $value) {
+            // Only product detail pages render browsing history; listing pages do not.
+            // Keep the visitor's history in their session while sharing public listings.
+            if ($key === 'front_recently_viewed_products'
+                && config('storefront_cache.public_b2c_enabled', false)
+                && $request->routeIs('home', 'shop.index', 'categories.index', 'categories.show', 'manufacturers.index', 'manufacturers.show', 'gift-guide.index')
+                && is_array($value) && count($value) <= 24
+                && collect($value)->every(fn ($id) => is_int($id) && $id > 0)) {
+                continue;
+            }
             if (! in_array($key, ['_token', '_previous', '_flash', 'front_locale'], true)) {
                 return false;
             }
