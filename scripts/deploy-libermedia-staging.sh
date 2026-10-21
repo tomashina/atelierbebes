@@ -15,7 +15,7 @@ handler_file="$backup_root/php-handler"
 if [[ -f "$target_root/public/.htaccess" ]]; then
     awk '/# php -- BEGIN cPanel-generated handler/{capture=1} capture{print} /# php -- END cPanel-generated handler/{capture=0}' "$target_root/public/.htaccess" > "$handler_file"
 fi
-rsync -a --backup --backup-dir="$backup_root" --exclude=.git --exclude=.env --exclude=vendor --exclude=node_modules --exclude=storage --exclude=public/storage --exclude=public/image --exclude=bootstrap/cache --exclude=database/database.sqlite "$source_root/" "$target_root/"
+rsync -a --chmod=D755,F644 --backup --backup-dir="$backup_root" --exclude=.git --exclude=.env --exclude=vendor --exclude=node_modules --exclude=storage --exclude=public/storage --exclude=public/image --exclude=bootstrap/cache --exclude=database/database.sqlite "$source_root/" "$target_root/"
 if [[ -s "$handler_file" ]]; then
     cat "$handler_file" >> "$target_root/public/.htaccess"
 fi
